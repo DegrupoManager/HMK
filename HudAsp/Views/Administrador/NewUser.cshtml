@@ -1,0 +1,288 @@
+﻿@{
+	ViewData["Title"] = "User";
+}
+
+@section Styles {
+	<link href="~/lib/datatables.net-bs5/css/dataTables.bootstrap5.min.css" rel="stylesheet">
+	<link href="~/lib/datatables.net-buttons-bs5/css/buttons.bootstrap5.min.css" rel="stylesheet">
+	<link href="~/lib/datatables.net-responsive-bs5/css/responsive.bootstrap5.min.css" rel="stylesheet">
+	<link href="~/lib/bootstrap-table/dist/bootstrap-table.min.css" rel="stylesheet">
+
+	<style>
+		.form-check-inline{
+			margin-right: 0rem;
+			padding-left: 1.9rem;
+		}
+
+		.row-line {
+			border-top: 1px solid #E00000;
+			border-bottom: 1px solid #E00000;
+		}
+
+	</style>
+
+}
+
+@section Scripts {
+	<script src="~/lib/datatables.net/js/jquery.dataTables.min.js"></script>
+	<script src="~/lib/@@highlightjs/cdn-assets/highlight.min.js"></script>
+	<script src="~/js/demo/highlightjs.demo.js"></script>
+	<script src="~/lib/datatables.net/js/jquery.dataTables.min.js"></script>
+	<script src="~/lib/datatables.net-bs5/js/dataTables.bootstrap5.min.js"></script>
+	<script src="~/lib/datatables.net-buttons/js/dataTables.buttons.min.js"></script>
+	<script src="~/lib/datatables.net-buttons/js/buttons.colVis.min.js"></script>
+	<script src="~/lib/datatables.net-buttons/js/buttons.flash.min.js"></script>
+	<script src="~/lib/datatables.net-buttons/js/buttons.html5.min.js"></script>
+	<script src="~/lib/datatables.net-buttons/js/buttons.print.min.js"></script>
+	<script src="~/lib/datatables.net-buttons-bs5/js/buttons.bootstrap5.min.js"></script>
+	<script src="~/lib/datatables.net-responsive/js/dataTables.responsive.min.js"></script>
+	<script src="~/lib/datatables.net-responsive-bs5/js/responsive.bootstrap5.min.js"></script>
+	<script src="~/lib/bootstrap-table/dist/bootstrap-table.min.js"></script>
+	<script src="~/js/demo/sidebar-scrollspy.demo.js"></script>
+	<script src="~/js/scripts/administrador_user.js"></script>
+
+}
+
+
+<div class="d-flex align-items-center mb-4">
+	<div>
+		<ul class="breadcrumb">
+			<li class="breadcrumb-item active">Administrador</li>
+			<li class="breadcrumb-item active">Nuevo Usuario</li>
+		</ul>
+		<h1 class="page-header mb-0">Registrar usuario</h1>
+	</div>
+</div>
+
+<div class="container-fluid mb-4">
+
+	<div class="row mb-3">
+		<!--inputUsuario-->
+		<div class="col-12 col-sm-6 col-md-4 col-lg-1">
+			<label for="inputPassword6" class="col-form-label">Usuario:</label>
+		</div>
+		<div class="col-12 col-sm-6 col-md-5 col-lg-2">
+			<input type="text" id="inputPassword6" class="form-control">
+		</div>
+	</div>
+
+	<div class="row mb-3">
+		<!--inputNombre-->
+		<div class="col-12 col-sm-6 col-md-4 col-lg-1">
+			<label for="inputPassword6" class="col-form-label">Nombre:</label>
+		</div>
+		<div class="col-12 col-sm-6 col-md-5 col-lg-3">
+			<input type="text" id="inputPassword6" class="form-control">
+		</div>
+	</div>
+
+	<div class="row mb-3">
+		<!--inputRol-->
+		<div class="col-12 col-sm-6 col-md-4 col-lg-1">
+			<label for="inputPassword6" class="col-form-label">Rol:</label>
+		</div>
+		<div class="col-12 col-sm-6 col-md-5 col-lg-2">
+			<select class="form-select" aria-label="Default select example">
+				<option selected></option>
+				<option value="1">Administrador</option>
+				<option value="2">Revisor</option>
+				<option value="3">Editor</option>
+			</select>
+		</div>
+	</div>
+
+	<div class="row mb-3">
+		<div class="col-12 col-sm-6 col-md-12 col-lg-6 mb-3">
+			<div class="row">
+                <!--inputEstado-->
+                <div class="col-12 col-sm-6 col-md-4 col-lg-2">
+                    <label for="inputPassword6" class="col-form-label">Estado:</label>
+                </div>
+                <div class="col-12 col-sm-6 col-md-5 col-lg-3">
+					<select class="form-select" aria-label="Default select example">
+						<option selected></option>
+						<option value="1">Activo</option>
+						<option value="2">Inactivo</option>
+					</select>
+                </div>
+			</div>
+		</div>
+		<div class="col-12 col-sm-6 col-md-12 col-lg-6">
+			<div class="row">
+                <!--inputContraseña-->
+                <div class="col-12 col-sm-6 col-md-4 col-lg-2">
+                    <label for="inputPassword6" class="col-form-label">Contraseña:</label>
+                </div>
+                <div class="col-12 col-sm-6 col-md-5 col-lg-5">
+                    <input type="password" id="inputPassword6" class="form-control">
+                </div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="container-fluid mb-4">
+
+	<!--Header-->
+	<div class="row mb-3 row-line">
+		<div class="col-12 col-sm-6 col-md-3 col-lg-3 my-2">Opciones</div>
+		<div class="col-12 col-sm-6 col-md-3 col-lg-3 my-2 d-flex justify-content-center">Administrador</div>
+		<div class="col-12 col-sm-6 col-md-3 col-lg-3 my-2 d-flex justify-content-center">Revisor</div>
+		<div class="col-12 col-sm-6 col-md-3 col-lg-3 my-2 d-flex justify-content-center">Editor</div>
+	</div>
+
+	<!--Body-->
+	<div class="row mb-3 align-content-center">
+		<div class="col-12 col-sm-6 col-md-3 col-lg-3 ">Crear orden</div>
+		<div class="col-12 col-sm-6 col-md-3 col-lg-3 d-flex justify-content-center">
+			<div class="form-check form-check-inline">
+				<input class="form-check-input" type="checkbox" id="inlineCheckbox1" value="option1">
+			</div>
+		</div>
+		<div class="col-12 col-sm-6 col-md-3 col-lg-3 d-flex justify-content-center">
+			<div class="form-check form-check-inline">
+				<input class="form-check-input" type="checkbox" id="inlineCheckbox1" value="option1">
+			</div>
+		</div>
+		<div class="col-12 col-sm-6 col-md-3 col-lg-3 d-flex justify-content-center">
+			<div class="form-check form-check-inline">
+				<input class="form-check-input" type="checkbox" id="inlineCheckbox1" value="option1">
+			</div>
+		</div>
+	</div>
+	<div class="row mb-3">
+		<div class="col-12 col-sm-6 col-md-3 col-lg-3">Visualizar orden</div>
+		<div class="col-12 col-sm-6 col-md-3 col-lg-3 d-flex justify-content-center">
+			<div class="form-check form-check-inline">
+				<input class="form-check-input" type="checkbox" id="inlineCheckbox1" value="option1">
+			</div>
+		</div>
+		<div class="col-12 col-sm-6 col-md-3 col-lg-3 d-flex justify-content-center">
+			<div class="form-check form-check-inline">
+				<input class="form-check-input" type="checkbox" id="inlineCheckbox1" value="option1">
+			</div>
+		</div>
+		<div class="col-12 col-sm-6 col-md-3 col-lg-3 d-flex justify-content-center">
+			<div class="form-check form-check-inline">
+				<input class="form-check-input" type="checkbox" id="inlineCheckbox1" value="option1">
+			</div>
+		</div>
+	</div>
+	<div class="row mb-3">
+		<div class="col-12 col-sm-6 col-md-3 col-lg-3">Editar orden</div>
+		<div class="col-12 col-sm-6 col-md-3 col-lg-3 d-flex justify-content-center">
+			<div class="form-check form-check-inline">
+				<input class="form-check-input" type="checkbox" id="inlineCheckbox1" value="option1">
+			</div>
+		</div>
+		<div class="col-12 col-sm-6 col-md-3 col-lg-3 d-flex justify-content-center">
+			<div class="form-check form-check-inline">
+				<input class="form-check-input" type="checkbox" id="inlineCheckbox1" value="option1">
+			</div>
+		</div>
+		<div class="col-12 col-sm-6 col-md-3 col-lg-3 d-flex justify-content-center">
+			<div class="form-check form-check-inline">
+				<input class="form-check-input" type="checkbox" id="inlineCheckbox1" value="option1">
+			</div>
+		</div>
+	</div>
+	<div class="row mb-3">
+		<div class="col-12 col-sm-6 col-md-3 col-lg-3">Elimimnar orden</div>
+		<div class="col-12 col-sm-6 col-md-3 col-lg-3 d-flex justify-content-center">
+			<div class="form-check form-check-inline">
+				<input class="form-check-input" type="checkbox" id="inlineCheckbox1" value="option1">
+			</div>
+		</div>
+		<div class="col-12 col-sm-6 col-md-3 col-lg-3 d-flex justify-content-center">
+			<div class="form-check form-check-inline">
+				<input class="form-check-input" type="checkbox" id="inlineCheckbox1" value="option1">
+			</div>
+		</div>
+		<div class="col-12 col-sm-6 col-md-3 col-lg-3 d-flex justify-content-center">
+			<div class="form-check form-check-inline">
+				<input class="form-check-input" type="checkbox" id="inlineCheckbox1" value="option1">
+			</div>
+		</div>
+	</div>
+	<div class="row mb-3">
+		<div class="col-12 col-sm-6 col-md-3 col-lg-3">Consulta de orden</div>
+		<div class="col-12 col-sm-6 col-md-3 col-lg-3 d-flex justify-content-center">
+			<div class="form-check form-check-inline">
+				<input class="form-check-input" type="checkbox" id="inlineCheckbox1" value="option1">
+			</div>
+		</div>
+		<div class="col-12 col-sm-6 col-md-3 col-lg-3 d-flex justify-content-center">
+			<div class="form-check form-check-inline">
+				<input class="form-check-input" type="checkbox" id="inlineCheckbox1" value="option1">
+			</div>
+		</div>
+		<div class="col-12 col-sm-6 col-md-3 col-lg-3 d-flex justify-content-center">
+			<div class="form-check form-check-inline">
+				<input class="form-check-input" type="checkbox" id="inlineCheckbox1" value="option1">
+			</div>
+		</div>
+	</div>
+	<div class="row mb-3">
+		<div class="col-12 col-sm-6 col-md-3 col-lg-3">Reporte - Guía de consignación</div>
+		<div class="col-12 col-sm-6 col-md-3 col-lg-3 d-flex justify-content-center">
+			<div class="form-check form-check-inline">
+				<input class="form-check-input" type="checkbox" id="inlineCheckbox1" value="option1">
+			</div>
+		</div>
+		<div class="col-12 col-sm-6 col-md-3 col-lg-3 d-flex justify-content-center">
+			<div class="form-check form-check-inline">
+				<input class="form-check-input" type="checkbox" id="inlineCheckbox1" value="option1">
+			</div>
+		</div>
+		<div class="col-12 col-sm-6 col-md-3 col-lg-3 d-flex justify-content-center">
+			<div class="form-check form-check-inline">
+				<input class="form-check-input" type="checkbox" id="inlineCheckbox1" value="option1">
+			</div>
+		</div>
+	</div>
+	<div class="row mb-3">
+		<div class="col-12 col-sm-6 col-md-3 col-lg-3">Registro de usuarios</div>
+		<div class="col-12 col-sm-6 col-md-3 col-lg-3 d-flex justify-content-center">
+			<div class="form-check form-check-inline">
+				<input class="form-check-input" type="checkbox" id="inlineCheckbox1" value="option1">
+			</div>
+		</div>
+		<div class="col-12 col-sm-6 col-md-3 col-lg-3 d-flex justify-content-center">
+			<div class="form-check form-check-inline">
+				<input class="form-check-input" type="checkbox" id="inlineCheckbox1" value="option1">
+			</div>
+		</div>
+		<div class="col-12 col-sm-6 col-md-3 col-lg-3 d-flex justify-content-center">
+			<div class="form-check form-check-inline">
+				<input class="form-check-input" type="checkbox" id="inlineCheckbox1" value="option1">
+			</div>
+		</div>
+	</div>
+	<div class="row mb-3">
+		<div class="col-12 col-sm-6 col-md-3 col-lg-3">Exportar datos (PDF/XLS)</div>
+		<div class="col-12 col-sm-6 col-md-3 col-lg-3 d-flex justify-content-center">
+			<div class="form-check form-check-inline">
+				<input class="form-check-input" type="checkbox" id="inlineCheckbox1" value="option1">
+			</div>
+		</div>
+		<div class="col-12 col-sm-6 col-md-3 col-lg-3 d-flex justify-content-center">
+			<div class="form-check form-check-inline">
+				<input class="form-check-input" type="checkbox" id="inlineCheckbox1" value="option1">
+			</div>
+		</div>
+		<div class="col-12 col-sm-6 col-md-3 col-lg-3 d-flex justify-content-center">
+			<div class="form-check form-check-inline">
+				<input class="form-check-input" type="checkbox" id="inlineCheckbox1" value="option1">
+			</div>
+		</div>
+	</div>
+
+</div>
+<div class="row">
+	<div class="col-3 gx-4 ms-auto">
+		<button type="button" id="openModalBtn" class="btn btn-danger px-4">Grabar</button>
+		<a href="/Administrador/User" class="btn btn-outline-theme px-3">
+			<span class="text-dark">Cancelar</span>
+		</a>
+	</div>
+</div>

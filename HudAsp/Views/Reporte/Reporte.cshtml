@@ -1,0 +1,151 @@
+﻿@{
+	ViewData["Title"] = "Reporte";
+}
+
+@section Styles {
+	<link href="~/lib/datatables.net-bs5/css/dataTables.bootstrap5.min.css" rel="stylesheet">
+	<link href="~/lib/datatables.net-buttons-bs5/css/buttons.bootstrap5.min.css" rel="stylesheet">
+	<link href="~/lib/datatables.net-responsive-bs5/css/responsive.bootstrap5.min.css" rel="stylesheet">
+	<link href="~/lib/bootstrap-table/dist/bootstrap-table.min.css" rel="stylesheet">
+}
+
+@section Scripts {
+	<script src="~/lib/datatables.net/js/jquery.dataTables.min.js"></script>
+	<script src="~/lib/@@highlightjs/cdn-assets/highlight.min.js"></script>
+	<script src="~/js/demo/highlightjs.demo.js"></script>
+	<script src="~/lib/datatables.net/js/jquery.dataTables.min.js"></script>
+	<script src="~/lib/datatables.net-bs5/js/dataTables.bootstrap5.min.js"></script>
+	<script src="~/lib/datatables.net-buttons/js/dataTables.buttons.min.js"></script>
+	<script src="~/lib/datatables.net-buttons/js/buttons.colVis.min.js"></script>
+	<script src="~/lib/datatables.net-buttons/js/buttons.flash.min.js"></script>
+	<script src="~/lib/datatables.net-buttons/js/buttons.html5.min.js"></script>
+	<script src="~/lib/datatables.net-buttons/js/buttons.print.min.js"></script>
+	<script src="~/lib/datatables.net-buttons-bs5/js/buttons.bootstrap5.min.js"></script>
+	<script src="~/lib/datatables.net-responsive/js/dataTables.responsive.min.js"></script>
+	<script src="~/lib/datatables.net-responsive-bs5/js/responsive.bootstrap5.min.js"></script>
+	<script src="~/lib/bootstrap-table/dist/bootstrap-table.min.js"></script>
+	<script src="~/js/demo/sidebar-scrollspy.demo.js"></script>
+    <script src="~/js/scripts/reporte_orders.js"></script>
+}
+
+
+<div class="d-flex align-items-center mb-3">
+	<div>
+		<ul class="breadcrumb">
+            <li class="breadcrumb-item active">Reporte</li>
+			<li class="breadcrumb-item active">Reporte de órdenes</li>
+		</ul>
+		<h1 class="page-header mb-0">Reporte</h1>
+	</div>
+</div>
+<form id="formNewOrderDraft">
+    <div class="row">
+        <div class="col-12 col-sm-12 col-md-12 col-lg-12">
+            <div class="card mb-3">
+                <div class="card-header d-flex align-items-center bg-inverse bg-opacity-10 fw-light">
+                    INGRESO DE DATOS
+                </div>
+                <div class="card-body align-items-center fw-light">
+                    <div class="row gx-5">
+                        <div class="col-12 col-sm-6 col-mb-3 col-lg-3">
+                            <div class="typeahead__container mb-1">
+                                <label class="form-label" style="font-size: 12px">Código de almacén</label>
+                                <div class="typeahead__field">
+                                    <div class="typeahead__query input-group">
+                                        <span class="input-group-text"><i class="fa fa-search"></i></span>
+                                        <input class="form-control" name="typeahead_Almacen" id="typeahead_Almacen" placeholder="Type 'af'" autocomplete="off">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-sm-6 col-mb-3 col-lg-3">
+                            <label for="nombreCliente" class="form-label" style="font-size: 12px">Rango de fecha de emisión</label>
+                            <div class="row gx-3">
+                                <div class="col-6">
+                                    <div class="input-group mb-3 w-auto">
+                                        <span class="input-group-text" id="basic-addon1"><i class="fa-regular fa-calendar"></i></span>
+                                        <input id="datepicker" name="nombreCliente" type="text" class="form-control">
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="input-group mb-3 w-auto">
+                                        <span class="input-group-text" id="basic-addon1"><i class="fa-regular fa-calendar"></i></span>
+                                        <input id="nombreCliente" name="nombreCliente" type="text" class="form-control">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-arrow">
+                    <div class="card-arrow-top-left"></div>
+                    <div class="card-arrow-top-right"></div>
+                    <div class="card-arrow-bottom-left"></div>
+                    <div class="card-arrow-bottom-right"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--BEGIN btnConsultar-->
+    <div class="d-md-flex mx-4">
+        <div class="ms-auto mt-md-0 mt-2">
+            <button type="submit" class="btn btn-outline-theme" id="btnConsultar">
+                <span class="text-dark px-4">Mostrar</span>
+            </button>
+        </div>
+    </div>
+    <!--END btnConsultar-->
+</form>
+
+<div class="mb-md-3 d-md-flex">
+    <div class="mt-md-0 mt-2">
+        <a href="#" class="text-inverse text-opacity-75 text-decoration-none">
+            <i class="fa fa-download fa-fw me-1 text-theme"></i> Exportar PDF / XLS
+        </a>
+    </div>
+</div>
+
+<!--BEGIN RESULTADO-->
+<div class="row mb-2">
+    <div class="col-12 col-sm-12 col-md-12 col-lg-12 mb-3">
+        <div class="card mb-3">
+            <div class="card-header d-flex align-items-center bg-inverse bg-opacity-10 fw-light">
+                RESULTADOS
+            </div>
+            <div class="card-body align-items-center fw-light">
+                <div class="container-fluid">
+                    <!-- BEGIN table -->
+                    <table id="datatableReporte" class="table table-hover text-nowrap w-100">
+                        <thead>
+                            <tr>
+                                <th class="border-top-0 pt-0 pb-2 text-sm">Tipo de documento</th>
+                                <th class="border-top-0 pt-0 pb-2 text-sm">Número interno</th>
+                                <th class="border-top-0 pt-0 pb-2 text-sm">Número de documento</th>
+                                <th class="border-top-0 pt-0 pb-2 text-sm">Número fiscal</th>
+                                <th class="border-top-0 pt-0 pb-2 text-sm">Fecha de contabilización</th>
+                                <th class="border-top-0 pt-0 pb-2 text-sm">Nombre de cliente</th>
+                                <th class="border-top-0 pt-0 pb-2 text-sm">Número de línea</th>
+                                <th class="border-top-0 pt-0 pb-2 text-sm">Número de artículo</th>
+                                <th class="border-top-0 pt-0 pb-2 text-sm">Código de barras</th>
+                                <th class="border-top-0 pt-0 pb-2 text-sm">Descripción de artículo</th>
+                                <th class="border-top-0 pt-0 pb-2 text-sm">Cantidad</th>
+                                <th class="border-top-0 pt-0 pb-2 text-sm">Código de almacén</th>
+                                <th class="border-top-0 pt-0 pb-2 text-sm">Número de lote</th>
+                                <th class="border-top-0 pt-0 pb-2 text-sm">Fecha de vencimiento</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                    <!-- END table -->
+                </div>
+            </div>
+            <div class="card-arrow">
+                <div class="card-arrow-top-left"></div>
+                <div class="card-arrow-top-right"></div>
+                <div class="card-arrow-bottom-left"></div>
+                <div class="card-arrow-bottom-right"></div>
+            </div>
+        </div>
+    </div>
+</div>

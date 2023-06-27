@@ -1,0 +1,59 @@
+﻿@{
+	ViewData["Title"] = "Login";
+	ViewData["BodyClass"] = "pace-top";
+	ViewData["AppClass"] = "app-full-height app-without-header app-full-width";
+	ViewData["AppHeaderNone"] = true;
+	ViewData["AppSidebarNone"] = true;
+	ViewData["AppContentNone"] = true;
+}
+
+@section scripts{
+
+	<script>
+
+		$(document).ready(function () {
+			$('#usuario').val('');
+			$('#contraseña').val('');
+
+		});
+
+	</script>
+
+}
+
+<!-- BEGIN login -->
+<div class="login">
+	<!-- BEGIN login-content -->
+	<div class="login-content">
+
+		<form method="POST" name="login_form">
+			@Html.ValidationSummary()
+			<div class="d-flex justify-content-center">
+				<img src="~/img/logo/logo-Hallmark.png" width="80%" height="auto" />
+			</div>
+			&nbsp
+			<h1 class="text-center ">Iniciar Sesión</h1>
+			&nbsp
+			<div class="mb-3">
+				<label for="usuario" class="form-label">Usuario <span class="text-danger">*</span></label>
+				<input type="text" id="usuario" name="usuario" class="form-control form-control-lg bg-inverse bg-opacity-5" value="" onkeydown="handleKeyDown(event)" placeholder="">
+			</div>
+			<div class="mb-3">
+				<div class="d-flex">
+					<label class="form-label">Contraseña <span class="text-danger">*</span></label>
+				</div>
+				<input type="password" id="contraseña" name="contraseña" class="form-control form-control-lg bg-inverse bg-opacity-5" onkeydown="handleKeyDown(event)" value="" placeholder="">
+			</div>
+			@*<div class="mb-3">
+				<div class="form-check">
+					<input class="form-check-input" type="checkbox" value="" id="customCheck1">
+					<label class="form-check-label" for="customCheck1">Remember me</label>
+				</div>
+			</div>*@
+			&nbsp
+			<button type="submit" class="btn btn-outline-theme btn-lg d-block w-100 fw-500 mb-3">Iniciar Sesión</button>
+		</form>
+	</div>
+	<!-- END login-content -->
+</div>
+<!-- END login -->

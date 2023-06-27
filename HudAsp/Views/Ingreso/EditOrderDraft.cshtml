@@ -1,0 +1,329 @@
+﻿@{
+    ViewData["Title"] = "NewOrderDraft";
+}
+
+@section Styles {
+    <!--Datatables START-->
+    <link href="~/lib/datatables.net-bs5/css/dataTables.bootstrap5.min.css" rel="stylesheet">
+    <link href="~/lib/datatables.net-buttons-bs5/css/buttons.bootstrap5.min.css" rel="stylesheet">
+    <link href="~/lib/datatables.net-responsive-bs5/css/responsive.bootstrap5.min.css" rel="stylesheet">
+    <link href="~/lib/bootstrap-table/dist/bootstrap-table.min.css" rel="stylesheet">
+    <!--Datatables END-->
+    <!--Datepicker START-->
+    <link href="~/lib/bootstrap-datepicker/dist/css/bootstrap-datepicker.min.css" rel="stylesheet">
+    <!--Datepicker END-->
+    <!--Typehead START-->
+    <link href="~/lib/jquery-typeahead/dist/jquery.typeahead.min.css" rel="stylesheet">
+    <!--Typehead END-->
+}
+
+@section Scripts {
+    <script src="~/lib/jquery-migrate/dist/jquery-migrate.min.js"></script>
+    <script src="~/lib/moment/min/moment.min.js"></script>
+    <script src="~/lib/@@highlightjs/cdn-assets/highlight.min.js"></script>
+    <script src="~/js/demo/highlightjs.demo.js"></script>
+
+    <script src="~/lib/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js"></script>
+
+    <script src="~/lib/bootstrap-timepicker/js/bootstrap-timepicker.min.js"></script>
+
+    <script src="~/lib/jquery-typeahead/dist/jquery.typeahead.min.js"></script>
+
+    <script src="~/lib/select-picker/dist/picker.min.js"></script>
+
+    <!--BEGIN Datatable-->
+    <script src="~/lib/datatables.net/js/jquery.dataTables.min.js"></script>
+    <script src="~/lib/datatables.net/js/jquery.dataTables.min.js"></script>
+    <script src="~/lib/datatables.net-bs5/js/dataTables.bootstrap5.min.js"></script>
+    <script src="~/lib/datatables.net-buttons/js/dataTables.buttons.min.js"></script>
+    <script src="~/lib/datatables.net-buttons/js/buttons.colVis.min.js"></script>
+    <script src="~/lib/datatables.net-buttons/js/buttons.flash.min.js"></script>
+    <script src="~/lib/datatables.net-buttons/js/buttons.html5.min.js"></script>
+    <script src="~/lib/datatables.net-buttons/js/buttons.print.min.js"></script>
+    <script src="~/lib/datatables.net-buttons-bs5/js/buttons.bootstrap5.min.js"></script>
+    <script src="~/lib/datatables.net-responsive/js/dataTables.responsive.min.js"></script>
+    <script src="~/lib/datatables.net-responsive-bs5/js/responsive.bootstrap5.min.js"></script>
+    <script src="~/lib/bootstrap-table/dist/bootstrap-table.min.js"></script>
+    <!--END Datatable-->
+
+    <script src="~/js/demo/new-order-draft-demo.js"></script>
+
+}
+
+<div class="d-flex align-items-center mb-3">
+    <div>
+        <ul class="breadcrumb">
+            @*<li class="breadcrumb-item"><a href="#">PAGES</a></li>*@
+            <li class="breadcrumb-item"><a href="/Ingreso/OrderDraft">Ingreso</a></li>
+            <li class="breadcrumb-item active">Editar orden</li>
+        </ul>
+        <h1 class="page-header mb-0">Orden @ViewBag.OrderId</h1>
+    </div>
+</div>
+
+&nbsp;
+
+<form id="formEditOrderDraft" action="" method="POST" name="formEditOrderDraft">
+    <div class="row">
+        <div class="col-12 col-sm-12 col-md-12 col-lg-12 mb-3">
+            <div class="card mb-3">
+                <div class="card-header d-flex align-items-center bg-inverse bg-opacity-10 fw-light">
+                    DATOS DEL CLIENTE
+                </div>
+                <div class="card-body align-items-center fw-light">
+                    <div class="row gx-3">
+                        <div class="col-12 col-sm-6 col-mb-7 col-lg-7">
+                            <div class="row gx-3 mb-2">
+                                <div class="col-12 col-sm-6 col-md-4 col-lg-4">
+                                    <div class="typeahead__container">
+                                        <label class="form-label" style="font-size: 12px">Código de Cliente</label>
+                                        <div class="typeahead__field">
+                                            <div class="typeahead__query input-group">
+                                                <span class="input-group-text"><i class="fa fa-search"></i></span>
+                                                <input class="form-control" name="country_v1[query]" id="typeahead" placeholder="Type 'af'" autocomplete="off">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    @*<label for="inputCodigo" class="form-label" style="font-size: 12px">Código del Cliente</label>
+                                    <div class="input-group mb-3 w-auto">
+                                    <span class="input-group-text"><i class="fa-solid fa-magnifying-glass"></i></span>
+                                    <input id="inputCodigo" name="inputCodigo" type="text" class="form-control">
+                                    </div>*@
+                                </div>
+                                <div class="col-12 col-sm-6 col-md-4 col-lg-4">
+                                    <label for="-" class="form-label" style="font-size: 12px">Nombre del Cliente</label>
+                                    <div class="input-group mb-3">
+                                        <span class="input-group-text"><i class="fa-solid fa-magnifying-glass"></i></span>
+                                        <input class="form-control w-75" id="typeahead" autocomplete="off" placeholder="Earthshaker Corporation">
+                                    </div>
+                                </div>
+                                <div class="col-12 col-sm-6 col-md-4 col-lg-4">
+                                    <label for="inputPersonaContacto" class="form-label" style="font-size: 12px">Persona de Contacto</label>
+                                    <div class="input-group mb-3">
+                                        <span class="input-group-text"><i class="fa-solid fa-magnifying-glass"></i></span>
+                                        <input id="inputPersonaContacto" type="text" class="form-control" placeholder="Bob McKensly">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row gx-3 mb-2">
+                                <div class="col-12 col-sm-6 col-md-4 col-lg-4">
+                                    <label for="inputNumeroReferencia" class="form-label" style="font-size: 12px">Número de referencia</label>
+                                    <div class="input-group mb-3 w-auto">
+                                        <span class="input-group-text"><i class="fa-solid fa-magnifying-glass"></i></span>
+                                        <input id="inputNumeroReferencia" name="inputNumeroReferencia" placeholder="PV20230523-001" type="text" class="form-control w-75">
+                                    </div>
+                                </div>
+                                <div class="col-12 col-sm-6 col-md-4 col-lg-4">
+                                    <label for="inputDireccionDestino" class="form-label" style="font-size: 12px">Dirección destino</label>
+                                    <div class="input-group mb-3">
+                                        <span class="input-group-text"><i class="fa-solid fa-chevron-down"></i></span>
+                                        <input id="inputDireccionDestino" name="inputDireccionDestino" placeholder="Bodega Principal" type="text" class="form-control">
+                                    </div>
+                                </div>
+                                <div class="col-12 col-sm-6 col-md-4 col-lg-4">
+                                    <label for="inputDestinatarioFactura" class="form-label" style="font-size: 12px">Destinatario de factura</label>
+                                    <div class="input-group mb-3">
+                                        <span class="input-group-text" id="basic-addon1"><i class="fa-solid fa-chevron-down"></i></span>
+                                        <input id="inputDestinatarioFactura" name="inputDestinatarioFactura" placeholder="de Facturacion" type="text" class="form-control">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row gx-3 mb-2">
+                                <div class="col-12 col-sm-6 col-md-4 col-lg-4">
+                                    <div class="row g-2">
+                                        <div class="col-7">
+                                            <label for="inputSerieDoc" class="form-label" style="font-size: 12px">Serie de doc.</label>
+                                            <div class="input-group mb-3">
+                                                <select id="inputSerieDoc" name="inputSerieDoc" class="form-select custom-select">
+                                                    <option selected></option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-5">
+                                            <label for="inputCorrelativo" class="form-label" style="font-size: 12px">Correlativo</label>
+                                            <div class="input-group mb-3">
+                                                <input id="inputCorrelativo" name="inputCorrelativo" type="text" class="form-control bg-inverse bg-opacity-10" placeholder="" disabled>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-12 col-sm-6 col-md-4 col-lg-4">
+                                    <textarea class="form-control bg-inverse bg-opacity-10" id="textAreaDireccionDestino" placeholder="208 Hollywood Ave 140101 LIMA PERU" rows="3" style="resize: none;" disabled></textarea>
+                                </div>
+                                <div class="col-12 col-sm-6 col-md-4 col-lg-4">
+                                    <textarea class="form-control bg-inverse bg-opacity-10" id="textAreaDestinatarioFactura" placeholder="208 Hollywood Ave 140101 LIMA PERU" rows="3" style="resize: none;" disabled></textarea>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-sm-6 col-mb-2 col-lg-2 px-3">
+                            <div class="row g-2 mb-2">
+                                <div class="col-12 col-sm-6 col-md-12 col-lg-12">
+                                    <label for="inputFechaContabilizacion" class="form-label" style="font-size: 12px">Fecha de Contabilización</label>
+                                    <div class="input-group text-end mb-3">
+                                        <span class="input-group-text"><i class="fa-regular fa-calendar"></i></span>
+                                        <input type="text" class="form-control" id="datepicker-default" name="inputFechaContabilizacion" placeholder="dd/mm/yyyy">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row g-2 mb-2">
+                                <div class="col-12 col-sm-6 col-md-12 col-lg-12">
+                                    <label for="inputFechaEntrega" class="form-label" style="font-size: 12px">Fecha de Entrega</label>
+                                    <div class="input-group text-end mb-3">
+                                        <span class="input-group-text"><i class="fa-regular fa-calendar"></i></span>
+                                        <input type="text" class="form-control" id="datepicker-range" name="inputFechaEntrega" placeholder="dd/mm/yyyy">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row g-2 mb-2">
+                                <div class="col-12 col-sm-6 col-md-12 col-lg-12">
+                                    <label for="inputFechaDocumento" class="form-label" style="font-size: 12px">Fecha de Documento</label>
+                                    <div class="input-group text-end mb-3">
+                                        <span class="input-group-text" id="basic-addon1"><i class="fa-regular fa-calendar"></i></span>
+                                        <input type="text" class="form-control" id="datepicker-inline" name="inputFechaDocumento" placeholder="dd/mm/yyyy">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-sm-6 col-mb-3 col-lg-3">
+                            <div class="row gx-4 mb-2">
+                                <div class="col-12 col-sm-6 col-md-4 col-lg-4 text-end">
+                                    <label for="inputMoneda" class="form-label" style="font-size: 12px">Moneda</label>
+                                    <div class="input-group mb-3 text-end">
+                                        <input id="inputMoneda" name="inputMoneda" type="text" class="form-control bg-inverse bg-opacity-10" style="font-size: 12px" placeholder="PEN" disabled>
+                                    </div>
+                                </div>
+                                <div class="col-12 col-sm-6 col-md-8 col-lg-8 text-end">
+                                    <label for="inputCondicionPago" class="form-label" style="font-size: 12px">Condición de Pago</label>
+                                    <div class="input-group mb-3">
+                                        <input id="inputCondicionPago" name="inputCondicionPago" type="text" class="form-control bg-inverse bg-opacity-10" style="font-size: 12px" placeholder="xxxxxxx" disabled>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row g-2 mb-2">
+                                <div class="col-12 col-sm-6 col-md-3 col-lg-12">
+                                    <label for="textAreaComentario" class="form-label" style="font-size: 12px">Comentario</label>
+                                    <textarea class="form-control" style="resize: none;" id="textAreaComentario" name="textAreaComentario" rows="6"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="card-arrow">
+                    <div class="card-arrow-top-left"></div>
+                    <div class="card-arrow-top-right"></div>
+                    <div class="card-arrow-bottom-left"></div>
+                    <div class="card-arrow-bottom-right"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12 col-sm-12 col-md-12 col-lg-9 mb-3">
+            <div class="card">
+                <div class="card-header d-flex align-items-center bg-inverse bg-opacity-10 fw-light">
+                    DETALLE
+                </div>
+
+                <div class="card-body align-items-center fw-light p-2">
+                    <div class="container-fluid">
+                        <table id="datatableNewOrderDraft" class="table table-hover text-nowrap">
+                            <thead>
+                                <tr>
+                                    <th class="border-top-0 pt-0 px-3"></th>
+                                    <th class="border-top-0 pt-0 px-3">Codigo del Articulo</th>
+                                    <th class="border-top-0 pt-0 px-3">Descripcion del Articulo</th>
+                                    <th class="border-top-0 pt-0 px-3">Codigo en almacen</th>
+                                    <th class="border-top-0 pt-0 px-3">Cantidad en almacen</th>
+                                    <th class="border-top-0 pt-0 px-3">Stock General</th>
+                                    <th class="border-top-0 pt-0 px-3">Codigo de barras</th>
+                                    <th class="border-top-0 pt-0 px-4">Cantidad</th>
+                                    <th class="border-top-0 pt-0 px-4">Precio</th>
+                                    <th class="border-top-0 pt-0 px-2">Porcentaje de descuento</th>
+                                    <th class="border-top-0 pt-0 px-4">IGV</th>
+                                </tr>
+                            </thead>
+                            <tbody id="detalleRow">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="card-arrow">
+                    <div class="card-arrow-top-left"></div>
+                    <div class="card-arrow-top-right"></div>
+                    <div class="card-arrow-bottom-left"></div>
+                    <div class="card-arrow-bottom-right"></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-sm-12 col-md-12 col-lg-3 mb-3">
+            <div class="card mb-4">
+                <div class="card-header d-flex align-items-center bg-inverse bg-opacity-10 fw-light">
+                    ATRIBUTOS ADICIONALES
+                </div>
+
+                <div class="card-body align-items-center fw-light p-4">
+                    <label for="inputTransferenciaGratuita" class="form-label" style="font-size: 12px">Transferencia gratuita</label>
+                    <div class="input-group mb-3">
+                        <span class="input-group-text" id="basic-addon1"><i class="fa-solid fa-chevron-down"></i></span>
+                        <input id="inputTransferenciaGratuita" name="inputTransferenciaGratuita" type="text" class="form-control">
+                    </div>
+                    <label for="inputConsignacion" class="form-label" style="font-size: 12px">Consignación</label>
+                    <div class="input-group mb-3">
+                        <span class="input-group-text" id="basic-addon1"><i class="fa-solid fa-chevron-down"></i></span>
+                        <input id="inputConsignacion" name="inputConsignacion" type="text" class="form-control">
+                    </div>
+                    <div class="mb-3">
+                        <label for="inputNumeroOrdenCompra" class="form-label" style="font-size: 12px">Numero de orden de compra</label>
+                        <input id="inputNumeroOrdenCompra" name="inputNumeroOrdenCompra" type="text" class="form-control">
+                    </div>
+
+                </div>
+
+                <div class="card-arrow">
+                    <div class="card-arrow-top-left"></div>
+                    <div class="card-arrow-top-right"></div>
+                    <div class="card-arrow-bottom-left"></div>
+                    <div class="card-arrow-bottom-right"></div>
+                </div>
+            </div>
+            <div class="card mb-4">
+                <div class="card-header d-flex align-items-center bg-inverse bg-opacity-10 fw-light">
+                    RESUMEN
+                </div>
+
+                <div class="card-body align-items-center fw-light p-4">
+                    <label for="inputTotal" class="form-label" style="font-size: 12px">Total</label>
+                    <input id="inputTotal" name="inputTotal" type="text" class="form-control mb-3 bg-inverse bg-opacity-10" disabled>
+
+                    <label for="inputImpuestos" class="form-label" style="font-size: 12px">Impuestos</label>
+                    <input id="inputImpuestos" name="inputImpuestos" type="text" class="form-control mb-3 bg-inverse bg-opacity-10" disabled>
+
+                    <label for="inputTotalDocumento" class="form-label" style="font-size: 12px">Total Documento</label>
+                    <input id="inputTotalDocumento" name="inputTotalDocumento" type="text" class="form-control mb-3 bg-inverse bg-opacity-10" disabled>
+                </div>
+
+                <div class="card-arrow">
+                    <div class="card-arrow-top-left"></div>
+                    <div class="card-arrow-top-right"></div>
+                    <div class="card-arrow-bottom-left"></div>
+                    <div class="card-arrow-bottom-right"></div>
+                </div>
+            </div>
+            <div class="align-items-end">
+                <input type="submit" class="btn btn-danger" value="Grabar">
+            </div>
+        </div>
+    </div>
+</form>
+
+<div class="alert alert-success" role="alert" id="alertaConfirmacion">
+</div>
+
+<style>
+    .custom-select {
+        background-position: left 0.75rem center;
+        padding: 0.375rem 0.75rem 0.375rem 2.25rem;
+    }
+</style>

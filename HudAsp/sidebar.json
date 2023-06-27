@@ -1,0 +1,32 @@
+﻿{
+  "sidebarMenu": [
+    {
+      "text": "Navigation",
+      "is_header": true
+    },
+    {
+      "controller": "Ingreso",
+      "action": "OrderDraft",
+      "icon": "bi bi-record-circle-fill",
+      "text": "Ingreso"
+    },
+    {
+      "controller": "Consulta",
+      "action": "QueryPreliminarySalesOrder",
+      "icon": "bi bi-record-circle-fill",
+      "text": "Consulta"
+    },
+    {
+      "controller": "Reporte",
+      "action": "Reporte",
+      "icon": "bi bi-record-circle-fill",
+      "text": "Reporte"
+    },
+    {
+      "controller": "Administrador",
+      "action": "User",
+      "icon": "bi bi-record-circle-fill",
+      "text": "Administrador"
+    }
+  ]
+}
