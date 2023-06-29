@@ -16,7 +16,7 @@ public class LoginController : Controller
 	}
 
 	[HttpPost]
-	public IActionResult Login(LoginViewModel model)
+	public <IActionResult> LoginAs(LoginViewModel model)
 	{
 		if (ModelState.IsValid)
 		{

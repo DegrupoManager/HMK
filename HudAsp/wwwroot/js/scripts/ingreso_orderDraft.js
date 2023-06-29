@@ -112,7 +112,7 @@ var handleRenderTableData = function () {
 			}
 		],
 		createdRow: function (row, data, index) {
-			$('td', row).addClass('align-middle');
+			$('td:eq(4)', row).addClass('text-end');
 			$('td', row).addClass('px-3');
 
 			$('td', row).addClass('text-sm');
