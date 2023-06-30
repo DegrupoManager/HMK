@@ -7,7 +7,7 @@ var handleToastToggle = function () {
 			toast.toast('show');
 			setTimeout(function () {
 				toast.toast('hide');
-			}, 2000); 
+			}, 2000);
 		} else {
 			toast.toast('dispose');
 			toast.addClass('hide');
@@ -20,7 +20,6 @@ var handleToastToggle = function () {
 			}, 100);
 		}
 	});
-
 
 	$('#openModalBtn').click(function () {
 		$('#myModal').modal('show');
@@ -38,7 +37,7 @@ var handleRenderDatepicker = function () {
 		format: 'dd/mm/yyyy'
 	}).datepicker("setDate", new Date());
 
-	console.log($('#datepicker-default').val());
+	//console.log($('#datepicker-default').val());
 
 	$('#datepicker-component').datepicker({
 		autoclose: true,
@@ -48,7 +47,7 @@ var handleRenderDatepicker = function () {
 	$('#datepicker-range').datepicker({
 		autoclose: true,
 		format: 'dd/mm/yyyy'
-	}).datepicker("setDate", new Date());
+	});
 
 	$('#datepicker-inline').datepicker({
 		autoclose: true,
@@ -57,6 +56,352 @@ var handleRenderDatepicker = function () {
 
 };
 var handleRenderTypeahead = function () {
+
+	/*
+	function getCustomerById(customerCode) {
+		var url = "/api/customer/getCustomerById";
+		var parameters = {
+			customerCode: customerCode
+		};
+
+		$.ajax({
+			url: url,
+			type: "GET",
+			data: parameters,
+			success: function (response) {
+				var dataClientes = JSON.parse(response);
+				console.log(dataClientes);
+				return dataClientes;
+			},
+			error: function (xhr, status, error) {
+				
+				console.log(error);
+			}
+		});
+	}
+
+
+	console.log(getCustomerById(4089));*/
+
+	function getCustomerById(customerCode) {
+		return new Promise(function(resolve, reject) {
+			var url = "/api/customer/getCustomerById";
+			var parameters = {
+				customerCode: customerCode
+			};
+
+			$.ajax({
+				url: url,
+				type: "GET",
+				data: parameters,
+				success: function(response) {
+					var dataClientes = JSON.parse(response);
+					resolve(dataClientes);
+				},
+				error: function(xhr, status, error) {
+					reject(error);
+				}
+			});
+		});
+	}
+
+
+	$('#inputCodigoCliente').on('input', function () {
+
+		var codigoCliente = $(this).val();
+
+
+		if (codigoCliente.length >= 3) {
+
+			getCustomerById(codigoCliente)
+				.then(function (dataClientes) {
+					var uniqueCodigoClienteData = dataClientes.reduce(function (acc, current) {
+						var codigoCliente = current.Codigo_Cliente;
+						if (!acc.includes(codigoCliente)) {
+							acc.push(codigoCliente);
+						}
+						return acc;
+					}, []);
+
+					console.log(uniqueCodigoClienteData);
+
+					$.typeahead({
+						input: '#inputCodigoCliente',
+						order: "desc",
+						source: {
+							data: [
+								uniqueCodigoClienteData
+							]
+						},
+						minLength: 3
+					});
+
+					/*BEGIN autocompletado */
+					//$('.typeahead__query .input-group-text')
+					$('#porCodigoCliente').on('click', function () {
+						var codigoCliente = $('#inputCodigoCliente').val();
+
+						var direccionesDestinoFiltradas = dataClientes.filter(function (item) {
+							return item.Codigo_Cliente === codigoCliente;
+						}).map(function (item) {
+							return item.Direccion_Destino;
+						});
+
+						var direccionesFacturaFiltradas = dataClientes.filter(function (item) {
+							return item.Codigo_Cliente === codigoCliente;
+						}).map(function (item) {
+							return item.Direccion_Factura;
+						});
+
+						$('#inputDireccionDestino').empty();
+						$('#inputDestinatarioFactura').empty();
+
+						direccionesDestinoFiltradas.forEach(function (direccion) {
+							var option = $('<option></option>').text(direccion);
+							$('#inputDireccionDestino').append(option);
+						});
+
+						direccionesFacturaFiltradas.forEach(function (direccion) {
+							var option = $('<option></option>').text(direccion);
+							$('#inputDestinatarioFactura').append(option);
+						});
+
+						var campo = dataClientes.filter(function (item) {
+							return item.Codigo_Cliente === codigoCliente;
+						});
+
+						console.log(campo);
+
+						if (campo.length > 0) {
+							$('#inputNombreCliente').val(campo[0].Nombre_Cliente);
+							$('#inputPersonaContacto').val(campo[0].Persona_contacto);
+							$('#inputCondicionPago').val(campo[0].Condicion_pago);
+						} else {
+							$('#inputNombreCliente').val('');
+							$('#inputPersonaContacto').val('');
+							$('#inputCondicionPago').val('');
+						}
+					});
+
+					/*END autocompletado */
+
+				})
+				.catch(function (error) {
+					console.log(error);
+				});
+
+			
+			//$.typeahead({
+			//	input: '#inputCodigoCliente',
+			//	order: "desc",
+			//	source: {
+			//		data: [
+			//			uniqueCodigoClienteData
+			//		]
+			//	},
+			//	minLength: 2
+			//});
+
+			///*BEGIN autocompletado */
+			////$('.typeahead__query .input-group-text')
+			//$('#porCodigoCliente').on('click', function () {
+			//	var codigoCliente = $('#inputCodigoCliente').val();
+
+			//	var direccionesDestinoFiltradas = clientePorCodigo.filter(function (item) {
+			//		return item.Codigo_Cliente === codigoCliente;
+			//	}).map(function (item) {
+			//		return item.Direccion_Destino;
+			//	});
+
+			//	var direccionesFacturaFiltradas = clientePorCodigo.filter(function (item) {
+			//		return item.Codigo_Cliente === codigoCliente;
+			//	}).map(function (item) {
+			//		return item.Direccion_Factura;
+			//	});
+
+			//	$('#inputDireccionDestino').empty();
+			//	$('#inputDestinatarioFactura').empty();
+
+			//	direccionesDestinoFiltradas.forEach(function (direccion) {
+			//		var option = $('<option></option>').text(direccion);
+			//		$('#inputDireccionDestino').append(option);
+			//	});
+
+			//	direccionesFacturaFiltradas.forEach(function (direccion) {
+			//		var option = $('<option></option>').text(direccion);
+			//		$('#inputDestinatarioFactura').append(option);
+			//	});
+
+			//	var campo = clientePorCodigo.filter(function (item) {
+			//		return item.Codigo_Cliente === codigoCliente;
+			//	});
+
+			//	console.log(campo);
+
+			//	if (campo.length > 0) {
+			//		$('#inputNombreCliente').val(campo[0].Nombre_Cliente);
+			//		$('#inputPersonaContacto').val(campo[0].Persona_contacto);
+			//		$('#inputCondicionPago').val(campo[0].Condicion_pago);
+			//	} else {
+			//		$('#inputNombreCliente').val('');
+			//		$('#inputPersonaContacto').val('');
+			//		$('#inputCondicionPago').val('');
+			//	}
+			//});
+			
+			///*END autocompletado */
+			
+		} else {
+			// Vaciar los campos si el input está vacío
+			$('#inputNombreCliente').val('');
+			$('#inputPersonaContacto').val('');
+			$('#inputCondicionPago').val('');
+			$('#inputDireccionDestino').empty();
+			$('#inputDestinatarioFactura').empty();
+		}
+	});
+
+	/*BEGIN codArticulo*/
+
+	/*BEGIN Serie documento */
+	function getSerieDoc(serieCode) {
+		return new Promise(function (resolve, reject) {
+			var url = "/api/draft/getSerieDoc";
+			var parameters = {
+				serieCode: serieCode
+			};
+
+			$.ajax({
+				url: url,
+				type: "GET",
+				data: parameters,
+				success: function (response) {
+					var dataCorrelativo = JSON.parse(response);
+
+					resolve(dataCorrelativo);
+				},
+				error: function (xhr, status, error) {
+					reject(error);
+				}
+			});
+		});
+	}
+
+
+	function getSerieList() {
+		return new Promise(function (resolve, reject) {
+			var url = "/api/draft/getSerieList";
+
+			$.ajax({
+				url: url,
+				type: "GET",
+				success: function (response) {
+					var dataSerieList = JSON.parse(response);
+
+					resolve(dataSerieList);
+				},
+				error: function (xhr, status, error) {
+					reject(error);
+				}
+			});
+		});
+	}
+
+	function primeraSerie() {
+		getSerieList()
+			.then(function (Series) {
+
+				var selectElement = $('#inputSerieDoc');
+
+				selectElement.empty();
+
+				Series.forEach(function (serie) {
+					var option = $('<option></option>');
+
+					option.val(serie.CodSerie);
+					option.text(serie.NombreSerie);
+
+					selectElement.append(option);
+				});
+
+				getSerieDoc(Series[0].CodSerie)
+					.then(function (serie) {
+
+						$('#inputCorrelativo').val(serie[0].Correlativo);
+
+					})
+					.catch(function (error) {
+						console.log(error);
+					});
+
+			})
+			.catch(function (error) {
+				console.log(error);
+			});
+	}
+
+	primeraSerie();
+	/*END Serie documento */
+
+	//$('#inputCodigoArticulo1').on('input', function () {
+
+	//	var codigoArticulo = $(this).val();
+
+	//	console.log(codigoArticulo)
+
+	//	if (codigoArticulo.length >= 3) {
+
+	//		var clientes = [];
+
+	//		getProductById(codigoArticulo)
+	//			.then(function (dataArticulos) {
+	//				var uniqueCodigoClienteData = dataArticulos.reduce(function (acc, current) {
+	//					var codigoCliente = current.CodigoArticulo;
+	//					if (!acc.includes(codigoCliente)) {
+	//						acc.push(codigoCliente);
+	//					}
+	//					return acc;
+	//				}, []);
+
+	//				console.log(uniqueCodigoClienteData);
+
+
+	//				/*BEGIN autocompletado */
+	//				//$('.typeahead__query .input-group-text')
+	//				$('#porCodigoArticulo').on('click', function () {
+	//					var codigoArticulo = find('[id^=inputDescripcionArticulo]').val();
+
+	//					console.log(codigoArticulo);
+
+	//					if (campo.length > 0) {
+	//						$('#inputNombreCliente').val(campo[0].Nombre_Cliente);
+	//						$('#inputPersonaContacto').val(campo[0].Persona_contacto);
+	//						$('#inputCondicionPago').val(campo[0].Condicion_pago);
+	//					} else {
+	//						$('#inputNombreCliente').val('');
+	//						$('#inputPersonaContacto').val('');
+	//						$('#inputCondicionPago').val('');
+	//					}
+	//				});
+
+	//				/*END autocompletado */
+
+	//			})
+	//			.catch(function (error) {
+	//				console.log(error);
+	//			});
+
+	//	} else {
+	//		// Vaciar los campos si el input está vacío
+	//		$('#inputNombreCliente').val('');
+	//		$('#inputPersonaContacto').val('');
+	//		$('#inputCondicionPago').val('');
+	//		$('#inputDireccionDestino').empty();
+	//		$('#inputDestinatarioFactura').empty();
+	//	}
+	//});
+
+	/*END codArticulo*/
 
 	/*
 	var get_cliente_cod = {
@@ -152,92 +497,6 @@ var handleRenderTypeahead = function () {
 	});
 	*/
 
-	/*BEGIN get_cliente_cod*/
-	//$.ajax(get_cliente_cod).done(function (response) {
-	//	clientePorCodigo = response.value;
-
-	//	console.log(clientePorCodigo);
-
-	//	var uniqueCodigoClienteData = clientePorCodigo.reduce(function (acc, current) {
-	//		var codigoCliente = current.Codigo_Cliente;
-	//		if (!acc.includes(codigoCliente)) {
-	//			acc.push(codigoCliente);
-	//		}
-	//		return acc;
-	//	}, []);
-
-	//	console.log(uniqueCodigoClienteData);
-
-	//	$.typeahead({
-	//		input: '#inputCodigoCliente',
-	//		order: "desc",
-	//		source: {
-	//			data: uniqueCodigoClienteData
-	//		},
-	//		minLength: 3
-	//	});
-	//	$('.typeahead__query .input-group-text').on('click', function () {
-	//		var codigoCliente = $('#inputCodigoCliente').val();
-
-	//		if (codigoCliente.length >= 3) {
-
-	//			/* BEGIN Direccion Destino */
-	//			var direccionesDestinoFiltradas = clientePorCodigo.filter(function (item) {
-	//				return item.Codigo_Cliente === codigoCliente;
-	//			}).map(function (item) {
-	//				return item.Direccion_Destino;
-	//			});
-
-	//			var direccionesFacturaFiltradas = clientePorCodigo.filter(function (item) {
-	//				return item.Codigo_Cliente === codigoCliente;
-	//			}).map(function (item) {
-	//				return item.Direccion_Factura;
-	//			});
-
-	//			$('#inputDireccionDestino').empty();
-	//			$('#inputDestinatarioFactura').empty();
-
-	//			direccionesDestinoFiltradas.forEach(function (direccion) {
-	//				var option = $('<option></option>').text(direccion);
-	//				$('#inputDireccionDestino').append(option);
-	//			});
-
-	//			direccionesFacturaFiltradas.forEach(function (direccion) {
-	//				var option = $('<option></option>').text(direccion);
-	//				$('#inputDestinatarioFactura').append(option);
-	//			});
-
-	//			/* END Direccion Destino */
-
-
-	//			/* END Direccion Factura */
-
-	//			/* BEGIN Campos Unitarios */
-	//			var campo = clientePorCodigo.filter(function (item) {
-	//				return item.Codigo_Cliente === codigoCliente;
-	//			});
-
-	//			console.log(campo);
-
-	//			if (campo.length > 0) {
-	//				$('#inputNombreCliente').val(campo[0].Nombre_Cliente);
-	//				$('#inputPersonaContacto').val(campo[0].Persona_contacto);
-	//				$('#inputCondicionPago').val(campo[0].Condicion_pago);
-	//			} else {
-	//				$('#inputNombreCliente').val('');
-	//				$('#inputPersonaContacto').val('');
-	//				$('#inputCondicionPago').val('');
-	//			}
-
-	//			/* END Campos Unitarios */
-
-	//		}
-	//	});
-
-	//});
-
-	/*END get_cliente_cod*/
-
 
 	/*
 	$.typeahead({
@@ -281,7 +540,7 @@ var handleRenderTableData = function () {
 				l
 			>
 			<'#pBuscar.col-4 ms-auto px-3'
-				f
+				
 			>
 			<'#pBoton.col-3 ms-auto p-0'
 				
@@ -298,15 +557,14 @@ var handleRenderTableData = function () {
 		>
 	`;
 
-	var lupaHTML = `
-		<div class="input-group-text position-absolute top-0 bottom-0 bg-none border-0 start-0">
-			<i class="fa fa-search opacity-5"></i>
-		</div>
-	`;
-
-	var buscarHTML = `
-		<div class="input-group mb-3">
-		  <input type="text" class="form-control" id="customSearchInput" placeholder="Buscar...">
+	busquedaHTML = `
+		<div>
+			<label class="input-group">
+				<input type="text" id="busquedaCustom" class="form-control px-35px mx-0 rounded-end" placeholder="Búsqueda">
+				<div class="input-group-text position-absolute top-0 bottom-0 bg-none border-0 start-0">
+					<i class="fa fa-search opacity-5"></i>
+				</div>
+			</label>
 		</div>
 	`;
 
@@ -349,8 +607,6 @@ var handleRenderTableData = function () {
 	var table = $('#datatableNewOrderDraft').DataTable({
 		lengthMenu: [5, 10, 15, 20],
 		language: {
-			search: "_INPUT_",
-			searchPlaceholder: "Búsqueda",
 			url: '//cdn.datatables.net/plug-ins/1.13.4/i18n/es-ES.json'
 		},
 		dom: domHTML,
@@ -359,19 +615,10 @@ var handleRenderTableData = function () {
 		scrollX: true,
 		initComplete: function () {
 
-			$('#datatableNewOrderDraft_filter input[type="search"]').removeClass('form-control-sm');
-			$('#datatableNewOrderDraft_filter input[type="search"]').addClass('px-35px');
-			$('#datatableNewOrderDraft_filter input[type="search"]').addClass('mx-0');
-			$('#datatableNewOrderDraft_filter input[type="search"]').addClass('rounded-end');
-
-			var label = document.querySelector('#datatableNewOrderDraft_filter label');
-
-			label.classList.add('input-group');
-
-			label.id = 'filtroBuscador';
-			$('#filtroBuscador').append(lupaHTML);
+			$('#pBuscar').append(busquedaHTML);
 			$('#pBoton').append(btnHTML);
 
+			var cuentaFilas = [];
 			var botonAgregar = $('#agregarFilaProducto').on('click', function () {
 
 				counter++;
@@ -389,8 +636,8 @@ var handleRenderTableData = function () {
 
 				var input01 = `
 					<div class="input-group px-2">
-                        <span class="input-group-text"><i class="fa-solid fa-magnifying-glass"></i></span>
-                        <input class="form-control searchable" placeholder="A00001" name="inputCodigoArticulo${counter}" id="inputCodigoArticulo${counter}" data-column="${counter}">
+                        <span id="porCodigoArticulo" data-index="${counter}" class="input-group-text porCodigoArticulo"><i class="fa-solid fa-magnifying-glass"></i></span>
+                        <input class="form-control searchable codigoArticulo" placeholder="A00001" name="inputCodigoArticulo${counter}" id="inputCodigoArticulo${counter}" data-column="${counter}">
                     </div>
 				`;
 
@@ -458,56 +705,6 @@ var handleRenderTableData = function () {
 				$(`#inputCantidad${counter}`).val(1);
 				$(`#inputPorcentajeDescuento${counter}`).val(0);
 
-				/*BEGIN Busqueda en inputs*/
-
-				// Detectar cambios en el campo de búsqueda de DataTables
-				$('#datatableNewOrderDraft_filter input[type="search"]').on('input', function () {
-					// Obtener el valor del campo de búsqueda
-					var searchTerm = $(this).val();
-
-					// Crear un array para almacenar los objetos con los valores de los inputs
-					var valores = [];
-
-					// Obtener todas las filas de la tabla
-					var rows = table.rows().nodes();
-
-					// Recorrer cada fila
-					rows.each(function () {
-						// Obtener los tres primeros inputs de la fila
-						var input01 = $(this).find('input[name^="inputCodigoArticulo"]');
-						var input02 = $(this).find('input[id^="inputDescripcionArticulo"]');
-						var input03 = $(this).find('input[name^="inputCodigoAlmacen"]');
-
-						// Obtener los valores de los inputs
-						var valorInput01 = input01.val();
-						var valorInput02 = input02.val();
-						var valorInput03 = input03.val();
-
-						// Verificar si algún valor coincide con el término de búsqueda
-						if (valorInput01.includes(searchTerm) || valorInput02.includes(searchTerm) || valorInput03.includes(searchTerm)) {
-							// Obtener el número de la fila para construir los ids de los inputs
-							var rowIndex = $(this).index() + 1;
-
-							// Crear un objeto con los valores
-							var obj = {
-								codigoArticulo: valorInput01,
-								descripcionArticulo: valorInput02,
-								codigoAlmacen: valorInput03,
-								fila: rowIndex
-							};
-
-							// Agregar el objeto al array de valores
-							valores.push(obj);
-						}
-					});
-
-					// Imprimir el array de valores en la consola
-					console.log(valores);
-				});
-
-
-				/*END Busqueda en inputs*/
-
 			});
 
 			$(document).on('click', '.eliminarFila', function () {
@@ -538,8 +735,95 @@ var handleRenderTableData = function () {
 			botonAgregar.click();
 
 
+			/*BEGIN busqueda en input */
+			$.fn.dataTable.ext.search.push(function (settings, data, dataIndex) {
+				var row = table.row(dataIndex).node();
+				var inputs = $(row).find('.input-group input');
+				var searchValue = $('#busquedaCustom').val().toLowerCase();
+
+				var matches = inputs.toArray().some(function (input) {
+					var inputValue = $(input).val().toLowerCase();
+					return inputValue.includes(searchValue);
+				});
+
+				return matches;
+			});
+
+			$('#busquedaCustom').on('keyup', function () {
+				table.draw();
+			});
+			/*END busqueda en input */
+
+
+			$(document).on('click', '.porCodigoArticulo', function () {
+				var index = $(this).data('index');
+
+				var codigoArticulo = $(`#inputCodigoArticulo${index}`).val();
+				console.log(codigoArticulo)
+
+				getProductById(codigoArticulo)
+					.then(function (dataArticulo) {
+
+						console.log(dataArticulo);
+
+						$(`#inputDescripcionArticulo${index}`).val(dataArticulo[0].DescripcionArticulo);
+						$(`#inputCodigoBarras${index}`).val(dataArticulo[0].CodigoBarra);
+
+					})
+					.catch(function (error) {
+						console.log(error);
+					});
+
+			});
+			/*
+			$('#porCodigoArticulo').on('click', function () {
+
+				var index = $(this).data('index');
+
+				var codigoArticulo = $('#inputCodigoArticulo').val();
+				console.log(codigoArticulo)
+
+				getProductById(codigoArticulo)
+					.then(function (dataClientes) {
+
+						console.log(dataClientes);
+
+						$('#inputDescripcionArticulo1').val(dataClientes[0].CodigoBarra);
+						$('#inputCodigoBarras1').val(dataClientes[0].DescripcionArticulo);
+
+					})
+					.catch(function (error) {
+						console.log(error);
+					});
+
+			});
+			*/
+
 		}
 	});
+
+	function getProductById(productCode) {
+		return new Promise(function (resolve, reject) {
+			var url = "/api/product/getProductById";
+			var parameters = {
+				productCode: productCode
+			};
+
+			$.ajax({
+				url: url,
+				type: "GET",
+				data: parameters,
+				success: function (response) {
+					var dataArticulos = JSON.parse(response);
+					//console.log(dataArticulos);
+					resolve(dataArticulos);
+				},
+				error: function (xhr, status, error) {
+					reject(error);
+				}
+			});
+		});
+	}
 
 	function formatearFecha(fecha, formato) {
 		var partesFecha = fecha.split('/');
@@ -556,10 +840,9 @@ var handleRenderTableData = function () {
 			case 'DD-MM-YYYY':
 				fechaFormateada = dia + '-' + mes + '-' + anio;
 				break;
-			// Agrega otros formatos según tus necesidades
 
 			default:
-				fechaFormateada = fecha; // Mantener el formato original si no se reconoce el formato especificado
+				fechaFormateada = fecha;
 				break;
 		}
 
@@ -567,7 +850,9 @@ var handleRenderTableData = function () {
 	}
 
 
-	$(document).on('click', '#formNewOrderDraft input[type="submit"]', function (e) {
+	//$(document).on('click', '#formNewOrderDraft input[type="submit"]', function (e) {
+	$("#formNewOrderDraft").on("submit", function (e) {
+
 		e.preventDefault();
 
 		var codigo = $('#inputCodigoCliente').val();
@@ -587,9 +872,9 @@ var handleRenderTableData = function () {
 		var fechaDocumento = formatearFecha(fechaFormateada3, 'YYYY-MM-DD');
 
 		var condicionPago = $('#inputCondicionPago').val();
-		var comentario = $('#textAreaComentario').val(); 
+		var comentario = $('#textAreaComentario').val();
 
-		var nuevaOrdenPreliminar = new OrdenPreliminar(codigo,personaContacto,numeroReferencia,direccionDestino,destinatarioFactura,moneda,fechaContabilizacion,fechaEntrega,fechaDocumento,condicionPago,comentario);
+		var nuevaOrdenPreliminar = new OrdenPreliminar(codigo, personaContacto, numeroReferencia, direccionDestino, destinatarioFactura, moneda, fechaContabilizacion, fechaEntrega, fechaDocumento, condicionPago, comentario);
 
 		$('#detalleRow tr').each(function () {
 			var CodigoArticulo = $(this).find('[name^="inputCodigoArticulo"]').val();
@@ -598,13 +883,14 @@ var handleRenderTableData = function () {
 			var Cantidad = $(this).find('[name^="inputCantidad"]').val();
 			var PorcentajeDescuento = $(this).find('[name^="inputPorcentajeDescuento"]').val();
 
-			nuevaOrdenPreliminar.addDocumentLine(CodigoArticulo,CodigoAlmacen,Precio,Cantidad,PorcentajeDescuento);
+			nuevaOrdenPreliminar.addDocumentLine(CodigoArticulo, CodigoAlmacen, Precio, Cantidad, PorcentajeDescuento);
 		});
 		console.log(nuevaOrdenPreliminar);
 
 		var dataDraft = JSON.stringify(nuevaOrdenPreliminar);
 
 		console.log(dataDraft);
+
 		/*
 		var postDraft = {
 			"url": "https://LAPTOP-4OBRKJSA:50000/b1s/v1/Drafts",
@@ -619,6 +905,7 @@ var handleRenderTableData = function () {
 			"data": dataDraft,
 		};
 
+		
 		$.ajax(postDraft).done(function (response, textStatus, jqXHR) {
 			var respuestaError = response.error;
 
@@ -634,14 +921,14 @@ var handleRenderTableData = function () {
 			$("#alertaConfirmacion").removeClass("alert-success").addClass("alert-danger");
 			$("#alertaConfirmacion").text("Se produjo un error en la solicitud.").fadeIn();
 			ocultarMensaje();
-		});
+		});*/
 
 		function ocultarMensaje() {
 			setTimeout(function () {
 				$("#alertaConfirmacion").fadeOut();
 			}, 5000);
 		};
-		*/
+
 	});
 
 };

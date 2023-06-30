@@ -230,21 +230,21 @@ var handleRenderTableData = function () {
 				var input01 = `
 					<div class="input-group px-2">
                         <span class="input-group-text"><i class="fa-solid fa-magnifying-glass"></i></span>
-                        <input class="form-control" placeholder="A00001" name="inputCodigoArticulo${counter}" id="inputCodigoArticulo${counter}">
+                        <input class="form-control bg-inverse bg-opacity-10" placeholder="A00001" name="inputCodigoArticulo${counter}" id="inputCodigoArticulo${counter}" disabled>
                     </div>
 				`;
 
 				var input02 = `
 					<div class="input-group px-2">
                         <span class="input-group-text"><i class="fa-solid fa-magnifying-glass"></i></span>
-                        <input class="form-control" placeholder="IBM Infoprint 1312" id="inputDescripcionArticulo${counter}">
+                        <input class="form-control bg-inverse bg-opacity-10" placeholder="IBM Infoprint 1312" id="inputDescripcionArticulo${counter}" disabled>
                     </div>
 				`;
 
 				var input03 = `
 					<div class="input-group px-3">
                         <span class="input-group-text"><i class="fa-solid fa-magnifying-glass"></i></span>
-                        <input class="form-control" placeholder="01" name="inputCodigoAlmacen${counter}" id="inputCodigoAlmacen${counter}">
+                        <input class="form-control bg-inverse bg-opacity-10" placeholder="01" name="inputCodigoAlmacen${counter}" id="inputCodigoAlmacen${counter}" disabled>
                     </div>
 				`;
 
@@ -268,7 +268,7 @@ var handleRenderTableData = function () {
 
 				var input07 = `
 					<div class="input-group px-2">
-                        <input class="form-control" name="inputCantidad${counter}" id="inputCantidad${counter}" style="text-align: center;">
+                        <input class="form-control bg-inverse bg-opacity-10" name="inputCantidad${counter}" id="inputCantidad${counter}" style="text-align: center;" disabled>
                     </div>
 				`;
 
@@ -280,7 +280,7 @@ var handleRenderTableData = function () {
 
 				var input09 = `
 					<div class="input-group px-5">
-                        <input class="form-control" name="inputPorcentajeDescuento${counter}" placeholder="0" id="inputPorcentajeDescuento${counter}" style="text-align: center;">
+                        <input class="form-control bg-inverse bg-opacity-10" name="inputPorcentajeDescuento${counter}" placeholder="0" id="inputPorcentajeDescuento${counter}" style="text-align: center;" disabled>
                     </div>
 				`;
 

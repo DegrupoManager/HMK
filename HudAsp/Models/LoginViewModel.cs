@@ -7,4 +7,3 @@
 		public string Contraseña { get; set; }
 	}
 }
-

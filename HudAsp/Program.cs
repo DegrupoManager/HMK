@@ -34,6 +34,9 @@ builder.Services.ConfigureApplicationCookie(options =>
 	options.SlidingExpiration = true;
 });
 
+builder.Services.AddSession();
+builder.Services.AddHttpContextAccessor();
+
 //END agregado
 
 
@@ -79,6 +82,7 @@ app.MapControllerRoute(
 //	endpoints.MapControllers();
 //});
 
+app.UseSession();
 
 app.MapRazorPages();
 

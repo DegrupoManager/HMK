@@ -18,6 +18,15 @@
 	<link href="~/lib/jquery-typeahead/dist/jquery.typeahead.min.css" rel="stylesheet">
     <!--Typehead END-->
 
+    <style>
+        .input-group {
+
+            flex-wrap: nowrap;
+
+        }
+
+    </style>
+
 }
 
 @section Scripts {
@@ -47,9 +56,11 @@
     <script src="~/lib/datatables.net-responsive/js/dataTables.responsive.min.js"></script>
     <script src="~/lib/datatables.net-responsive-bs5/js/responsive.bootstrap5.min.js"></script>
     <script src="~/lib/bootstrap-table/dist/bootstrap-table.min.js"></script>
+    <script src="~/lib/datatables.net-select/js/dataTables.select.min.js"></script>
     <!--END Datatable-->
 
-    <script src="~/js/demo/new-order-draft-demo.js"></script>
+    @*<script src="~/js/demo/new-order-draft-demo.js"></script>*@
+    <script src="~/js/scripts/ingreso_newOrderDraft.js"></script>
 	
 }
 
@@ -78,7 +89,7 @@
 
 &nbsp;
 
-<form id="formNewOrderDraft" name="formNewOrderDraft" method="post">
+<form id="formNewOrderDraft" name="formNewOrderDraft">
 <div class="row">
     <div class="col-12 col-sm-12 col-md-12 col-lg-12">
         <div class="card mb-3">
@@ -94,7 +105,7 @@
                                     <label class="form-label" style="font-size: 12px">Código de Cliente</label>
                                     <div class="typeahead__field">
                                         <div class="typeahead__query input-group">
-                                            <span class="input-group-text"><i class="fa fa-search"></i></span>
+                                            <span id="porCodigoCliente" class="input-group-text"><i class="fa fa-search"></i></span>
                                             <input type="text" class="form-control" name="inputCodigoCliente[query]" id="inputCodigoCliente" autocomplete="off" required>
                                         </div>
                                     </div>
@@ -106,7 +117,7 @@
                                     <div class="typeahead__field">
                                         <div class="typeahead__query input-group">
                                             <span class="input-group-text"><i class="fa fa-search"></i></span>
-                                            <input type="text" class="form-control" name="inputNombreCliente[query]" id="inputNombreCliente" autocomplete="off" required>
+                                            <input type="text" class="form-control" name="inputNombreCliente[query]" id="inputNombreCliente" autocomplete="off">
                                         </div>
                                     </div>
                                 </div>
@@ -117,29 +128,34 @@
                                     <div class="typeahead__field">
                                         <div class="typeahead__query input-group">
                                             <span class="input-group-text"><i class="fa fa-search"></i></span>
-                                            <input class="form-control" name="inputPersonaContacto[query]" id="inputPersonaContacto" placeholder="" autocomplete="off">
+                                            <input class="form-control" name="inputPersonaContacto[query]" id="inputPersonaContacto" placeholder="" autocomplete="off" required>
                                         </div>
-                                    </div>
+                                    </div>  
                                 </div>
                             </div>
                         </div>
                         <div class="row gx-3">
                             <div class="col-12 col-sm-6 col-md-4 col-lg-4">
-                                <label for="inputNumeroReferencia" class="form-label" style="font-size: 12px">Número de referencia</label>
-                                <div class="input-group mb-3 w-auto" >
-                                    <span class="input-group-text"><i class="fa-solid fa-magnifying-glass"></i></span>
-                                    <input id="inputNumeroReferencia" name="inputNumeroReferencia" placeholder="PV20230523-001" type="text" class="form-control w-75">
+                                <div class="container-fluid px-0 mx-0 mb-3">
+                                    <label for="inputNumeroReferencia" class="form-label" style="font-size: 12px">Número de referencia</label>
+                                    <div class="container-fluid px-0 mx-0 nowrap">
+                                        <div class="input-group" sytle="flex-wrap: nowrap;">
+                                            <span class="input-group-text"><i class="fa-solid fa-magnifying-glass"></i></span>
+                                            <input id="inputNumeroReferencia" name="inputNumeroReferencia" type="text" class="form-control w-75" required>
+                                        </div>
+                                    </div>
                                 </div>
+                                
                                 <div class="row g-2">
-                                    <div class="col-7">
+                                    <div class="col-6">
                                         <label for="inputSerieDoc" class="form-label" style="font-size: 12px">Serie de doc.</label>
                                         <div class="input-group mb-3">
-                                            <select id="inputSerieDoc" name="inputSerieDoc" class="form-select custom-select">
-                                                <option selected></option>
+                                            <select id="inputSerieDoc" name="inputSerieDoc" class="form-select custom-select" required>
+                                                @*<option selected></option>*@
                                             </select>
                                         </div>
                                     </div>
-                                    <div class="col-5">
+                                    <div class="col-6">
                                         <label for="inputCorrelativo" class="form-label" style="font-size: 12px">Correlativo</label>
                                         <div class="input-group mb-3">
                                             <input id="inputCorrelativo" name="inputCorrelativo" type="text" class="form-control bg-inverse bg-opacity-10" placeholder="" disabled>
@@ -173,7 +189,7 @@
                                 <label for="inputFechaContabilizacion" class="form-label" style="font-size: 12px">Fecha de Contabilización</label>
                                 <div class="input-group text-end mb-2">
                                     <span class="input-group-text"><i class="fa-regular fa-calendar"></i></span>
-                                    <input type="text" class="form-control" id="datepicker-default" name="inputFechaContabilizacion" placeholder="dd/mm/yyyy">
+                                    <input type="text" class="form-control" id="datepicker-default" name="inputFechaContabilizacion" placeholder="dd/mm/yyyy" required>
                                 </div>
                             </div>
                         </div>
@@ -182,7 +198,7 @@
                                 <label for="inputFechaEntrega" class="form-label" style="font-size: 12px">Fecha de Entrega</label>
                                 <div class="input-group text-end mb-2">
                                     <span class="input-group-text"><i class="fa-regular fa-calendar"></i></span>
-                                    <input type="text" class="form-control" id="datepicker-range" name="inputFechaEntrega" placeholder="dd/mm/yyyy">
+                                    <input type="text" class="form-control" id="datepicker-range" name="inputFechaEntrega" placeholder="dd/mm/yyyy" required>
                                 </div>
                             </div>
                         </div>
@@ -191,7 +207,7 @@
                                 <label for="inputFechaDocumento" class="form-label" style="font-size: 12px">Fecha de Documento</label>
                                 <div class="input-group text-end mb-2">
                                     <span class="input-group-text" id="basic-addon1"><i class="fa-regular fa-calendar"></i></span>
-                                    <input type="text" class="form-control" id="datepicker-inline" name="inputFechaDocumento" placeholder="dd/mm/yyyy">
+                                    <input type="text" class="form-control" id="datepicker-inline" name="inputFechaDocumento" placeholder="dd/mm/yyyy" required>
                                 </div>
                             </div>
                         </div>
@@ -239,6 +255,7 @@
 
             <div class="card-body align-items-center fw-light p-2">
                 <div class="container-fluid">
+ 
                     <table id="datatableNewOrderDraft" class="table table-hover text-nowrap">
                         <thead>
                             <tr>

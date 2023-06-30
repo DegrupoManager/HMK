@@ -6,7 +6,7 @@ namespace HudAsp.Controllers
 	{
 		public IActionResult Reporte()
 		{
-			if (Request.Cookies.TryGetValue("Rol", out var rol) && rol == "revisor")
+			if (Request.Cookies.TryGetValue("Rol", out var rol) && (rol == "Revisor" || rol == "Editor"))
 			{
 
 				return View();

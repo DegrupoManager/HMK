@@ -22,11 +22,11 @@
       "icon": "bi bi-record-circle-fill",
       "text": "Reporte"
     },
-    {
-      "controller": "Administrador",
-      "action": "User",
-      "icon": "bi bi-record-circle-fill",
-      "text": "Administrador"
-    }
+    //{
+    //  "controller": "Administrador",
+    //  "action": "User",
+    //  "icon": "bi bi-record-circle-fill",
+    //  "text": "Administrador"
+    //}
   ]
 }

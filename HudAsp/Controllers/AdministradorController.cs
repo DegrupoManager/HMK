@@ -6,7 +6,7 @@ namespace HudAsp.Controllers
 	{
 		public IActionResult User()
 		{
-			if (Request.Cookies.TryGetValue("Rol", out var rol) && rol == "administrador")
+			if (Request.Cookies.TryGetValue("Rol", out var rol) && (rol == "Revisor" || rol == "Editor"))
 			{
 
 				return View();
@@ -14,13 +14,13 @@ namespace HudAsp.Controllers
 			else
 			{
 
-				return RedirectToAction("Ingreso", "OrderDraft");
+				return RedirectToAction("OrderDraft", "Ingreso");
 			}
 		}
 
 		public IActionResult NewUser()
 		{
-			if (Request.Cookies.TryGetValue("Rol", out var rol) && rol == "administrador")
+			if (Request.Cookies.TryGetValue("Rol", out var rol) && (rol == "Revisor" || rol == "Editor"))
 			{
 
 				return View();
@@ -28,7 +28,7 @@ namespace HudAsp.Controllers
 			else
 			{
 
-				return RedirectToAction("Ingreso", "OrderDraft");
+				return RedirectToAction("OrderDraft", "Ingreso");
 			}
 		}
 

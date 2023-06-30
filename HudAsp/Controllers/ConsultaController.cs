@@ -9,7 +9,7 @@ namespace HudAsp.Controllers
 
 		public IActionResult QueryPreliminarySalesOrder()
 		{
-			if (Request.Cookies.TryGetValue("Rol", out var rol) && rol == "revisor")
+			if (Request.Cookies.TryGetValue("Rol", out var rol) && (rol == "Revisor" || rol == "Editor"))
 			{
 
 				return View();

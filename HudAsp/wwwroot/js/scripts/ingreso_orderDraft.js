@@ -4,17 +4,13 @@ var handleRenderTableData = function () {
 	/*BEGIN obtenerOrdenes */
 	async function obtenerOrdenes() {
 		var settings = {
-			url: "https://LAPTOP-4OBRKJSA:50000/b1s/v1/view.svc/DGP_GET_PRELIMINARY_B1SLQuery",
-			method: "GET",
-			timeout: 0,
-			xhrFields: {
-				withCredentials: "true"
-			}
+			url: "/api/draft/list",
+			method: "GET"
 		};
 
 		try {
 			const response = await $.ajax(settings);
-			var ordenes = response.value;
+			var ordenes = JSON.parse(response);
 			return ordenes;
 		} catch (error) {
 			console.error(error);
@@ -23,18 +19,25 @@ var handleRenderTableData = function () {
 	}
 	/*END obtenerOrdenes */
 
+
 	/*BEGIN html's */
-
 	var DropdownHTML = `
-		<button id="filterEstado" class="btn btn-outline-default dropdown-toggle rounded-0" type="button" data-bs-toggle="dropdown"><span class="d-none d-md-inline">Estado</span><span class="d-inline d-md-none"><i class="fa fa-check"></i></span> &nbsp;</button>
-		<div class="dropdown-menu" id="estadosF">
+		<button id="filterEstado" class="btn btn-outline-default dropdown-toggle rounded-0" type="button" data-bs-toggle="dropdown">
+			<span class="d-none d-md-inline">Estado</span>
 
-		</div>
-		<button id="filterStatus" class="btn btn-outline-default dropdown-toggle" type="button" data-bs-toggle="dropdown"><span class="d-none d-md-inline">Status</span><span class="d-inline d-md-none"><i class="fa fa-check"></i></span> &nbsp;</button>
-		<div class="dropdown-menu" id="statusF">
+			&nbsp;
+		</button>
+		<div class="dropdown-menu estado-menu" id="estadosF"></div>
 
-		</div>
+		<button id="filterStatus" class="btn btn-outline-default dropdown-toggle" type="button" data-bs-toggle="dropdown">
+			<span class="d-none d-md-inline">Status</span>
+
+			&nbsp;
+		</button>
+		<div class="dropdown-menu status-menu" id="statusF"></div>
 	`;
+
+	/*<span class="d-inline d-md-none"><i class="fa fa-check"></i></span>*/
 
 	var lupaHTML = `
 	<div class="input-group-text position-absolute top-0 bottom-0 bg-none border-0 start-0" style="margin: 0px 0px 0px 0px;">
@@ -55,23 +58,28 @@ var handleRenderTableData = function () {
 			>
 		>
 		t
-		<'row align-items-center mx-1'
-			<'mr-auto col-md-6 mb-3 mb-md-0 mt-n2'
+		<'row mx-1 mt-3'
+			<'col-12 col-ms-6 col-md-6 col-lg-6 mr-auto col-md-6 mb-3 mb-md-0 align-middle'
 				i
 			>
-			<'mb-0 col-md-6'
+			<'col-12 col-ms-6 col-md-6 col-lg-6 mb-0'
 				p
 			>
 		>
 	`;
 	/*END html's */
 
+
 	/*BEGIN datatable */
 	var table = $('#datatableOrderDraft').DataTable({
 		language: {
 			search: "_INPUT_",
 			searchPlaceholder: "Búsqueda de órdenes",
-			url: '//cdn.datatables.net/plug-ins/1.13.4/i18n/es-ES.json'
+			url: '//cdn.datatables.net/plug-ins/1.13.4/i18n/es-ES.json',
+			paginate: {
+				previous: '<i class="fas fa-chevron-left"></i>',
+				next: '<i class="fas fa-chevron-right"></i>'
+			}
 		},
 		buttons: [],
 		dom: domHTML,
@@ -81,21 +89,21 @@ var handleRenderTableData = function () {
 		lengthChange: false,
 		autoWidth: false,
 		columns: [
-			{ data: "Nro Orden" },
-			{ data: "Código de Cliente" },
-			{ data: "Nombre de Cliente" },
-			{ data: "Fecha" },
-			{ data: "Monto" },
-			{ data: "Estado" },
-			{ data: "Status" },
-			{ data: "Usuario" },
-			{ data: "Vendedor" },
+			{ data: "num_orden" },
+			{ data: "cliente_codigo" },
+			{ data: "cliente_nombre" },
+			{ data: "fecha" },
+			{ data: "monto" },
+			{ data: "estado" },
+			{ data: "status" },
+			{ data: "usuario" },
+			{ data: "vendedor" },
 			{ data: null, defaultContent: "" }
 		], columnDefs: [
 			{
 				targets: 9,
 				render: function (data, type, row, meta) {
-					var id = row["Nro Orden"];
+					var id = row["num_orden"];
 					var opcionesHTML = `
 						<button type="button" class="btn btn-icon text-theme duplicarOrden" style="--bs-btn-padding-x: 0.25rem;" data-id="${id}">
 							<i class="fa-regular fa-copy"></i>
@@ -113,6 +121,8 @@ var handleRenderTableData = function () {
 		],
 		createdRow: function (row, data, index) {
 			$('td:eq(4)', row).addClass('text-end');
+			//$('td', row).addClass('d-flex');
+			$('td', row).addClass('align-middle');
 			$('td', row).addClass('px-3');
 
 			$('td', row).addClass('text-sm');
@@ -137,39 +147,51 @@ var handleRenderTableData = function () {
 
 		},
 		initComplete: function () {
-			$('#datatableOrderDraft_filter').addClass('input-group');
+
+			$.fn.DataTable.ext.pager.numbers_length = 4;
+
+			//$('#datatableOrderDraft_filter').addClass('input-group');
 			$('#datatableOrderDraft_filter input[type="search"]').removeClass('form-control-sm');
-			$('#datatableOrderDraft_filter input[type="search"]').addClass('px-35px');
+			$('#datatableOrderDraft_filter input[type="search"]').addClass('ps-35px');
 			$('#datatableOrderDraft_filter input[type="search"]').addClass('mx-0');
+			$('#datatableOrderDraft_filter input[type="search"]').css('padding', '0 0');
 
 			var label = document.querySelector('#datatableOrderDraft_filter label');
 
 			label.classList.add('input-group');
+			label.classList.add('flex-nowrap');
 
 			label.id = 'filtroBuscador';
 			$('#filtroBuscador').append(lupaHTML);
 			$('#filtroBuscador').append(DropdownHTML);
 
-			$('.dropdown-menu').on('click', '.dropdown-item', function (event) {
+			$('.estado-menu').on('click', '.dropdown-item', function (event) {
 				event.preventDefault();
 
-				var valor = $(this).text(); 
+				var valor = $(this).text();
 
 				var columna;
-				if ($(this).closest('.dropdown-menu').attr('id') === 'estadosF') {
-					columna = 5; 
-				} else if ($(this).closest('.dropdown-menu').attr('id') === 'statusF') {
-					columna = 6; 
-				}
+				columna = 5;
 
 				table.column(columna).search(valor).draw();
-
-				console.log('Búsqueda realizada en columna ' + columna + ': ' + valor);
 			});
+
+			$('.status-menu').on('click', '.dropdown-item', function (event) {
+				event.preventDefault();
+
+				var valor = $(this).text();
+
+				var columna;
+				columna = 6;
+
+				table.column(columna).search(valor).draw();
+			});
+
 
 		}
 	});
 	/*END datatable */
+
 
 	/*BEGIN Manejar metodos */
 	async function manejarOrdenes() {
@@ -185,6 +207,7 @@ var handleRenderTableData = function () {
 	manejarOrdenes();
 	/*END Manejar metodos */
 
+
 	$('#exportPDFLink').on('click', function (event) {
 		event.preventDefault();
 		generarPDF();
@@ -199,6 +222,7 @@ var handleRenderTableData = function () {
 	});
 	/*END duplicar */
 
+
 	/*BEGIN editar */
 	$(document).on('click', '.editarOrden', function () {
 		var id = $(this).data('id');
@@ -206,6 +230,7 @@ var handleRenderTableData = function () {
 		window.location.href = '/Ingreso/EditOrderDraft?id=' + id;
 	});
 	/*END editar */
+
 
 	/*BEGIN eliminar */
 	$(document).on('click', '.eliminarOrden', function () {
@@ -242,6 +267,7 @@ var handleRenderTableData = function () {
 	});
 	/*END eliminar */
 
+
 	/*BEGIN llenar tabla */
 	function setearOrdenes() {
 		obtenerOrdenes().then(function (ordenesPreliminares) {
@@ -261,12 +287,9 @@ var handleRenderTableData = function () {
 		const estados = [];
 		const status = [];
 
-		var losEstados = [];
-		var losStatus = [];
-
 		$.each(data, function (index, value) {
-			estados.push(value.Estado);
-			status.push(value.Status);
+			estados.push(value.estado);
+			status.push(value.status);
 		});
 
 		const unicosEstados = estados.filter((valor, indice) => {
@@ -277,15 +300,17 @@ var handleRenderTableData = function () {
 			return status.indexOf(valor) === indice;
 		});
 
-		losEstados.push(unicosEstados);
-		losStatus.push(unicosStatus);
+		const estadosDropdown = $('#estadosF');
+		const statusDropdown = $('#statusF');
 
-		losEstados.forEach(function (estado) {
-			$('#estadosF').append(`<button type="button" class="dropdown-item">${estado}</button>`);
+		unicosEstados.forEach(function (estado) {
+			const estadoBoton = `<button type="button" class="dropdown-item">${estado}</button>`;
+			estadosDropdown.append(estadoBoton);
 		});
 
-		losStatus.forEach(function (status) {
-			$('#statusF').append(`<button type="button" class="dropdown-item">${status}</button>`);
+		unicosStatus.forEach(function (status) {
+			const statusBoton = `<button type="button" class="dropdown-item">${status}</button>`;
+			statusDropdown.append(statusBoton);
 		});
 	}
 	/*END obtener filtros */
@@ -315,15 +340,15 @@ var handleRenderTableData = function () {
 								['N°', 'Código de Cliente', 'Nombre de Cliente', 'Fecha', 'Monto', 'Estado', 'Status', 'Usuario', 'Vendedor'],
 								...tableData.map(function (row) {
 									return [
-										{ text: row['Nro Orden'], style: 'tableCell' },
-										{ text: row['Código de Cliente'], style: 'tableCell' },
-										{ text: row['Nombre de Cliente'], style: 'tableCell' },
-										{ text: row['Fecha'], style: 'tableCell' },
-										{ text: row['Monto'], style: 'tableCell' },
-										{ text: row['Estado'], style: 'tableCell' },
-										{ text: row['Status'], style: 'tableCell' },
-										{ text: row['Usuario'], style: 'tableCell' },
-										{ text: row['Vendedor'], style: 'tableCell' }
+										{ text: row['num_orden'], style: 'tableCell' },
+										{ text: row['cliente_codigo'], style: 'tableCell' },
+										{ text: row['cliente_nombre'], style: 'tableCell' },
+										{ text: row['fecha'], style: 'tableCell' },
+										{ text: row['monto'], style: 'tableCell' },
+										{ text: row['estado'], style: 'tableCell' },
+										{ text: row['status'], style: 'tableCell' },
+										{ text: row['usuario'], style: 'tableCell' },
+										{ text: row['vendedor'], style: 'tableCell' }
 									];
 								})
 							]
