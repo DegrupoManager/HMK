@@ -37,8 +37,6 @@ var handleRenderTableData = function () {
 		<div class="dropdown-menu status-menu" id="statusF"></div>
 	`;
 
-	/*<span class="d-inline d-md-none"><i class="fa fa-check"></i></span>*/
-
 	var lupaHTML = `
 	<div class="input-group-text position-absolute top-0 bottom-0 bg-none border-0 start-0" style="margin: 0px 0px 0px 0px;">
 			<i class="fa fa-search opacity-5"></i>
@@ -75,11 +73,11 @@ var handleRenderTableData = function () {
 		language: {
 			search: "_INPUT_",
 			searchPlaceholder: "Búsqueda de órdenes",
-			url: '//cdn.datatables.net/plug-ins/1.13.4/i18n/es-ES.json',
-			paginate: {
-				previous: '<i class="fas fa-chevron-left"></i>',
-				next: '<i class="fas fa-chevron-right"></i>'
-			}
+			url: '//cdn.datatables.net/plug-ins/1.13.4/i18n/es-ES.json'
+			//paginate: {
+			//	previous: '<i class="fas fa-chevron-left"></i>',
+			//	next: '<i class="fas fa-chevron-right"></i>'
+			//}
 		},
 		buttons: [],
 		dom: domHTML,
@@ -187,6 +185,13 @@ var handleRenderTableData = function () {
 				table.column(columna).search(valor).draw();
 			});
 
+			$('#noEstado').click(function () {
+				table.search('').columns().search('').draw();
+			});
+
+			$('#noStatus').click(function () {
+				table.search('').columns().search('').draw();
+			});
 
 		}
 	});
@@ -308,10 +313,15 @@ var handleRenderTableData = function () {
 			estadosDropdown.append(estadoBoton);
 		});
 
+		estadosDropdown.append(`<button type="button" class="dropdown-item" id="noEstado"></button>`);
+
 		unicosStatus.forEach(function (status) {
 			const statusBoton = `<button type="button" class="dropdown-item">${status}</button>`;
 			statusDropdown.append(statusBoton);
 		});
+
+		statusDropdown.append(`<button type="button" class="dropdown-item" id="noStatus"></button>`);
+
 	}
 	/*END obtener filtros */
 

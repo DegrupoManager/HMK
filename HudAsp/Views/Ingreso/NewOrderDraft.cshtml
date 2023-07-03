@@ -20,9 +20,13 @@
 
     <style>
         .input-group {
-
             flex-wrap: nowrap;
 
+        }
+
+        .custom-select {
+            background-position: left 0.75rem center;
+            padding: 0.375rem 0.75rem 0.375rem 2.25rem;
         }
 
     </style>
@@ -116,21 +120,18 @@
                                     <label class="form-label" style="font-size: 12px">Nombre de Cliente</label>
                                     <div class="typeahead__field">
                                         <div class="typeahead__query input-group">
-                                            <span class="input-group-text"><i class="fa fa-search"></i></span>
+                                            <span id="porNombreCliente" class="input-group-text"><i class="fa fa-search"></i></span>
                                             <input type="text" class="form-control" name="inputNombreCliente[query]" id="inputNombreCliente" autocomplete="off">
                                         </div>
                                     </div>
                                 </div>
                             </div>
                             <div class="col-12 col-sm-6 col-md-4 col-lg-4">
-                                <div class="typeahead__container">
-                                    <label class="form-label" style="font-size: 12px">Persona de contacto</label>
-                                    <div class="typeahead__field">
-                                        <div class="typeahead__query input-group">
-                                            <span class="input-group-text"><i class="fa fa-search"></i></span>
-                                            <input class="form-control" name="inputPersonaContacto[query]" id="inputPersonaContacto" placeholder="" autocomplete="off" required>
-                                        </div>
-                                    </div>  
+                                    <label for="inputPersonaContacto" class="form-label" style="font-size: 12px">Persona de contacto</label>
+                                <div class="input-group mb-3">
+                                    <select id="inputPersonaContacto" name="inputPersonaContacto" class="form-select custom-select" required>
+                                        @*<option selected></option>*@
+                                    </select>
                                 </div>
                             </div>
                         </div>
@@ -151,14 +152,14 @@
                                         <label for="inputSerieDoc" class="form-label" style="font-size: 12px">Serie de doc.</label>
                                         <div class="input-group mb-3">
                                             <select id="inputSerieDoc" name="inputSerieDoc" class="form-select custom-select" required>
-                                                @*<option selected></option>*@
+
                                             </select>
                                         </div>
                                     </div>
                                     <div class="col-6">
                                         <label for="inputCorrelativo" class="form-label" style="font-size: 12px">Correlativo</label>
                                         <div class="input-group mb-3">
-                                            <input id="inputCorrelativo" name="inputCorrelativo" type="text" class="form-control bg-inverse bg-opacity-10" placeholder="" disabled>
+                                            <input id="inputCorrelativo" name="inputCorrelativo" type="text" class="form-control bg-inverse bg-opacity-10" disabled>
                                         </div>
                                     </div>
                                 </div>
@@ -166,20 +167,20 @@
                             <div class="col-12 col-sm-6 col-md-4 col-lg-4">
                                 <label for="inputDireccionDestino" class="form-label" style="font-size: 12px">Dirección destino</label>
                                 <div class="input-group mb-3">
-                                    <select id="inputDireccionDestino" name="inputDireccionDestino" class="form-select custom-select">
-                                        <option selected></option>
+                                    <select id="inputDireccionDestino" name="inputDireccionDestino" class="form-select custom-select" required>
+                                        @*<option selected></option>*@
                                     </select>
                                 </div>
-                                <textarea class="form-control bg-inverse bg-opacity-10" id="textAreaDireccionDestino" placeholder="208 Hollywood Ave 140101 LIMA PERU" rows="3" style="resize: none;" disabled></textarea>
+                                <textarea class="form-control bg-inverse bg-opacity-10" id="textAreaDireccionDestino" rows="3" style="resize: none;" disabled></textarea>
                             </div>
                             <div class="col-12 col-sm-6 col-md-4 col-lg-4">
                                 <label for="inputDestinatarioFactura" class="form-label" style="font-size: 12px">Destinatario de factura</label>
                                 <div class="input-group mb-3">
                                     <select id="inputDestinatarioFactura" name="inputDestinatarioFactura" class="form-select custom-select">
-                                        <option selected></option>
+                                        @*<option selected></option>*@
                                     </select>
                                 </div>
-                                <textarea class="form-control bg-inverse bg-opacity-10" id="textAreaDestinatarioFactura" placeholder="208 Hollywood Ave 140101 LIMA PERU"  rows="3" style="resize: none;" disabled></textarea>
+                                <textarea class="form-control bg-inverse bg-opacity-10" id="textAreaDestinatarioFactura" rows="3" style="resize: none;" disabled></textarea>
                             </div>
                         </div>
                     </div>
@@ -223,7 +224,7 @@
                             <div class="col-12 col-sm-8 col-md-8 col-lg-8 text-end">
                                 <label for="inputCondicionPago" class="form-label" style="font-size: 12px">Condición de Pago</label>
                                 <div class="input-group mb-3">
-                                    <input id="inputCondicionPago" name="inputCondicionPago" type="text" class="form-control bg-inverse bg-opacity-10" style="font-size: 12px" placeholder="xxxxxxx" disabled>
+                                    <input id="inputCondicionPago" name="inputCondicionPago" type="text" class="form-control bg-inverse bg-opacity-10" style="font-size: 12px" disabled>
                                 </div>
                             </div>
                         </div>
@@ -247,7 +248,7 @@
     </div>
 </div>
 <div class="row">
-    <div class="col-12 col-sm-12 col-md-12 col-lg-9 mb-3">
+    <div class="col-12 col-sm-12 col-md-12 col-lg-10 mb-3">
         <div class="card">
             <div class="card-header d-flex align-items-center bg-inverse bg-opacity-10 fw-light">
                 DETALLE
@@ -259,17 +260,17 @@
                     <table id="datatableNewOrderDraft" class="table table-hover text-nowrap">
                         <thead>
                             <tr>
-                                <th class="border-top-0 pt-0 px-3"></th>
-                                <th class="border-top-0 pt-0 px-3">Codigo del Articulo</th>
-                                <th class="border-top-0 pt-0 px-3">Descripcion del Articulo</th>
-                                <th class="border-top-0 pt-0 px-3">Codigo en almacen</th>
-                                <th class="border-top-0 pt-0 px-3">Cantidad en almacen</th>
-                                <th class="border-top-0 pt-0 px-3">Stock General</th>
-                                <th class="border-top-0 pt-0 px-3">Codigo de barras</th>
-                                <th class="border-top-0 pt-0 px-4">Cantidad</th>
-                                <th class="border-top-0 pt-0 px-4">Precio</th>
+                                <th class="border-top-0 pt-0 px-2"></th>
+                                <th class="border-top-0 pt-0 px-2">Código del Artículo</th>
+                                <th class="border-top-0 pt-0 px-2">Descripción del Artículo</th>
+                                <th class="border-top-0 pt-0 px-2">Código de almacén</th>
+                                <th class="border-top-0 pt-0 px-2">Cantidad en almacén</th>
+                                <th class="border-top-0 pt-0 px-2">Stock General</th>
+                                <th class="border-top-0 pt-0 px-2">Código de barras</th>
+                                <th class="border-top-0 pt-0 px-2">Cantidad</th>
+                                <th class="border-top-0 pt-0 px-2">Precio</th>
                                 <th class="border-top-0 pt-0 px-2">Porcentaje de descuento</th>
-                                <th class="border-top-0 pt-0 px-4">IGV</th>
+                                <th class="border-top-0 pt-0 px-2">IGV</th>
                             </tr>
                         </thead>
                         <tbody id="detalleRow">
@@ -286,12 +287,12 @@
             </div>
         </div>
     </div>
-    <div class="col-12 col-sm-12 col-md-12 col-lg-3 mb-1">
+    <div class="col-12 col-sm-12 col-md-12 col-lg-2 mb-1">
         <div class="row">
             <div class="col-12 col-sm-6 col-md-6 col-lg-12">
                 <div class="card mb-4">
                     <div class="card-header d-flex align-items-center bg-inverse bg-opacity-10 fw-light">
-                        ATRIBUTOS ADICIONALES
+                        ADICIONALES
                     </div>
 
                     <div class="card-body align-items-center fw-light p-4">
@@ -378,11 +379,3 @@
     </div>
 </div>
 </form>
-</div>
-
-<style>
-    .custom-select {
-        background-position: left 0.75rem center;
-        padding: 0.375rem 0.75rem 0.375rem 2.25rem;
-    }
-</style>

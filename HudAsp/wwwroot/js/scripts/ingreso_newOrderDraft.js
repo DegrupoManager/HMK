@@ -37,8 +37,6 @@ var handleRenderDatepicker = function () {
 		format: 'dd/mm/yyyy'
 	}).datepicker("setDate", new Date());
 
-	//console.log($('#datepicker-default').val());
-
 	$('#datepicker-component').datepicker({
 		autoclose: true,
 		format: 'dd/mm/yyyy'
@@ -57,32 +55,61 @@ var handleRenderDatepicker = function () {
 };
 var handleRenderTypeahead = function () {
 
-	/*
-	function getCustomerById(customerCode) {
-		var url = "/api/customer/getCustomerById";
-		var parameters = {
-			customerCode: customerCode
-		};
+	function getCustomerList(){
+		return new Promise(function (resolve, reject) {
+			var url = "/api/customer/getCustomerList";
 
-		$.ajax({
-			url: url,
-			type: "GET",
-			data: parameters,
-			success: function (response) {
-				var dataClientes = JSON.parse(response);
-				console.log(dataClientes);
-				return dataClientes;
-			},
-			error: function (xhr, status, error) {
-				
-				console.log(error);
-			}
+			$.ajax({
+				url: url,
+				type: "GET",
+				success: function (response) {
+					var clientes = JSON.parse(response);
+					resolve(clientes);
+				},
+				error: function (xhr, status, error) {
+					reject(error);
+				}
+			});
 		});
 	}
 
+	
+	getCustomerList()
+		.then(function (clientes) {
 
-	console.log(getCustomerById(4089));*/
+			var clientes_codigo = [];
+			var clientes_nombre = [];
 
+			clientes.forEach(function (cliente) {
+				clientes_codigo.push(cliente.Codigo_Cliente);
+				clientes_nombre.push(cliente.Nombre_Cliente);
+			});
+
+
+			$.typeahead({
+				input: '#inputCodigoCliente',
+				order: "desc",
+				source: {
+					data: clientes_codigo
+				},
+				minLength: 3
+			});
+
+			$.typeahead({
+				input: '#inputNombreCliente',
+				order: "desc",
+				source: {
+					data: clientes_nombre
+				},
+				minLength: 3
+			});
+
+		})
+		.catch(function (error) {
+
+		});
+
+	/*BEGIN porCodigoCliente */
 	function getCustomerById(customerCode) {
 		return new Promise(function(resolve, reject) {
 			var url = "/api/customer/getCustomerById";
@@ -105,163 +132,209 @@ var handleRenderTypeahead = function () {
 		});
 	}
 
+	function getPersonContactsByCustomerId(customerCode) {
+		return new Promise(function (resolve, reject) {
+			var url = "/api/customer/getPersonContactsByCustomerId";
+			var parameters = {
+				customerId: customerCode
+			};
 
-	$('#inputCodigoCliente').on('input', function () {
+			$.ajax({
+				url: url,
+				type: "GET",
+				data: parameters,
+				success: function (response) {
+					var dataClientes = JSON.parse(response);
+					resolve(dataClientes);
+				},
+				error: function (xhr, status, error) {
+					reject(error);
+				}
+			});
+		});
+	}
 
-		var codigoCliente = $(this).val();
+	function vaciarCabecera() {
 
+		$('#inputNombreCliente').val('');
 
-		if (codigoCliente.length >= 3) {
+		var personaContacto = $('#inputPersonaContacto');
+		personaContacto.empty();
 
-			getCustomerById(codigoCliente)
-				.then(function (dataClientes) {
-					var uniqueCodigoClienteData = dataClientes.reduce(function (acc, current) {
-						var codigoCliente = current.Codigo_Cliente;
-						if (!acc.includes(codigoCliente)) {
-							acc.push(codigoCliente);
-						}
-						return acc;
-					}, []);
+		$('#inputCondicionPago').val('');
+		$('#inputMoneda').val('');
+		$('#inputNumeroReferencia').val('');
 
-					console.log(uniqueCodigoClienteData);
+		var direccionDestino = $('#inputDireccionDestino');
+		direccionDestino.empty();
+		$('#textAreaDireccionDestino').val('');
 
-					$.typeahead({
-						input: '#inputCodigoCliente',
-						order: "desc",
-						source: {
-							data: [
-								uniqueCodigoClienteData
-							]
-						},
-						minLength: 3
-					});
+		var destinatarioFactura = $('#inputDestinatarioFactura');
+		destinatarioFactura.empty();
+		$('#textAreaDestinatarioFactura').val('');
+	}
 
-					/*BEGIN autocompletado */
-					//$('.typeahead__query .input-group-text')
-					$('#porCodigoCliente').on('click', function () {
-						var codigoCliente = $('#inputCodigoCliente').val();
-
-						var direccionesDestinoFiltradas = dataClientes.filter(function (item) {
-							return item.Codigo_Cliente === codigoCliente;
-						}).map(function (item) {
-							return item.Direccion_Destino;
-						});
-
-						var direccionesFacturaFiltradas = dataClientes.filter(function (item) {
-							return item.Codigo_Cliente === codigoCliente;
-						}).map(function (item) {
-							return item.Direccion_Factura;
-						});
-
-						$('#inputDireccionDestino').empty();
-						$('#inputDestinatarioFactura').empty();
-
-						direccionesDestinoFiltradas.forEach(function (direccion) {
-							var option = $('<option></option>').text(direccion);
-							$('#inputDireccionDestino').append(option);
-						});
-
-						direccionesFacturaFiltradas.forEach(function (direccion) {
-							var option = $('<option></option>').text(direccion);
-							$('#inputDestinatarioFactura').append(option);
-						});
-
-						var campo = dataClientes.filter(function (item) {
-							return item.Codigo_Cliente === codigoCliente;
-						});
-
-						console.log(campo);
-
-						if (campo.length > 0) {
-							$('#inputNombreCliente').val(campo[0].Nombre_Cliente);
-							$('#inputPersonaContacto').val(campo[0].Persona_contacto);
-							$('#inputCondicionPago').val(campo[0].Condicion_pago);
-						} else {
-							$('#inputNombreCliente').val('');
-							$('#inputPersonaContacto').val('');
-							$('#inputCondicionPago').val('');
-						}
-					});
-
-					/*END autocompletado */
-
-				})
-				.catch(function (error) {
-					console.log(error);
-				});
-
-			
-			//$.typeahead({
-			//	input: '#inputCodigoCliente',
-			//	order: "desc",
-			//	source: {
-			//		data: [
-			//			uniqueCodigoClienteData
-			//		]
-			//	},
-			//	minLength: 2
-			//});
-
-			///*BEGIN autocompletado */
-			////$('.typeahead__query .input-group-text')
-			//$('#porCodigoCliente').on('click', function () {
-			//	var codigoCliente = $('#inputCodigoCliente').val();
-
-			//	var direccionesDestinoFiltradas = clientePorCodigo.filter(function (item) {
-			//		return item.Codigo_Cliente === codigoCliente;
-			//	}).map(function (item) {
-			//		return item.Direccion_Destino;
-			//	});
-
-			//	var direccionesFacturaFiltradas = clientePorCodigo.filter(function (item) {
-			//		return item.Codigo_Cliente === codigoCliente;
-			//	}).map(function (item) {
-			//		return item.Direccion_Factura;
-			//	});
-
-			//	$('#inputDireccionDestino').empty();
-			//	$('#inputDestinatarioFactura').empty();
-
-			//	direccionesDestinoFiltradas.forEach(function (direccion) {
-			//		var option = $('<option></option>').text(direccion);
-			//		$('#inputDireccionDestino').append(option);
-			//	});
-
-			//	direccionesFacturaFiltradas.forEach(function (direccion) {
-			//		var option = $('<option></option>').text(direccion);
-			//		$('#inputDestinatarioFactura').append(option);
-			//	});
-
-			//	var campo = clientePorCodigo.filter(function (item) {
-			//		return item.Codigo_Cliente === codigoCliente;
-			//	});
-
-			//	console.log(campo);
-
-			//	if (campo.length > 0) {
-			//		$('#inputNombreCliente').val(campo[0].Nombre_Cliente);
-			//		$('#inputPersonaContacto').val(campo[0].Persona_contacto);
-			//		$('#inputCondicionPago').val(campo[0].Condicion_pago);
-			//	} else {
-			//		$('#inputNombreCliente').val('');
-			//		$('#inputPersonaContacto').val('');
-			//		$('#inputCondicionPago').val('');
-			//	}
-			//});
-			
-			///*END autocompletado */
-			
-		} else {
-			// Vaciar los campos si el input está vacío
-			$('#inputNombreCliente').val('');
-			$('#inputPersonaContacto').val('');
-			$('#inputCondicionPago').val('');
-			$('#inputDireccionDestino').empty();
-			$('#inputDestinatarioFactura').empty();
+	$("#inputCodigoCliente").on("input", function () {
+		if ($(this).val() === "") {
+			console.log("No hay data1");
+			vaciarCabecera();
 		}
 	});
 
-	/*BEGIN codArticulo*/
+	// Obtener el elemento span
+	var cancelButton = $(".typeahead__cancel-button");
+
+	// Agregar el ID al elemento
+	cancelButton.attr("id", "cerrarCodigoCliente");
+
+	$("#inputCodigoCliente").on("#cerrarCodigoCliente", function () {
+		console.log('hola');
+		if ($(this).val() === "") {
+			console.log("No hay data");
+		}
+	});
+
+	$('#porCodigoCliente').on('click', function () {
+			
+		var codigoCliente = $('#inputCodigoCliente').val();
+
+		if (codigoCliente.length > 0) {
+			getCustomerById(codigoCliente)
+				.then(function (dataCliente) {
+
+					/*BEGIN Autocompletar */
+					
+					$('#inputNombreCliente').val(dataCliente.Nombre_Cliente);
+
+					var personaContacto = $('#inputPersonaContacto');
+					personaContacto.append(`<option value="${dataCliente.contactoCodigo}" selected>${dataCliente.contactoNombre}</option>`);
+
+					$('#inputCondicionPago').val(dataCliente.Condicion_pago);
+					$('#inputMoneda').val(dataCliente.Moneda);
+					$('#inputNumeroReferencia').val(dataCliente.Numero_Referencia);
+
+					var direccionDestino = $('#inputDireccionDestino');
+					direccionDestino.append(`<option value="${dataCliente.direccionDestinoCodigo}" selected>${dataCliente.direccionDestinoCodigo}</option>`);
+					$('#textAreaDireccionDestino').val(dataCliente.Direccion_Destino);
+
+					var destinatarioFactura = $('#inputDestinatarioFactura');
+					destinatarioFactura.append(`<option value="${dataCliente.direccionFacturaCodigo}" selected>${dataCliente.direccionFacturaCodigo}</option>`);
+					$('#textAreaDestinatarioFactura').val(dataCliente.Direccion_Factura);
+
+					/*END Autocompletar */
+
+					getPersonContactsByCustomerId(codigoCliente)
+						.then(function (dataContacto) {
+							dataContacto.forEach(function (contacto) {
+								if (contacto.codigo !== dataCliente.contactoCodigo) {
+									personaContacto.append(`<option value="${contacto.codigo}" selected>${contacto.nombreCompleto}</option>`);
+									console.log('funcionó');
+								}
+							});
+						})
+						.catch(function (error) {
+							console.log(error);
+						});
+					
+				})
+				.catch(function (error) {
+					console.log(error); 
+				});
+		}
+	});
+
+	/*
+	$('#inputCodigoCliente').on('input', function (event) {
+
+		$('#inputNombreCliente').val('')
+		$('#inputPersonaContacto').val('');
+		$('#inputCondicionPago').val('');
+		$('#inputMoneda').val('');
+		$('#inputNumeroReferencia').val('');
+
+		var direccionDestino = $('#inputDireccionDestino');
+		direccionDestino.empty();
+		$('#textAreaDireccionDestino').val('');
+
+		var destinatarioFactura = $('#inputDestinatarioFactura');
+		destinatarioFactura.empty();
+		$('#textAreaDestinatarioFactura').val('');
+
+	});*/
+
+	/*END porCodigoCliente*/
+
+
+	/*BEGIN porNombreCliente */
+
+	$('#porNombreCliente').on('click', function () {
+		
+		var nombreCliente = $('#inputNombreCliente').val();
+
+		getCustomerList()
+			.then(function (clientes) {
+
+				var codigoClienteEncontrado;
+				clientes.forEach(function (cliente) {
+					if (cliente.Nombre_Cliente === nombreCliente) {
+						codigoClienteEncontrado = cliente.Codigo_Cliente;
+						return;
+					}
+				});
+
+				console.log(codigoClienteEncontrado);
+
+				if (codigoClienteEncontrado !== null) {
+
+					getCustomerById(codigoClienteEncontrado)
+						.then(function (dataClientes) {
+
+							console.log(dataClientes);
+
+							/*BEGIN autocompletado */
+						
+							if (nombreCliente.length > 0) {
+
+								$('#inputCodigoCliente').val(dataClientes[0].Codigo_Cliente);
+								$('#inputPersonaContacto').val(dataClientes[0].Persona_contacto);
+								$('#inputCondicionPago').val(dataClientes[0].Condicion_pago);
+								$('#inputMoneda').val(dataClientes[0].Moneda);
+								$('#inputNumeroReferencia').val(dataClientes[0].Numero_Referencia);
+								$('#textAreaDireccionDestino').val(dataClientes[0].Direccion_Destino);
+								$('#textAreaDestinatarioFactura').val(dataClientes[0].Direccion_Factura);
+
+							} else {
+								$('#inputPersonaContacto').val('');
+								$('#inputCondicionPago').val('');
+								$('#inputMoneda').val('');
+								$('#inputDireccionDestino').empty();
+								$('#inputDestinatarioFactura').empty();
+								$('#inputNumeroReferencia').val('');
+								$('#textAreaDireccionDestino').val('');
+								$('#textAreaDestinatarioFactura').val('');
+							}
+
+						/*END autocompletado */
+
+						})
+						.catch(function (error) {
+							console.log(error);
+						});
+
+				} else {
+					console.log('Cliente no encontrado');
+				}
+
+
+			})
+			.catch(function (error) {
+				console.log(error);
+			});
+		
+	});
+
+	/*END porNombreCliente*/
+
 
 	/*BEGIN Serie documento */
 	function getSerieDoc(serieCode) {
@@ -341,162 +414,6 @@ var handleRenderTypeahead = function () {
 	}
 
 	primeraSerie();
-	/*END Serie documento */
-
-	//$('#inputCodigoArticulo1').on('input', function () {
-
-	//	var codigoArticulo = $(this).val();
-
-	//	console.log(codigoArticulo)
-
-	//	if (codigoArticulo.length >= 3) {
-
-	//		var clientes = [];
-
-	//		getProductById(codigoArticulo)
-	//			.then(function (dataArticulos) {
-	//				var uniqueCodigoClienteData = dataArticulos.reduce(function (acc, current) {
-	//					var codigoCliente = current.CodigoArticulo;
-	//					if (!acc.includes(codigoCliente)) {
-	//						acc.push(codigoCliente);
-	//					}
-	//					return acc;
-	//				}, []);
-
-	//				console.log(uniqueCodigoClienteData);
-
-
-	//				/*BEGIN autocompletado */
-	//				//$('.typeahead__query .input-group-text')
-	//				$('#porCodigoArticulo').on('click', function () {
-	//					var codigoArticulo = find('[id^=inputDescripcionArticulo]').val();
-
-	//					console.log(codigoArticulo);
-
-	//					if (campo.length > 0) {
-	//						$('#inputNombreCliente').val(campo[0].Nombre_Cliente);
-	//						$('#inputPersonaContacto').val(campo[0].Persona_contacto);
-	//						$('#inputCondicionPago').val(campo[0].Condicion_pago);
-	//					} else {
-	//						$('#inputNombreCliente').val('');
-	//						$('#inputPersonaContacto').val('');
-	//						$('#inputCondicionPago').val('');
-	//					}
-	//				});
-
-	//				/*END autocompletado */
-
-	//			})
-	//			.catch(function (error) {
-	//				console.log(error);
-	//			});
-
-	//	} else {
-	//		// Vaciar los campos si el input está vacío
-	//		$('#inputNombreCliente').val('');
-	//		$('#inputPersonaContacto').val('');
-	//		$('#inputCondicionPago').val('');
-	//		$('#inputDireccionDestino').empty();
-	//		$('#inputDestinatarioFactura').empty();
-	//	}
-	//});
-
-	/*END codArticulo*/
-
-	/*
-	var get_cliente_cod = {
-		"url": "https://LAPTOP-4OBRKJSA:50000/b1s/v1/view.svc/DGP_GET_CLIENTE_COD_B1SLQuery",
-		"method": "GET",
-		"timeout": 0,
-		"xhrFields": {
-			"withCredentials": "true"
-		}
-	}
-
-	var clientePorCodigo = [];
-	var clientePorNombre = [];
-
-	$.ajax(get_cliente_cod).done(function (response) {
-		clientePorCodigo = response.value;
-
-		console.log(clientePorCodigo);
-
-		var uniqueCodigoClienteData = clientePorCodigo.reduce(function (acc, current) {
-			var codigoCliente = current.Codigo_Cliente;
-			if (!acc.includes(codigoCliente)) {
-				acc.push(codigoCliente);
-			}
-			return acc;
-		}, []);
-
-		console.log(uniqueCodigoClienteData);
-
-		$.typeahead({
-			input: '#inputCodigoCliente',
-			order: "desc",
-			source: {
-				data: uniqueCodigoClienteData
-			},
-			minLength: 3
-		});
-
-		$('.typeahead__query .input-group-text').on('click', function () {
-			var codigoCliente = $('#inputCodigoCliente').val();
-
-			if (codigoCliente.length >= 3) {
-				var direccionesDestinoFiltradas = clientePorCodigo.filter(function (item) {
-					return item.Codigo_Cliente === codigoCliente;
-				}).map(function (item) {
-					return item.Direccion_Destino;
-				});
-
-				var direccionesFacturaFiltradas = clientePorCodigo.filter(function (item) {
-					return item.Codigo_Cliente === codigoCliente;
-				}).map(function (item) {
-					return item.Direccion_Factura;
-				});
-
-				$('#inputDireccionDestino').empty();
-				$('#inputDestinatarioFactura').empty();
-
-				direccionesDestinoFiltradas.forEach(function (direccion) {
-					var option = $('<option></option>').text(direccion);
-					$('#inputDireccionDestino').append(option);
-				});
-
-				direccionesFacturaFiltradas.forEach(function (direccion) {
-					var option = $('<option></option>').text(direccion);
-					$('#inputDestinatarioFactura').append(option);
-				});
-
-				var campo = clientePorCodigo.filter(function (item) {
-					return item.Codigo_Cliente === codigoCliente;
-				});
-
-				console.log(campo);
-
-				if (campo.length > 0) {
-					$('#inputNombreCliente').val(campo[0].Nombre_Cliente);
-					$('#inputPersonaContacto').val(campo[0].Persona_contacto);
-					$('#inputCondicionPago').val(campo[0].Condicion_pago);
-				} else {
-					$('#inputNombreCliente').val('');
-					$('#inputPersonaContacto').val('');
-					$('#inputCondicionPago').val('');
-				}
-			} else {
-				// Vaciar los campos si el input está vacío
-				$('#inputNombreCliente').val('');
-				$('#inputPersonaContacto').val('');
-				$('#inputCondicionPago').val('');
-				$('#inputDireccionDestino').empty();
-				$('#inputDestinatarioFactura').empty();
-			}
-		});
-
-	});
-	*/
-
 
 	/*
 	$.typeahead({
@@ -569,17 +486,18 @@ var handleRenderTableData = function () {
 	`;
 
 	class DocumentLine {
-		constructor(ItemCode, WarehouseCode, UnitPrice, Quantity, DiscountPercent) {
+		constructor(ItemCode, WarehouseCode, UnitPrice, Quantity, DiscountPercent, VatGroup) {
 			this.ItemCode = ItemCode;
 			this.WarehouseCode = WarehouseCode;
 			this.UnitPrice = UnitPrice;
 			this.Quantity = Quantity;
 			this.DiscountPercent = DiscountPercent;
+			this.VatGroup = VatGroup;
 		}
 	}
 
 	class OrdenPreliminar {
-		constructor(CardCode, ContactPersonCode, NumAtCard, ShipToCode, PayToCode, DocCurrency, DocDate, DocDueDate, TaxDate, GroupNum, Comments) {
+		constructor(CardCode, ContactPersonCode, NumAtCard, ShipToCode, PayToCode, DocCurrency, DocDate, DocDueDate, TaxDate, GroupNum, Comments, Series, U_DGP_OwnerCode) {
 			this.CardCode = CardCode;
 			this.ContactPersonCode = ContactPersonCode;
 			this.NumAtCard = NumAtCard;
@@ -592,11 +510,14 @@ var handleRenderTableData = function () {
 			this.TaxDate = TaxDate;
 			this.GroupNum = GroupNum;
 			this.Comments = Comments;
+			this.Series = Series;
+
+			this.U_DGP_OwnerCode = U_DGP_OwnerCode;
 			this.DocumentLines = [];
 		}
 
-		addDocumentLine(ItemCode, WarehouseCode, UnitPrice, Quantity, DiscountPercent) {
-			const documentLine = new DocumentLine(ItemCode, WarehouseCode, UnitPrice, Quantity, DiscountPercent);
+		addDocumentLine(ItemCode, WarehouseCode, UnitPrice, Quantity, DiscountPercent, VatGroup) {
+			const documentLine = new DocumentLine(ItemCode, WarehouseCode, UnitPrice, Quantity, DiscountPercent, VatGroup);
 			this.DocumentLines.push(documentLine);
 		}
 	}
@@ -618,7 +539,22 @@ var handleRenderTableData = function () {
 			$('#pBuscar').append(busquedaHTML);
 			$('#pBoton').append(btnHTML);
 
-			var cuentaFilas = [];
+			var articulos_codigo = [];
+			var articulos_descripcion = [];
+
+			getProductList()
+				.then(function (articulos) {
+					articulos.forEach(function (articulo) {
+						articulos_codigo.push(articulo.CodigoArticulo);
+						articulos_descripcion.push(articulo.DescripcionArticulo);
+					});
+
+					botonAgregar.click();
+				})
+				.catch(function (error) {
+					console.log(error);
+				});
+
 			var botonAgregar = $('#agregarFilaProducto').on('click', function () {
 
 				counter++;
@@ -635,41 +571,60 @@ var handleRenderTableData = function () {
 				`;
 
 				var input01 = `
-					<div class="input-group px-2">
-                        <span id="porCodigoArticulo" data-index="${counter}" class="input-group-text porCodigoArticulo"><i class="fa-solid fa-magnifying-glass"></i></span>
-                        <input class="form-control searchable codigoArticulo" placeholder="A00001" name="inputCodigoArticulo${counter}" id="inputCodigoArticulo${counter}" data-column="${counter}">
-                    </div>
+					<div class="typeahead__container">
+						<div class="typeahead__field">
+							<div class="typeahead__query input-group px-2">
+								<span id="porCodigoArticulo" data-index="${counter}" class="input-group-text porCodigoArticulo"><i class="fa-solid fa-magnifying-glass"></i></span>
+								<input type="text" class="form-control searchable codigoArticulo" name="inputCodigoArticulo${counter}" id="inputCodigoArticulo${counter}" data-column="${counter}" autocomplete="off" required>
+							</div>
+						</div>
+					</div>
 				`;
 
 				var input02 = `
-					<div class="input-group px-2">
-                        <span class="input-group-text"><i class="fa-solid fa-magnifying-glass"></i></span>
-                        <input class="form-control" placeholder="IBM Infoprint 1312" id="inputDescripcionArticulo${counter}">
-                    </div>
+					<div class="typeahead__container">
+						<div class="typeahead__field">
+							<div class="typeahead__query input-group px-2">
+								<span id="porNombreArticulo" data-index="${counter}" class="input-group-text porCodigoArticulo"><i class="fa-solid fa-magnifying-glass"></i></span>
+								<input type="text" class="form-control descripcionArticulo" name="inputDescripcionArticulo${counter}" id="inputDescripcionArticulo${counter}" data-column="${counter}" autocomplete="off" required>
+							</div>
+						</div>
+					</div>
 				`;
 
 				var input03 = `
+				<div class="typeahead__container">
+						<div class="typeahead__field">
+							<div class="typeahead__query input-group px-3">
+								<span id="" data-index="${counter}" class="input-group-text porCodigoArticulo"><i class="fa-solid fa-magnifying-glass"></i></span>
+								<input type="text" class="form-control" name="inputCodigoAlmacen${counter}" id="inputCodigoAlmacen${counter}" data-column="${counter}" autocomplete="off" required>
+							</div>
+						</div>
+					</div>
+				`;
+
+				var input03X = `
 					<div class="input-group px-3">
                         <span class="input-group-text"><i class="fa-solid fa-magnifying-glass"></i></span>
-                        <input class="form-control" placeholder="01" name="inputCodigoAlmacen${counter}" id="inputCodigoAlmacen${counter}">
+                        <input class="form-control" name="inputCodigoAlmacen${counter}" id="inputCodigoAlmacen${counter}">
                     </div>
 				`;
 
 				var input04 = `
 					<div class="input-group px-4">
-                        <input class="form-control bg-inverse bg-opacity-10" placeholder="1000" id="inputCantidadAlmacen${counter}" style="text-align: center;" disabled>
+                        <input class="form-control bg-inverse bg-opacity-10" id="inputCantidadAlmacen${counter}" style="text-align: center;" disabled>
                     </div>
 				`;
 
 				var input05 = `
 					<div class="input-group px-2">
-                        <input class="form-control bg-inverse bg-opacity-10" placeholder="2000" id="inputStockAlmacen${counter}" style="text-align: center;" disabled>
+                        <input class="form-control bg-inverse bg-opacity-10" id="inputStockAlmacen${counter}" style="text-align: center;" disabled>
                     </div>
 				`;
 
 				var input06 = `
 					<div class="input-group px-2">
-                        <input class="form-control bg-inverse bg-opacity-10" placeholder="xxxxxxxxxxxx" id="inputCodigoBarras${counter}" style="text-align: center;" disabled>
+                        <input class="form-control bg-inverse bg-opacity-10" id="inputCodigoBarras${counter}" style="text-align: center;" disabled>
                     </div>
 				`;
 
@@ -681,19 +636,19 @@ var handleRenderTableData = function () {
 
 				var input08 = `
 					<div class="input-group">
-                        <input class="form-control bg-inverse bg-opacity-10" placeholder="200" name="inputPrecio${counter}" id="inputPrecio${counter}" style="text-align: center;" disabled>
+                        <input class="form-control bg-inverse bg-opacity-10" name="inputPrecio${counter}" id="inputPrecio${counter}" style="text-align: center;" disabled>
                     </div>
 				`;
 
 				var input09 = `
 					<div class="input-group px-5">
-                        <input class="form-control" name="inputPorcentajeDescuento${counter}" placeholder="0" id="inputPorcentajeDescuento${counter}" style="text-align: center;">
+                        <input class="form-control" name="inputPorcentajeDescuento${counter}" id="inputPorcentajeDescuento${counter}" style="text-align: center;">
                     </div>
 				`;
 
 				var input10 = `
 					<div class="input-group">
-                        <input class="form-control bg-inverse bg-opacity-10" placeholder="18" id="inputIGV${counter}" style="text-align: center;" disabled>
+                        <input class="form-control bg-inverse bg-opacity-10" placeholder="18" name="inputIGV${counter}" id="inputIGV${counter}" style="text-align: center;" disabled>
                     </div>
 				`;
 
@@ -702,8 +657,26 @@ var handleRenderTableData = function () {
 				var newRow = table.row.add(fila).draw(false).node();
 				$(newRow).find('.eliminarFila').attr('data-row-index', counter);
 
-				$(`#inputCantidad${counter}`).val(1);
-				$(`#inputPorcentajeDescuento${counter}`).val(0);
+
+				$.typeahead({
+					input: `#inputCodigoArticulo${counter}`,
+					order: "desc",
+					source: {
+						data: articulos_codigo
+					},
+					minLength: 3
+				});
+
+				$.typeahead({
+					input: `#inputDescripcionArticulo${counter}`,
+					order: "desc",
+					source: {
+						data: articulos_descripcion
+					},
+					minLength: 3
+				});
+
+				
 
 			});
 
@@ -732,7 +705,7 @@ var handleRenderTableData = function () {
 
 			});
 
-			botonAgregar.click();
+			//botonAgregar.click();
 
 
 			/*BEGIN busqueda en input */
@@ -759,45 +732,35 @@ var handleRenderTableData = function () {
 				var index = $(this).data('index');
 
 				var codigoArticulo = $(`#inputCodigoArticulo${index}`).val();
-				console.log(codigoArticulo)
 
 				getProductById(codigoArticulo)
 					.then(function (dataArticulo) {
 
-						console.log(dataArticulo);
+						$(`#inputDescripcionArticulo${index}`).val(dataArticulo.DescripcionArticulo);
+						$(`#inputCodigoBarras${index}`).val(dataArticulo.CodigoBarra);
 
-						$(`#inputDescripcionArticulo${index}`).val(dataArticulo[0].DescripcionArticulo);
-						$(`#inputCodigoBarras${index}`).val(dataArticulo[0].CodigoBarra);
+						getStoragesByProduct(codigoArticulo)
+							.then(function (dataAlmacenes) {
 
+								$.typeahead({
+									input: `#inputCodigoAlmacen${index}`,
+									order: "desc",
+									source: {
+										data: dataAlmacenes
+									},
+									minLength: 3
+								});
+
+							})
+							.catch(function (error) {
+								console.log(error);
+							});
 					})
 					.catch(function (error) {
 						console.log(error);
 					});
 
 			});
-			/*
-			$('#porCodigoArticulo').on('click', function () {
-
-				var index = $(this).data('index');
-
-				var codigoArticulo = $('#inputCodigoArticulo').val();
-				console.log(codigoArticulo)
-
-				getProductById(codigoArticulo)
-					.then(function (dataClientes) {
-
-						console.log(dataClientes);
-
-						$('#inputDescripcionArticulo1').val(dataClientes[0].CodigoBarra);
-						$('#inputCodigoBarras1').val(dataClientes[0].DescripcionArticulo);
-
-					})
-					.catch(function (error) {
-						console.log(error);
-					});
-
-			});
-			*/
 
 		}
 	});
@@ -815,8 +778,47 @@ var handleRenderTableData = function () {
 				data: parameters,
 				success: function (response) {
 					var dataArticulos = JSON.parse(response);
-					//console.log(dataArticulos);
 					resolve(dataArticulos);
+				},
+				error: function (xhr, status, error) {
+					reject(error);
+				}
+			});
+		});
+	}
+
+	function getProductList() {
+		return new Promise(function (resolve, reject) {
+			var url = "/api/product/getProductList";
+
+			$.ajax({
+				url: url,
+				type: "GET",
+				success: function (response) {
+					var articulos = JSON.parse(response);
+					resolve(articulos);
+				},
+				error: function (xhr, status, error) {
+					reject(error);
+				}
+			});
+		});
+	}
+
+	function getStoragesByProduct(productCode) {
+		return new Promise(function (resolve, reject) {
+			var url = "/api/product/getStoragesByProduct";
+			var parameters = {
+				productCode: productCode
+			};
+
+			$.ajax({
+				url: url,
+				type: "GET",
+				data: parameters,
+				success: function (response) {
+					var almacenes = JSON.parse(response);
+					resolve(almacenes);
 				},
 				error: function (xhr, status, error) {
 					reject(error);
@@ -835,7 +837,7 @@ var handleRenderTableData = function () {
 
 		switch (formato) {
 			case 'YYYY-MM-DD':
-				fechaFormateada = anio + '-' + mes + '-' + dia;
+				fechaFormateada = anio + '-' + dia + '-' + mes;
 				break;
 			case 'DD-MM-YYYY':
 				fechaFormateada = dia + '-' + mes + '-' + anio;
@@ -848,19 +850,19 @@ var handleRenderTableData = function () {
 
 		return fechaFormateada;
 	}
-
-
-	//$(document).on('click', '#formNewOrderDraft input[type="submit"]', function (e) {
+	
+	
 	$("#formNewOrderDraft").on("submit", function (e) {
 
 		e.preventDefault();
-
+		
 		var codigo = $('#inputCodigoCliente').val();
 		var personaContacto = $('#inputPersonaContacto').val();
 		var numeroReferencia = $('#inputNumeroReferencia').val();
 		var direccionDestino = $('#inputDireccionDestino').val();
 		var destinatarioFactura = $('#inputDestinatarioFactura').val();
 		var moneda = $('#inputMoneda').val();
+		var serie = $('#inputSerieDoc').val();
 
 		var fechaFormateada = $('#datepicker-default').val();
 		var fechaContabilizacion = formatearFecha(fechaFormateada, 'YYYY-MM-DD');
@@ -874,7 +876,7 @@ var handleRenderTableData = function () {
 		var condicionPago = $('#inputCondicionPago').val();
 		var comentario = $('#textAreaComentario').val();
 
-		var nuevaOrdenPreliminar = new OrdenPreliminar(codigo, personaContacto, numeroReferencia, direccionDestino, destinatarioFactura, moneda, fechaContabilizacion, fechaEntrega, fechaDocumento, condicionPago, comentario);
+		var nuevaOrdenPreliminar = new OrdenPreliminar(codigo, personaContacto, numeroReferencia, direccionDestino, destinatarioFactura, moneda, fechaContabilizacion, fechaEntrega, fechaDocumento, condicionPago, comentario, serie);
 
 		$('#detalleRow tr').each(function () {
 			var CodigoArticulo = $(this).find('[name^="inputCodigoArticulo"]').val();
@@ -882,55 +884,73 @@ var handleRenderTableData = function () {
 			var Precio = $(this).find('[name^="inputPrecio"]').val();
 			var Cantidad = $(this).find('[name^="inputCantidad"]').val();
 			var PorcentajeDescuento = $(this).find('[name^="inputPorcentajeDescuento"]').val();
+			var VatGroup = $(this).find('[name^="inputIGV"]').val();
 
-			nuevaOrdenPreliminar.addDocumentLine(CodigoArticulo, CodigoAlmacen, Precio, Cantidad, PorcentajeDescuento);
+			nuevaOrdenPreliminar.addDocumentLine(CodigoArticulo, CodigoAlmacen, Precio, Cantidad, PorcentajeDescuento, VatGroup);
 		});
-		console.log(nuevaOrdenPreliminar);
+
+		//console.log(nuevaOrdenPreliminar);
 
 		var dataDraft = JSON.stringify(nuevaOrdenPreliminar);
 
-		console.log(dataDraft);
+		//console.log(dataDraft);
 
-		/*
-		var postDraft = {
-			"url": "https://LAPTOP-4OBRKJSA:50000/b1s/v1/Drafts",
-			"method": "POST",
-			"timeout": 0,
-			"xhrFields": {
-				"withCredentials": "true"
-			},
-			"headers": {
-				"Content-Type": "application/json"
-			},
-			"data": dataDraft,
+		var DRAFT = {
+			CardCode: nuevaOrdenPreliminar.CardCode,
+			ContactPersonCode: nuevaOrdenPreliminar.ContactPersonCode,
+			NumAtCard: nuevaOrdenPreliminar.NumAtCard,
+			ShipToCode: nuevaOrdenPreliminar.ShipToCode,
+			PayToCode: nuevaOrdenPreliminar.PayToCode,
+			DocCurrency: nuevaOrdenPreliminar.DocCurrency,
+			DocObjectCode: 17,
+			DocDate: nuevaOrdenPreliminar.DocDate,
+			DocDueDate: nuevaOrdenPreliminar.DocDueDate,
+			TaxDate: nuevaOrdenPreliminar.TaxDate,
+			GroupNum: nuevaOrdenPreliminar.GroupNum,
+			Comments: nuevaOrdenPreliminar.Comments,
+			Series: nuevaOrdenPreliminar.Series,
+			DocumentLines:
+				[
+					{
+						ItemCode: nuevaOrdenPreliminar.DocumentLines[0].ItemCode,
+						WarehouseCode: nuevaOrdenPreliminar.DocumentLines[0].WarehouseCode,
+						UnitPrice: nuevaOrdenPreliminar.DocumentLines[0].UnitPrice,
+						Quantity: nuevaOrdenPreliminar.DocumentLines[0].Quantity,
+						DiscountPercent: nuevaOrdenPreliminar.DocumentLines[0].DiscountPercent,
+						VatGroup: nuevaOrdenPreliminar.DocumentLines[0].VatGroup
+					}
+				]
 		};
 
+		//console.log(DRAFT);
 		
-		$.ajax(postDraft).done(function (response, textStatus, jqXHR) {
-			var respuestaError = response.error;
-
-			$("#alertaConfirmacion").show();
-			$("#alertaConfirmacion").removeClass("alert-danger").addClass("alert-success");
-			$("#alertaConfirmacion").text("La orden de venta preliminar fue creada correctamente.").fadeIn();;
-			ocultarMensaje();
-
-		}).fail(function (jqXHR, textStatus, errorThrown) {
-			console.log(jqXHR.status);
-
-			$("#alertaConfirmacion").show();
-			$("#alertaConfirmacion").removeClass("alert-success").addClass("alert-danger");
-			$("#alertaConfirmacion").text("Se produjo un error en la solicitud.").fadeIn();
-			ocultarMensaje();
-		});*/
+		$.ajax({
+			url: "/api/PreOrders",
+			method: "POST",
+			contentType: "application/json",
+			data: JSON.stringify(DRAFT),
+			success: function (response) {
+				$("#alertaConfirmacion").show();
+				$("#alertaConfirmacion").removeClass("alert-danger").addClass("alert-success");
+				$("#alertaConfirmacion").text("La orden de venta preliminar fue creada correctamente.").fadeIn();
+				ocultarMensaje();
+			},
+			error: function (xhr, status, error) {
+				$("#alertaConfirmacion").show();
+				$("#alertaConfirmacion").removeClass("alert-success").addClass("alert-danger");
+				$("#alertaConfirmacion").text("Se produjo un error en la solicitud.").fadeIn();
+				ocultarMensaje();
+			}
+		});
 
 		function ocultarMensaje() {
 			setTimeout(function () {
 				$("#alertaConfirmacion").fadeOut();
 			}, 5000);
 		};
-
+		
 	});
-
+	
 };
 
 

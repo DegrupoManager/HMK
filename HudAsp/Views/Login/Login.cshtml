@@ -15,7 +15,29 @@
 			$('#usuario').val('');
 			$('#contraseña').val('');
 
+			var data = {
+				nombre: "Juan",
+				edad: 25
+			};
+
+			$.ajax({
+				url: "/api/Ejemplo",
+				type: "POST",
+				contentType: "application/json",
+				data: JSON.stringify(data),
+				success: function (response) {
+					console.log(response);
+				},
+				error: function (xhr, status, error) {
+					console.log("Error en la solicitud:", error);
+				}
+			});
+
+
+
 		});
+
+
 
 	</script>
 

@@ -66,11 +66,18 @@ app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 
+app.UseCors(options =>
+{
+	options.AllowAnyOrigin();
+	options.AllowAnyMethod();
+	options.AllowAnyHeader();
+});
+
 
 app.MapControllerRoute(
 	name: "default",
 	//pattern: "{controller=Consulta}/{action=OrderDraft}/{id?}");
-	pattern: "{controller=Login}/{action=Login}/{id?}"
+	pattern: "{controller=Login}/{action=Login}"
 );
 
 //app.UseEndpoints(endpoints =>

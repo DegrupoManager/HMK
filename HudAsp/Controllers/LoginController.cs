@@ -1,6 +1,7 @@
 ﻿using HudAsp.Models;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System.Net.Http;
 using System.Text;
 
@@ -14,11 +15,10 @@ public class LoginController : Controller
 		Response.Cookies.Delete("Usuario");
 		Response.Cookies.Delete("Rol");
 
-        Task.Run(() => ImprimirRespuestaAsync());
-
         return View();
 	}
 
+	/*
 	private async Task ImprimirRespuestaAsync()
 	{
 		try
@@ -30,8 +30,9 @@ public class LoginController : Controller
 		{
 			Console.WriteLine($"Error: {ex.Message}");
 		}
-	}
+	}*/
 
+	/*
     static async Task<string> Conexion()
     {
         using (var client = new HttpClient())
@@ -52,10 +53,26 @@ public class LoginController : Controller
 
             return await response.Content.ReadAsStringAsync();
         }
-    }
+    }*/
 
 
-    [HttpPost]
+	[HttpPost]
+	[Route("api/Ejemplo")]
+	public IActionResult Ejemplo([FromBody] JObject datos)
+	{
+		var respuesta = JsonConvert.SerializeObject(datos);
+		return Ok(respuesta);
+	}
+
+
+	public class DatosEjemplo
+	{
+		public string Nombre { get; set; }
+		public int Edad { get; set; }
+	}
+
+
+	[HttpPost]
 	public IActionResult Login(LoginViewModel model)
 	{
 		if (ModelState.IsValid)
@@ -79,22 +96,23 @@ public class LoginController : Controller
 				{
 					var responseContent = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
 					var loginResponse = JsonConvert.DeserializeObject<LoginResponse>(responseContent);
+					
+                    if (loginResponse != null && loginResponse.Rol != null && loginResponse.Nombre != null)
+                    {
+                        Response.Cookies.Append("Usuario", model.Usuario);
+                        Response.Cookies.Append("Rol", loginResponse.Rol);
 
-					if (loginResponse != null)
-					{
-						Response.Cookies.Append("Usuario", model.Usuario);
-						Response.Cookies.Append("Rol", loginResponse.Rol);
+                        return RedirectToAction("OrderDraft", "Ingreso");
+                    }
+                    else
+                    {
+                        ModelState.AddModelError("", "Credenciales incorrectas");
+                    }
 
-						return RedirectToAction("OrderDraft", "Ingreso");
-					}
-					else
-					{
-						ModelState.AddModelError("", "La respuesta de la API login indica un error");
-					}
-				}
-				else
+                }
+                else
 				{
-					ModelState.AddModelError("", "Error al hacer la solicitud a la API login");
+					ModelState.AddModelError("", "Error de servidor");
 				}
 			}
 		}
