@@ -21,7 +21,6 @@
     <script src="~/lib/jquery-migrate/dist/jquery-migrate.min.js"></script>
     <script src="~/lib/moment/min/moment.min.js"></script>
     <script src="~/lib/@@highlightjs/cdn-assets/highlight.min.js"></script>
-    @*<script src="~/js/demo/highlightjs.demo.js"></script>*@
 
     <script src="~/lib/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js"></script>
 
@@ -47,8 +46,13 @@
     <!--END Datatable-->
 
     <script src="~/js/scripts/ingreso_viewOrderDraft.js"></script>
-
 }
+
+@{
+    var orderData = ViewBag.OrderData;
+}
+
+<div id="orderData" data-order='@Html.Raw(orderData)'></div>
 
 <div class="d-flex align-items-center mb-3">
     <div>
@@ -107,7 +111,7 @@
                                             <label for="viewSerieDoc" class="form-label" style="font-size: 12px">Serie de doc.</label>
                                             <div class="input-group mb-3">
                                                 <select id="viewSerieDoc" name="inputSerieDoc" class="form-select custom-select bg-inverse bg-opacity-10" disabled>
-                                                    <option selected></option>
+                                                    
                                                 </select>
                                             </div>
                                         </div>
@@ -201,7 +205,7 @@
         </div>
     </div>
     <div class="row">
-        <div class="col-12 col-sm-12 col-md-12 col-lg-9 mb-3">
+        <div class="col-12 col-sm-12 col-md-12 col-lg-10 mb-3">
             <div class="card">
                 <div class="card-header d-flex align-items-center bg-inverse bg-opacity-10 fw-light">
                     DETALLE
@@ -212,16 +216,20 @@
                         <table id="datatableNewOrderDraft" class="table table-hover text-nowrap">
                             <thead>
                                 <tr>
-                                    <th class="border-top-0 pt-0 px-3">Codigo del Articulo</th>
-                                    <th class="border-top-0 pt-0 px-3">Descripcion del Articulo</th>
-                                    <th class="border-top-0 pt-0 px-3">Codigo en almacen</th>
-                                    <th class="border-top-0 pt-0 px-3">Cantidad en almacen</th>
-                                    <th class="border-top-0 pt-0 px-3">Stock General</th>
-                                    <th class="border-top-0 pt-0 px-3">Codigo de barras</th>
-                                    <th class="border-top-0 pt-0 px-4">Cantidad</th>
+                                    <th class="border-top-0 pt-0 px-3">Código de Artículo</th>
+                                    @*<th class="border-top-0 pt-0 px-2 text-wrap">
+                                    <span class="d-inline-block">Código</span>
+                                    <span class="d-inline-block">del Artículo</span>
+                                    </th>*@
+                                    <th class="border-top-0 pt-0" style="padding-left: 6rem; padding-right: 6rem;">Descripción de Artículo</th>
+                                    <th class="border-top-0 pt-0 px-3">Código de almacén</th>
+                                    <th class="border-top-0 pt-0 px-2">Cantidad en almacén</th>
+                                    <th class="border-top-0 pt-0 px-2">Stock General</th>
+                                    <th class="border-top-0 pt-0 px-4">Código de barras</th>
+                                    <th class="border-top-0 pt-0 px-3">Cantidad</th>
                                     <th class="border-top-0 pt-0 px-4">Precio</th>
-                                    <th class="border-top-0 pt-0 px-2">Porcentaje de descuento</th>
-                                    <th class="border-top-0 pt-0 px-4">IGV</th>
+                                    <th class="border-top-0 pt-0 px-4">Descuento</th>
+                                    <th class="border-top-0 pt-0 px-5">IGV</th>
                                 </tr>
                             </thead>
                             <tbody id="detalleRow">
@@ -238,27 +246,27 @@
                 </div>
             </div>
         </div>
-        <div class="col-12 col-sm-12 col-md-12 col-lg-3 mb-1">
+        <div class="col-12 col-sm-12 col-md-12 col-lg-2 mb-1">
             <div class="row">
                 <div class="col-12 col-sm-6 col-md-6 col-lg-12">
                     <div class="card mb-4">
                         <div class="card-header d-flex align-items-center bg-inverse bg-opacity-10 fw-light">
-                            ATRIBUTOS ADICIONALES
+                            ADICIONALES
                         </div>
 
                         <div class="card-body align-items-center fw-light p-4">
                             <!--Transferencia gratuita-->
-                            <label for="viewSerieDoc" class="form-label" style="font-size: 12px">Transferencia gratuita</label>
+                            <label for="viewTransGrat" class="form-label" style="font-size: 12px">Transferencia gratuita</label>
                             <div class="input-group mb-3">
-                                <select id="viewSerieDoc" name="inputSerieDoc" class="form-select custom-select bg-inverse bg-opacity-10" disabled>
-                                    <option selected></option>
+                                <select id="viewTransGrat" name="viewTransGrat" class="form-select custom-select bg-inverse bg-opacity-10" disabled>
+                                    @*<option selected></option>*@
                                 </select>
                             </div>
                             <!--Consignacion-->
-                            <label for="viewSerieDoc" class="form-label" style="font-size: 12px">Consignación</label>
+                            <label for="viewConsignacion" class="form-label" style="font-size: 12px">Consignación</label>
                             <div class="input-group mb-3">
-                                <select id="viewSerieDoc" name="inputSerieDoc" class="form-select custom-select bg-inverse bg-opacity-10" disabled>
-                                    <option selected></option>
+                                <select id="viewConsignacion" name="viewConsignacion" class="form-select custom-select bg-inverse bg-opacity-10" disabled>
+                                    @*<option selected></option>*@
                                 </select>
                             </div>
                             <div class="mb-3">
@@ -284,13 +292,13 @@
 
                         <div class="card-body align-items-center fw-light p-4">
                             <label for="inputTotal" class="form-label" style="font-size: 12px">Total</label>
-                            <input id="inputTotal" name="inputTotal" type="text" class="form-control mb-3 bg-inverse bg-opacity-10" disabled>
+                            <input id="inputTotal" name="inputTotal" type="text" class="form-control text-end mb-3 bg-inverse bg-opacity-10" disabled>
 
                             <label for="inputImpuestos" class="form-label" style="font-size: 12px">Impuestos</label>
-                            <input id="inputImpuestos" name="inputImpuestos" type="text" class="form-control mb-3 bg-inverse bg-opacity-10" disabled>
+                            <input id="inputImpuestos" name="inputImpuestos" type="text" class="form-control text-end mb-3 bg-inverse bg-opacity-10" disabled>
 
                             <label for="inputTotalDocumento" class="form-label" style="font-size: 12px">Total Documento</label>
-                            <input id="inputTotalDocumento" name="inputTotalDocumento" type="text" class="form-control mb-3 bg-inverse bg-opacity-10" disabled>
+                            <input id="inputTotalDocumento" name="inputTotalDocumento" type="text" class="form-control text-end mb-3 bg-inverse bg-opacity-10" disabled>
                         </div>
 
                         <div class="card-arrow">
@@ -303,42 +311,10 @@
                 </div>
             </div>
         </div>
-        <div class="row">
-            <div class="col-3 gx-4 ms-auto">
-                <button type="button" id="openModalBtn" class="btn btn-danger px-4">Grabar</button>
-                <a href="/Ingreso/OrderDraft" class="btn btn-outline-theme px-3">
-                    <span class="text-dark">Cancelar</span>
-                </a>
-                <!--BEGIN Modal-->
-                <div id="myModal" class="modal" tabindex="-1" role="dialog">
-                    <div class="modal-dialog modal-dialog-centered">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title">Confirmación</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                            </div>
-                            <div class="modal-body">
-                                <p>Se creará una nueva orden preliminar.¿Desea Seguir?</p>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                                <input type="submit" class="btn btn-danger" value="Aceptar">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <!--END Modal-->
-            </div>
-        </div>
     </div>
 </form>
 
 @*<button id="showToastBtn" class="btn btn-primary">Mostrar Toast</button>*@
-
-
-
-<div class="alert alert-success" role="alert" id="alertaConfirmacion">
-</div>
 
 <style>
     .custom-select {

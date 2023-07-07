@@ -1,26 +1,18 @@
-﻿using HudAsp.Models;
-using Microsoft.AspNetCore.Mvc;
-using System.Diagnostics;
-using System;
-using System.Net.Http;
-using System.Threading.Tasks;
+﻿using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using System.Text.Json;
 using System.Text;
-using Microsoft.AspNetCore.Authorization;
-using Newtonsoft.Json.Linq;
-using Azure;
-using static HudAsp.Controllers.LoginController;
 
 namespace HudAsp.Controllers
 {
-//[Authorize]
-	public class IngresoController : Controller
+    //[Authorize]
+    public class IngresoController : Controller
 	{
 
 		private static readonly HttpClient _client = new HttpClient();
 
 		public IActionResult OrderDraft()
-        {
+		{
 
 			if (Request.Cookies.TryGetValue("Rol", out var rol) && (rol == "Revisor" || rol == "Editor"))
 			{
@@ -48,17 +40,36 @@ namespace HudAsp.Controllers
 			}
 		}
 
-		public IActionResult ViewOrderDraft(int id)
+		[HttpGet]
+        public async Task<IActionResult> ViewOrderDraft(int id)
         {
+            var apiUrl = $"http://169.47.224.163:5024/api/PreOrders?Id={id}";
+            var response = await _client.GetAsync(apiUrl);
+            response.EnsureSuccessStatusCode();
+            var content = await response.Content.ReadAsStringAsync();
+
+            var model = JsonConvert.DeserializeObject<List<OrderDraftModel>>(content);
+            ViewBag.OrderData = JsonConvert.SerializeObject(model);
             ViewBag.OrderId = id;
+
             return View();
         }
 
-		public IActionResult EditOrderDraft(int id)
+        [HttpGet]
+        public async Task<IActionResult> EditOrderDraft(int id)
         {
+            var apiUrl = $"http://169.47.224.163:5024/api/PreOrders?Id={id}";
+            var response = await _client.GetAsync(apiUrl);
+            response.EnsureSuccessStatusCode();
+            var content = await response.Content.ReadAsStringAsync();
+
+            var model = JsonConvert.DeserializeObject<List<OrderDraftModel>>(content);
+            ViewBag.OrderData = JsonConvert.SerializeObject(model);
             ViewBag.OrderId = id;
+
             return View();
         }
+
 
 		//GET lista de ordenes
 		[HttpGet]
@@ -66,6 +77,30 @@ namespace HudAsp.Controllers
 		public async Task<string> GetDraftListAsync()
 		{
 			var request = new HttpRequestMessage(HttpMethod.Get, "http://169.47.224.163:5024/api/preOrders/list");
+			var response = await _client.SendAsync(request);
+			response.EnsureSuccessStatusCode();
+			var content = await response.Content.ReadAsStringAsync();
+			return content;
+		}
+
+		//GET transferencia gratuita
+		[HttpGet]
+		[Route("api/PreOrders/getTransferenciaGratuita")]
+		public async Task<string> GetTrasnferenciaGratuitaAsync()
+		{
+			var request = new HttpRequestMessage(HttpMethod.Get, "http://169.47.224.163:5024/api/PreOrders/getTransferenciaGratuita");
+			var response = await _client.SendAsync(request);
+			response.EnsureSuccessStatusCode();
+			var content = await response.Content.ReadAsStringAsync();
+			return content;
+		}
+
+		//GET Consignacion
+		[HttpGet]
+		[Route("api/PreOrders/getConsignacion")]
+		public async Task<string> GetConsignacionAsync()
+		{
+			var request = new HttpRequestMessage(HttpMethod.Get, "http://169.47.224.163:5024/api/PreOrders/getConsignacion");
 			var response = await _client.SendAsync(request);
 			response.EnsureSuccessStatusCode();
 			var content = await response.Content.ReadAsStringAsync();
@@ -86,122 +121,65 @@ namespace HudAsp.Controllers
 			return content;
 		}
 
-        //GET obtener cliente por su codigo
-        [HttpGet]
-        [Route("api/customer/getPersonContactsByCustomerId")]
-        public async Task<string> GetPersonContactsByCustomerIdAsync(string customerId)
-        {
-            var url = $"http://169.47.224.163:5024/api/customer/getPersonContactsByCustomerId?customerId={customerId}";
-
-            var request = new HttpRequestMessage(HttpMethod.Get, url);
-            var response = await _client.SendAsync(request);
-            response.EnsureSuccessStatusCode();
-            var content = await response.Content.ReadAsStringAsync();
-            return content;
-        }
-
-
-        //GET obtener lista clientes
-        [HttpGet]
-        [Route("api/customer/getCustomerList")]
-        public async Task<string> GetCustomerListAsync()
-        {
-            var request = new HttpRequestMessage(HttpMethod.Get, "http://169.47.224.163:5024/api/customer/getCustomerList");
-            var response = await _client.SendAsync(request);
-            response.EnsureSuccessStatusCode();
-            var content = await response.Content.ReadAsStringAsync();
-            return content;
-        }
-
-		//POST crear orden
-		/*[HttpPost]
-        [Route("api/PreOrders")]
-        public async Task<IActionResult> CreatePreOrderAsync([FromBody] JObject dataDraft)
-        {
-            string jsonString = dataDraft.ToString();
-
-            var request = new HttpRequestMessage(HttpMethod.Post, "http://169.47.224.163:5024/api/PreOrders");
-            request.Content = new StringContent(jsonString, Encoding.UTF8, "application/json");
-
-            var response = await _client.SendAsync(request);
-            response.EnsureSuccessStatusCode();
-
-            //var content = await response.Content.ReadAsStringAsync();
-
-            return Ok();
-        }*/
-
-		[HttpPost]
-		[Route("api/PreOrders")]
-		public IActionResult CreatePreOrder([FromBody] PreOrderModel data)
+		//GET obtener cliente por su codigo
+		[HttpGet]
+		[Route("api/customer/getPersonContactsByCustomerId")]
+		public async Task<string> GetPersonContactsByCustomerIdAsync(string customerId)
 		{
-			var preOrderData = JsonConvert.SerializeObject(data);
+			var url = $"http://169.47.224.163:5024/api/customer/getPersonContactsByCustomerId?customerId={customerId}";
 
-			/*
-			var request = new HttpRequestMessage(HttpMethod.Post, "http://169.47.224.163:5024/api/PreOrders");
-			request.Content = new StringContent(preOrderData, Encoding.UTF8, "application/json");
-
-			var response = await _client.SendAsync(request);
-			response.EnsureSuccessStatusCode();
-
-			var content = await response.Content.ReadAsStringAsync();*/
-			return Ok(preOrderData);
-		}
-
-		[HttpPost]
-		[Route("api/Ejemplo")]
-		public IActionResult Ejemplo([FromBody] DatosEjemplo datos)
-		{
-			return Ok(JsonConvert.SerializeObject(datos));
-		}
-
-
-		//POST crear orden
-		[HttpPost]
-		[Route("api/PreOrders2")]
-		public async Task<IActionResult> CreatePreOrderAsync2([FromBody] PreOrderModel data)
-		{
-            var preOrderData = JsonConvert.SerializeObject(data);
-
-            /*
-			string cardCode = preOrderData.CardCode;
-            int contactPersonCode = preOrderData.ContactPersonCode;
-            string numAtCard = preOrderData.NumAtCard;
-            string shipToCode = preOrderData.ShipToCode;
-            string payToCode = preOrderData.PayToCode;
-            string docCurrency = preOrderData.DocCurrency;
-            string docObjectCode = preOrderData.DocObjectCode;
-            string docDate = preOrderData.DocDate;
-            string docDueDate = preOrderData.DocDueDate;
-            string taxDate = preOrderData.TaxDate;
-            string groupNum = preOrderData.GroupNum;
-            string comments = preOrderData.Comments;
-            string series = preOrderData.Series;
-            string uHmkTrans = preOrderData.U_HMK_TRANS;
-            string uDgpDropConsignment = preOrderData.U_DGP_DropConsignment;
-            string uDgpNumAtCardSup = preOrderData.U_DGP_NumAtCardSup;
-            string uDgpOwnerCode = preOrderData.U_DGP_OwnerCode;
-
-            List<DocumentLineModel> documentLines = preOrderData.DocumentLines;
-            foreach (var documentLine in documentLines)
-            {
-                string itemCode = documentLine.ItemCode;
-                string warehouseCode = documentLine.WarehouseCode;
-                decimal unitPrice = documentLine.UnitPrice;
-                decimal quantity = documentLine.Quantity;
-                decimal discountPercent = documentLine.DiscountPercent;
-                string vatGroup = documentLine.VatGroup;
-
-            }*/
-
-            var request = new HttpRequestMessage(HttpMethod.Post, "http://169.47.224.163:5024/api/PreOrders");
-            request.Content = new StringContent(preOrderData, Encoding.UTF8, "application/json");
+			var request = new HttpRequestMessage(HttpMethod.Get, url);
 			var response = await _client.SendAsync(request);
 			response.EnsureSuccessStatusCode();
 			var content = await response.Content.ReadAsStringAsync();
-			return Ok(content);
+			return content;
 		}
 
+
+		//GET obtener lista clientes
+		[HttpGet]
+		[Route("api/customer/getCustomerList")]
+		public async Task<string> GetCustomerListAsync()
+		{
+			var request = new HttpRequestMessage(HttpMethod.Get, "http://169.47.224.163:5024/api/customer/getCustomerList");
+			var response = await _client.SendAsync(request);
+			response.EnsureSuccessStatusCode();
+			var content = await response.Content.ReadAsStringAsync();
+			return content;
+		}
+
+		//POST crear orden preliminar
+		[HttpPost]
+		public async Task<JsonResult> CreatePreOrder(PreOrderModel DRAFT)
+		{
+			var preOrderData = JsonConvert.SerializeObject(DRAFT);
+
+			var request = new HttpRequestMessage(HttpMethod.Post, "http://169.47.224.163:5024/api/PreOrders");
+			request.Content = new StringContent(JsonConvert.SerializeObject(DRAFT), Encoding.UTF8, "application/json");
+			var response = await _client.SendAsync(request);
+			response.EnsureSuccessStatusCode();
+			var content = await response.Content.ReadAsStringAsync();
+
+			return new JsonResult(Ok(content));
+		}
+
+        // PATCH actualizar orden preliminar
+        [HttpPatch]
+        public async Task<JsonResult> UpdatePreOrder(UpdateOrderDraftModel DRAFT)
+        {
+            var preOrderData = JsonConvert.SerializeObject(DRAFT);
+
+            var request = new HttpRequestMessage(new HttpMethod("PATCH"), "http://169.47.224.163:5024/api/PreOrders");
+            request.Content = new StringContent(JsonConvert.SerializeObject(DRAFT), Encoding.UTF8, "application/json");
+            var response = await _client.SendAsync(request);
+            response.EnsureSuccessStatusCode();
+            var content = await response.Content.ReadAsStringAsync();
+
+            return new JsonResult(Ok(content));
+        }
+
+
+        //GET obtener producto
         [HttpGet]
 		[Route("api/product/getProductById")]
 		public async Task<string> GetProductByIdAsync(string productCode)
@@ -215,23 +193,38 @@ namespace HudAsp.Controllers
 			return content;
 		}
 
-        //GET obtener lista clientes
-        [HttpGet]
-        [Route("api/product/getProductList")]
-        public async Task<string> GetProducListAsync()
-        {
-            var request = new HttpRequestMessage(HttpMethod.Get, "http://169.47.224.163:5024/api/product/getProductList");
-            var response = await _client.SendAsync(request);
-            response.EnsureSuccessStatusCode();
-            var content = await response.Content.ReadAsStringAsync();
-            return content;
-        }
+		//GET obtener lista clientes
+		[HttpGet]
+		[Route("api/product/getProductList")]
+		public async Task<string> GetProducListAsync()
+		{
+			var request = new HttpRequestMessage(HttpMethod.Get, "http://169.47.224.163:5024/api/product/getProductList");
+			var response = await _client.SendAsync(request);
+			response.EnsureSuccessStatusCode();
+			var content = await response.Content.ReadAsStringAsync();
+			return content;
+		}
 
+		//GET almacenes por codigo de producto
+		[HttpGet]
+		[Route("api/product/getStoragesByProduct")]
+		public async Task<string> GetStoragesByProductAsync(string productCode)
+		{
+			var url = $"http://169.47.224.163:5024/api/product/getStoragesByProductId?productId={productCode}";
+
+			var request = new HttpRequestMessage(HttpMethod.Get, url);
+			var response = await _client.SendAsync(request);
+			response.EnsureSuccessStatusCode();
+			var content = await response.Content.ReadAsStringAsync();
+			return content;
+		}
+
+		//GET porcentaje de descuento por producto y almacen
         [HttpGet]
-        [Route("api/product/getStoragesByProduct")]
-        public async Task<string> GetStoragesByProductAsync(string productCode)
+        [Route("api/PreOrders/getPorcentajeDescuento")]
+        public async Task<string> GetPorcentajeDescuentoAsync(string productId, string storageId)
         {
-            var url = $"http://169.47.224.163:5024/api/product/getStoragesByProductId?productId={productCode}";
+            var url = $"http://169.47.224.163:5024/api/PreOrders/getPorcentajeDescuento?productId={productId}&storageId={storageId}";
 
             var request = new HttpRequestMessage(HttpMethod.Get, url);
             var response = await _client.SendAsync(request);
@@ -240,7 +233,21 @@ namespace HudAsp.Controllers
             return content;
         }
 
+        //GET linea articulo
+        [HttpGet]
+        [Route("api/PreOrders/getLineArt")]
+        public async Task<string> GetAsync(string codListaPrecio, string productCode, string storageCode)
+        {
+            var url = $"http://169.47.224.163:5024/api/PreOrders/getLineArt?codListaPrecio={codListaPrecio}&productId={productCode}&storageId={storageCode}";
 
+            var request = new HttpRequestMessage(HttpMethod.Get, url);
+            var response = await _client.SendAsync(request);
+            response.EnsureSuccessStatusCode();
+            var content = await response.Content.ReadAsStringAsync();
+            return content;
+        }
+
+        //GET codigo de serie
         [HttpGet]
 		[Route("api/draft/getSerieDoc")]
 		public async Task<string> GetSerieDocAsync(string serieCode)
@@ -254,6 +261,7 @@ namespace HudAsp.Controllers
 			return content;
 		}
 
+		//GET lista series
 		[HttpGet]
 		[Route("api/draft/getSerieList")]
 		public async Task<string> GetSerieListAsync()
@@ -265,5 +273,33 @@ namespace HudAsp.Controllers
 			return content;
 		}
 
-	}
+        //DELETE orden preliminar
+        [HttpDelete]
+        [Route("api/preorders/deletePreOrderById")]
+        public async Task<string> DeletePreOrderByIAsync(string id)
+        {
+            var url = $"http://169.47.224.163:5024/api/PreOrders?Id={id}";
+
+            var request = new HttpRequestMessage(HttpMethod.Delete, url);
+            var response = await _client.SendAsync(request);
+            response.EnsureSuccessStatusCode();
+            var content = await response.Content.ReadAsStringAsync();
+            return content;
+        }
+
+        //GET dirección del cliente por tipo
+        [HttpGet]
+        [Route("api/Customer/getCustomerAddressByType")]
+        public async Task<string> GetCustomerAddressByTypeAsync(string addressType, string customerId)
+        {
+            var url = $"http://169.47.224.163:5024/api/Customer/getCustomerAddressByType?addressType={addressType}&customerId={customerId}";
+
+            var request = new HttpRequestMessage(HttpMethod.Get, url);
+            var response = await _client.SendAsync(request);
+            response.EnsureSuccessStatusCode();
+            var content = await response.Content.ReadAsStringAsync();
+            return content;
+        }
+
+    }
 }

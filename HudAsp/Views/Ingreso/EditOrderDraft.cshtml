@@ -1,5 +1,5 @@
 ﻿@{
-    ViewData["Title"] = "NewOrderDraft";
+    ViewData["Title"] = "Editar orden";
 }
 
 @section Styles {
@@ -15,6 +15,23 @@
     <!--Typehead START-->
     <link href="~/lib/jquery-typeahead/dist/jquery.typeahead.min.css" rel="stylesheet">
     <!--Typehead END-->
+
+    <style>
+        .input-group {
+            flex-wrap: nowrap;
+        }
+
+        .custom-select {
+            background-position: left 0.75rem center;
+            padding: 0.375rem 0.75rem 0.375rem 2.25rem;
+        }
+
+        .dataTables_scrollBody {
+            height: 300px;
+        }
+
+    </style>
+
 }
 
 @section Scripts {
@@ -44,165 +61,182 @@
     <script src="~/lib/datatables.net-responsive/js/dataTables.responsive.min.js"></script>
     <script src="~/lib/datatables.net-responsive-bs5/js/responsive.bootstrap5.min.js"></script>
     <script src="~/lib/bootstrap-table/dist/bootstrap-table.min.js"></script>
+    <script src="~/lib/datatables.net-select/js/dataTables.select.min.js"></script>
     <!--END Datatable-->
 
-    <script src="~/js/demo/new-order-draft-demo.js"></script>
+    <script src="~/js/scripts/ingreso_editOrderDraft.js"></script>
 
 }
+
+@{
+    var orderData = ViewBag.OrderData;
+}
+
+<div id="orderData" data-order='@Html.Raw(orderData)'></div>
+
+<!--BEGIN Toast-->
+<div class="position-fixed top-1 end-0 p-3" style="z-index: 11">
+    <div id="liveToast" class="toast align-items-center text-white bg-primary border-0" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="d-flex">
+            <div class="toast-body">
+                La orden @ViewBag.OrderId se actualizo correctamente.
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+    </div>
+</div>
+<!--END Toast-->
 
 <div class="d-flex align-items-center mb-3">
     <div>
         <ul class="breadcrumb">
-            @*<li class="breadcrumb-item"><a href="#">PAGES</a></li>*@
             <li class="breadcrumb-item"><a href="/Ingreso/OrderDraft">Ingreso</a></li>
             <li class="breadcrumb-item active">Editar orden</li>
         </ul>
-        <h1 class="page-header mb-0">Orden @ViewBag.OrderId</h1>
+        <h1 class="page-header mb-0">Editar orden @ViewBag.OrderId</h1>
     </div>
 </div>
 
 &nbsp;
 
-<form id="formEditOrderDraft" action="" method="POST" name="formEditOrderDraft">
+<form id="formNewOrderDraft" name="formNewOrderDraft">
     <div class="row">
-        <div class="col-12 col-sm-12 col-md-12 col-lg-12 mb-3">
+        <div class="col-12 col-sm-12 col-md-12 col-lg-12">
             <div class="card mb-3">
                 <div class="card-header d-flex align-items-center bg-inverse bg-opacity-10 fw-light">
                     DATOS DEL CLIENTE
                 </div>
                 <div class="card-body align-items-center fw-light">
                     <div class="row gx-3">
-                        <div class="col-12 col-sm-6 col-mb-7 col-lg-7">
+                        <div class="col-12 col-sm-12 col-mb-7 col-lg-7">
                             <div class="row gx-3 mb-2">
-                                <div class="col-12 col-sm-6 col-md-4 col-lg-4">
+                                <div class="col-12 col-sm-6 col-md-4 col-lg-4" style="width: 28%;">
                                     <div class="typeahead__container">
                                         <label class="form-label" style="font-size: 12px">Código de Cliente</label>
                                         <div class="typeahead__field">
                                             <div class="typeahead__query input-group">
-                                                <span class="input-group-text"><i class="fa fa-search"></i></span>
-                                                <input class="form-control" name="country_v1[query]" id="typeahead" placeholder="Type 'af'" autocomplete="off">
+                                                <span id="porCodigoCliente" class="input-group-text"><i class="fa fa-search"></i></span>
+                                                <input type="text" data-codPriceList="" class="form-control" name="inputCodigoCliente[query]" id="inputCodigoCliente" autocomplete="off" required>
                                             </div>
                                         </div>
                                     </div>
-                                    @*<label for="inputCodigo" class="form-label" style="font-size: 12px">Código del Cliente</label>
-                                    <div class="input-group mb-3 w-auto">
-                                    <span class="input-group-text"><i class="fa-solid fa-magnifying-glass"></i></span>
-                                    <input id="inputCodigo" name="inputCodigo" type="text" class="form-control">
-                                    </div>*@
                                 </div>
-                                <div class="col-12 col-sm-6 col-md-4 col-lg-4">
-                                    <label for="-" class="form-label" style="font-size: 12px">Nombre del Cliente</label>
-                                    <div class="input-group mb-3">
-                                        <span class="input-group-text"><i class="fa-solid fa-magnifying-glass"></i></span>
-                                        <input class="form-control w-75" id="typeahead" autocomplete="off" placeholder="Earthshaker Corporation">
+                                <div class="col-12 col-sm-6 col-md-4 col-lg-4" style="width: 37%;">
+                                    <div class="typeahead__container">
+                                        <label class="form-label" style="font-size: 12px">Nombre de Cliente</label>
+                                        <div class="typeahead__field">
+                                            <div class="typeahead__query input-group">
+                                                <span id="porNombreCliente" class="input-group-text"><i class="fa fa-search"></i></span>
+                                                <input type="text" class="form-control" name="inputNombreCliente[query]" id="inputNombreCliente" autocomplete="off">
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="col-12 col-sm-6 col-md-4 col-lg-4">
-                                    <label for="inputPersonaContacto" class="form-label" style="font-size: 12px">Persona de Contacto</label>
+                                    <label for="inputPersonaContacto" class="form-label" style="font-size: 12px">Persona de contacto</label>
                                     <div class="input-group mb-3">
-                                        <span class="input-group-text"><i class="fa-solid fa-magnifying-glass"></i></span>
-                                        <input id="inputPersonaContacto" type="text" class="form-control" placeholder="Bob McKensly">
+                                        <select id="inputPersonaContacto" name="inputPersonaContacto" class="form-select custom-select">
+                                            @*<option selected></option>*@
+                                        </select>
                                     </div>
                                 </div>
                             </div>
-                            <div class="row gx-3 mb-2">
-                                <div class="col-12 col-sm-6 col-md-4 col-lg-4">
-                                    <label for="inputNumeroReferencia" class="form-label" style="font-size: 12px">Número de referencia</label>
-                                    <div class="input-group mb-3 w-auto">
-                                        <span class="input-group-text"><i class="fa-solid fa-magnifying-glass"></i></span>
-                                        <input id="inputNumeroReferencia" name="inputNumeroReferencia" placeholder="PV20230523-001" type="text" class="form-control w-75">
+                            <div class="row gx-3">
+                                <div class="col-12 col-sm-6 col-md-4 col-lg-4" style="width: 28%;">
+                                    <div class="container-fluid px-0 mx-0 mb-3">
+                                        <label for="inputNumeroReferencia" class="form-label" style="font-size: 12px">Número de referencia</label>
+                                        <div class="container-fluid px-0 mx-0 nowrap">
+                                            <div class="input-group" sytle="flex-wrap: nowrap;">
+                                                <span class="input-group-text"><i class="fa-solid fa-magnifying-glass"></i></span>
+                                                <input id="inputNumeroReferencia" name="inputNumeroReferencia" type="text" class="form-control w-75" required>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row g-2">
+                                        <div class="col-6">
+                                            <label for="inputSerieDoc" class="form-label" style="font-size: 12px">Serie de doc.</label>
+                                            <div class="input-group mb-3">
+                                                <select id="inputSerieDoc" name="inputSerieDoc" class="form-select custom-select" required>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <label for="inputCorrelativo" class="form-label" style="font-size: 12px">Correlativo</label>
+                                            <div class="input-group mb-3">
+                                                <input id="inputCorrelativo" name="inputCorrelativo" type="text" class="form-control bg-inverse bg-opacity-10" disabled>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
-                                <div class="col-12 col-sm-6 col-md-4 col-lg-4">
+                                <div class="col-12 col-sm-6 col-md-4 col-lg-4" style="width: 37%;">
                                     <label for="inputDireccionDestino" class="form-label" style="font-size: 12px">Dirección destino</label>
                                     <div class="input-group mb-3">
-                                        <span class="input-group-text"><i class="fa-solid fa-chevron-down"></i></span>
-                                        <input id="inputDireccionDestino" name="inputDireccionDestino" placeholder="Bodega Principal" type="text" class="form-control">
+                                        <select id="inputDireccionDestino" name="inputDireccionDestino" class="form-select custom-select" required>
+                                            @*<option selected></option>*@
+                                        </select>
                                     </div>
+                                    <textarea class="form-control bg-inverse bg-opacity-10" id="textAreaDireccionDestino" rows="3" style="resize: none;" disabled></textarea>
                                 </div>
                                 <div class="col-12 col-sm-6 col-md-4 col-lg-4">
                                     <label for="inputDestinatarioFactura" class="form-label" style="font-size: 12px">Destinatario de factura</label>
                                     <div class="input-group mb-3">
-                                        <span class="input-group-text" id="basic-addon1"><i class="fa-solid fa-chevron-down"></i></span>
-                                        <input id="inputDestinatarioFactura" name="inputDestinatarioFactura" placeholder="de Facturacion" type="text" class="form-control">
+                                        <select id="inputDestinatarioFactura" name="inputDestinatarioFactura" class="form-select custom-select">
+                                            @*<option selected></option>*@
+                                        </select>
                                     </div>
-                                </div>
-                            </div>
-                            <div class="row gx-3 mb-2">
-                                <div class="col-12 col-sm-6 col-md-4 col-lg-4">
-                                    <div class="row g-2">
-                                        <div class="col-7">
-                                            <label for="inputSerieDoc" class="form-label" style="font-size: 12px">Serie de doc.</label>
-                                            <div class="input-group mb-3">
-                                                <select id="inputSerieDoc" name="inputSerieDoc" class="form-select custom-select">
-                                                    <option selected></option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <div class="col-5">
-                                            <label for="inputCorrelativo" class="form-label" style="font-size: 12px">Correlativo</label>
-                                            <div class="input-group mb-3">
-                                                <input id="inputCorrelativo" name="inputCorrelativo" type="text" class="form-control bg-inverse bg-opacity-10" placeholder="" disabled>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-12 col-sm-6 col-md-4 col-lg-4">
-                                    <textarea class="form-control bg-inverse bg-opacity-10" id="textAreaDireccionDestino" placeholder="208 Hollywood Ave 140101 LIMA PERU" rows="3" style="resize: none;" disabled></textarea>
-                                </div>
-                                <div class="col-12 col-sm-6 col-md-4 col-lg-4">
-                                    <textarea class="form-control bg-inverse bg-opacity-10" id="textAreaDestinatarioFactura" placeholder="208 Hollywood Ave 140101 LIMA PERU" rows="3" style="resize: none;" disabled></textarea>
+                                    <textarea class="form-control bg-inverse bg-opacity-10" id="textAreaDestinatarioFactura" rows="3" style="resize: none;" disabled></textarea>
                                 </div>
                             </div>
                         </div>
-                        <div class="col-12 col-sm-6 col-mb-2 col-lg-2 px-3">
+                        <div class="col-12 col-sm-6 col-md-6 col-lg-2 px-3">
                             <div class="row g-2 mb-2">
-                                <div class="col-12 col-sm-6 col-md-12 col-lg-12">
+                                <div class="col-12 col-sm-12 col-md-12 col-lg-12">
                                     <label for="inputFechaContabilizacion" class="form-label" style="font-size: 12px">Fecha de Contabilización</label>
-                                    <div class="input-group text-end mb-3">
+                                    <div class="input-group text-end mb-2">
                                         <span class="input-group-text"><i class="fa-regular fa-calendar"></i></span>
-                                        <input type="text" class="form-control" id="datepicker-default" name="inputFechaContabilizacion" placeholder="dd/mm/yyyy">
+                                        <input type="text" class="form-control" id="datepicker-default" name="inputFechaContabilizacion" placeholder="dd/mm/yyyy" required>
                                     </div>
                                 </div>
                             </div>
                             <div class="row g-2 mb-2">
-                                <div class="col-12 col-sm-6 col-md-12 col-lg-12">
+                                <div class="col-12 col-sm-12 col-md-12 col-lg-12">
                                     <label for="inputFechaEntrega" class="form-label" style="font-size: 12px">Fecha de Entrega</label>
-                                    <div class="input-group text-end mb-3">
+                                    <div class="input-group text-end mb-2">
                                         <span class="input-group-text"><i class="fa-regular fa-calendar"></i></span>
-                                        <input type="text" class="form-control" id="datepicker-range" name="inputFechaEntrega" placeholder="dd/mm/yyyy">
+                                        <input type="text" class="form-control" id="datepicker-range" name="inputFechaEntrega" placeholder="dd/mm/yyyy" required>
                                     </div>
                                 </div>
                             </div>
-                            <div class="row g-2 mb-2">
-                                <div class="col-12 col-sm-6 col-md-12 col-lg-12">
+                            <div class="row g-2">
+                                <div class="col-12 col-sm-12 col-md-12 col-lg-12">
                                     <label for="inputFechaDocumento" class="form-label" style="font-size: 12px">Fecha de Documento</label>
-                                    <div class="input-group text-end mb-3">
+                                    <div class="input-group text-end mb-2">
                                         <span class="input-group-text" id="basic-addon1"><i class="fa-regular fa-calendar"></i></span>
-                                        <input type="text" class="form-control" id="datepicker-inline" name="inputFechaDocumento" placeholder="dd/mm/yyyy">
+                                        <input type="text" class="form-control" id="datepicker-inline" name="inputFechaDocumento" placeholder="dd/mm/yyyy" required>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="col-12 col-sm-6 col-mb-3 col-lg-3">
-                            <div class="row gx-4 mb-2">
-                                <div class="col-12 col-sm-6 col-md-4 col-lg-4 text-end">
+                        <div class="col-12 col-sm-6 col-md-6 col-lg-3">
+                            <div class="row gx-4">
+                                <div class="col-12 col-sm-4 col-md-4 col-lg-4 text-end">
                                     <label for="inputMoneda" class="form-label" style="font-size: 12px">Moneda</label>
                                     <div class="input-group mb-3 text-end">
-                                        <input id="inputMoneda" name="inputMoneda" type="text" class="form-control bg-inverse bg-opacity-10" style="font-size: 12px" placeholder="PEN" disabled>
+                                        <input id="inputMoneda" name="inputMoneda" type="text" class="form-control bg-inverse bg-opacity-10" style="font-size: 12px" disabled>
                                     </div>
                                 </div>
-                                <div class="col-12 col-sm-6 col-md-8 col-lg-8 text-end">
+                                <div class="col-12 col-sm-8 col-md-8 col-lg-8 text-end">
                                     <label for="inputCondicionPago" class="form-label" style="font-size: 12px">Condición de Pago</label>
                                     <div class="input-group mb-3">
-                                        <input id="inputCondicionPago" name="inputCondicionPago" type="text" class="form-control bg-inverse bg-opacity-10" style="font-size: 12px" placeholder="xxxxxxx" disabled>
+                                        <input id="inputCondicionPago" name="inputCondicionPago" type="text" class="form-control bg-inverse bg-opacity-10" style="font-size: 12px" disabled>
                                     </div>
                                 </div>
                             </div>
                             <div class="row g-2 mb-2">
-                                <div class="col-12 col-sm-6 col-md-3 col-lg-12">
+                                <div class="col-12 col-sm-12 col-md-12 col-lg-12">
                                     <label for="textAreaComentario" class="form-label" style="font-size: 12px">Comentario</label>
-                                    <textarea class="form-control" style="resize: none;" id="textAreaComentario" name="textAreaComentario" rows="6"></textarea>
+                                    <textarea class="form-control" style="resize: none;" id="textAreaComentario" name="textAreaComentario" rows="5"></textarea>
                                 </div>
                             </div>
                         </div>
@@ -219,7 +253,7 @@
         </div>
     </div>
     <div class="row">
-        <div class="col-12 col-sm-12 col-md-12 col-lg-9 mb-3">
+        <div class="col-12 col-sm-12 col-md-12 col-lg-10 mb-3">
             <div class="card">
                 <div class="card-header d-flex align-items-center bg-inverse bg-opacity-10 fw-light">
                     DETALLE
@@ -227,20 +261,25 @@
 
                 <div class="card-body align-items-center fw-light p-2">
                     <div class="container-fluid">
+
                         <table id="datatableNewOrderDraft" class="table table-hover text-nowrap">
                             <thead>
                                 <tr>
-                                    <th class="border-top-0 pt-0 px-3"></th>
-                                    <th class="border-top-0 pt-0 px-3">Codigo del Articulo</th>
-                                    <th class="border-top-0 pt-0 px-3">Descripcion del Articulo</th>
-                                    <th class="border-top-0 pt-0 px-3">Codigo en almacen</th>
-                                    <th class="border-top-0 pt-0 px-3">Cantidad en almacen</th>
-                                    <th class="border-top-0 pt-0 px-3">Stock General</th>
-                                    <th class="border-top-0 pt-0 px-3">Codigo de barras</th>
-                                    <th class="border-top-0 pt-0 px-4">Cantidad</th>
+                                    <th class="border-top-0 pt-0 px-2"></th>
+                                    <th class="border-top-0 pt-0 px-3">Código de Artículo</th>
+                                    @*<th class="border-top-0 pt-0 px-2 text-wrap">
+                                    <span class="d-inline-block">Código</span>
+                                    <span class="d-inline-block">del Artículo</span>
+                                    </th>*@
+                                    <th class="border-top-0 pt-0" style="padding-left: 6rem; padding-right: 6rem;">Descripción de Artículo</th>
+                                    <th class="border-top-0 pt-0 px-3">Código de almacén</th>
+                                    <th class="border-top-0 pt-0 px-2">Cantidad en almacén</th>
+                                    <th class="border-top-0 pt-0 px-2">Stock General</th>
+                                    <th class="border-top-0 pt-0 px-4">Código de barras</th>
+                                    <th class="border-top-0 pt-0 px-3">Cantidad</th>
                                     <th class="border-top-0 pt-0 px-4">Precio</th>
-                                    <th class="border-top-0 pt-0 px-2">Porcentaje de descuento</th>
-                                    <th class="border-top-0 pt-0 px-4">IGV</th>
+                                    <th class="border-top-0 pt-0 px-4">Descuento</th>
+                                    <th class="border-top-0 pt-0 px-5">IGV</th>
                                 </tr>
                             </thead>
                             <tbody id="detalleRow">
@@ -257,73 +296,92 @@
                 </div>
             </div>
         </div>
-        <div class="col-12 col-sm-12 col-md-12 col-lg-3 mb-3">
-            <div class="card mb-4">
-                <div class="card-header d-flex align-items-center bg-inverse bg-opacity-10 fw-light">
-                    ATRIBUTOS ADICIONALES
+        <div class="col-12 col-sm-12 col-md-12 col-lg-2 mb-1">
+            <div class="row">
+                <div class="col-12 col-sm-6 col-md-6 col-lg-12">
+                    <div class="card mb-4">
+                        <div class="card-header d-flex align-items-center bg-inverse bg-opacity-10 fw-light">
+                            ADICIONALES
+                        </div>
+
+                        <div class="card-body align-items-center fw-light p-4">
+                            <label for="inputTransferenciaGratuita" class="form-label" style="font-size: 12px">Transferencia gratuita</label>
+                            <div class="input-group mb-3">
+                                <select id="inputTransferenciaGratuita" name="inputTransferenciaGratuita" class="form-select custom-select">
+                                </select>
+                            </div>
+                            <label for="inputConsignacion" class="form-label" style="font-size: 12px">Consignación</label>
+                            <div class="input-group mb-3">
+                                <select id="inputConsignacion" name="inputConsignacion" class="form-select custom-select">
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="inputNumeroOrdenCompra" class="form-label" style="font-size: 12px">Numero de orden de compra</label>
+                                <input id="inputNumeroOrdenCompra" name="inputNumeroOrdenCompra" type="text" class="form-control">
+                            </div>
+                        </div>
+
+                        <div class="card-arrow">
+                            <div class="card-arrow-top-left"></div>
+                            <div class="card-arrow-top-right"></div>
+                            <div class="card-arrow-bottom-left"></div>
+                            <div class="card-arrow-bottom-right"></div>
+                        </div>
+                    </div>
                 </div>
+                <div class="col-12 col-sm-6 col-md-6 col-lg-12">
+                    <div class="card mb-4">
+                        <div class="card-header d-flex align-items-center bg-inverse bg-opacity-10 fw-light">
+                            RESUMEN
+                        </div>
 
-                <div class="card-body align-items-center fw-light p-4">
-                    <label for="inputTransferenciaGratuita" class="form-label" style="font-size: 12px">Transferencia gratuita</label>
-                    <div class="input-group mb-3">
-                        <span class="input-group-text" id="basic-addon1"><i class="fa-solid fa-chevron-down"></i></span>
-                        <input id="inputTransferenciaGratuita" name="inputTransferenciaGratuita" type="text" class="form-control">
-                    </div>
-                    <label for="inputConsignacion" class="form-label" style="font-size: 12px">Consignación</label>
-                    <div class="input-group mb-3">
-                        <span class="input-group-text" id="basic-addon1"><i class="fa-solid fa-chevron-down"></i></span>
-                        <input id="inputConsignacion" name="inputConsignacion" type="text" class="form-control">
-                    </div>
-                    <div class="mb-3">
-                        <label for="inputNumeroOrdenCompra" class="form-label" style="font-size: 12px">Numero de orden de compra</label>
-                        <input id="inputNumeroOrdenCompra" name="inputNumeroOrdenCompra" type="text" class="form-control">
-                    </div>
+                        <div class="card-body align-items-center fw-light p-4">
+                            <label for="inputTotal" class="form-label" style="font-size: 12px">Total</label>
+                            <input id="inputTotal" name="inputTotal" type="text" class="form-control mb-3 bg-inverse bg-opacity-10 text-end" disabled>
 
-                </div>
+                            <label for="inputImpuestos" class="form-label" style="font-size: 12px">Impuestos</label>
+                            <input id="inputImpuestos" name="inputImpuestos" type="text" class="form-control mb-3 bg-inverse bg-opacity-10 text-end" disabled>
 
-                <div class="card-arrow">
-                    <div class="card-arrow-top-left"></div>
-                    <div class="card-arrow-top-right"></div>
-                    <div class="card-arrow-bottom-left"></div>
-                    <div class="card-arrow-bottom-right"></div>
+                            <label for="inputTotalDocumento" class="form-label" style="font-size: 12px">Total Documento</label>
+                            <input id="inputTotalDocumento" name="inputTotalDocumento" type="text" class="form-control text-end mb-3 bg-inverse bg-opacity-10" disabled>
+                        </div>
+
+                        <div class="card-arrow">
+                            <div class="card-arrow-top-left"></div>
+                            <div class="card-arrow-top-right"></div>
+                            <div class="card-arrow-bottom-left"></div>
+                            <div class="card-arrow-bottom-right"></div>
+                        </div>
+                    </div>
                 </div>
             </div>
-            <div class="card mb-4">
-                <div class="card-header d-flex align-items-center bg-inverse bg-opacity-10 fw-light">
-                    RESUMEN
+        </div>
+        <div class="row">
+            <div class="col-3 gx-4 ms-auto">
+                <button type="button" id="openModalBtn" class="btn btn-danger px-4">Grabar</button>
+                <a href="/Ingreso/OrderDraft" class="btn btn-outline-theme px-3">
+                    <span class="text-dark">Cancelar</span>
+                </a>
+                <!--BEGIN Modal-->
+                <div id="myModal" class="modal" tabindex="-1" role="dialog">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Confirmación</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <p>Se actualizará la orden @ViewBag.OrderId .¿Desea Seguir?</p>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                                <input id="btnAceptar" type="submit" class="btn btn-danger" value="Aceptar">
+                            </div>
+                        </div>
+                    </div>
                 </div>
-
-                <div class="card-body align-items-center fw-light p-4">
-                    <label for="inputTotal" class="form-label" style="font-size: 12px">Total</label>
-                    <input id="inputTotal" name="inputTotal" type="text" class="form-control mb-3 bg-inverse bg-opacity-10" disabled>
-
-                    <label for="inputImpuestos" class="form-label" style="font-size: 12px">Impuestos</label>
-                    <input id="inputImpuestos" name="inputImpuestos" type="text" class="form-control mb-3 bg-inverse bg-opacity-10" disabled>
-
-                    <label for="inputTotalDocumento" class="form-label" style="font-size: 12px">Total Documento</label>
-                    <input id="inputTotalDocumento" name="inputTotalDocumento" type="text" class="form-control mb-3 bg-inverse bg-opacity-10" disabled>
-                </div>
-
-                <div class="card-arrow">
-                    <div class="card-arrow-top-left"></div>
-                    <div class="card-arrow-top-right"></div>
-                    <div class="card-arrow-bottom-left"></div>
-                    <div class="card-arrow-bottom-right"></div>
-                </div>
-            </div>
-            <div class="align-items-end">
-                <input type="submit" class="btn btn-danger" value="Grabar">
+                <!--END Modal-->
             </div>
         </div>
     </div>
 </form>
-
-@*<div class="alert alert-success" role="alert" id="alertaConfirmacion">
-</div>
-*@
-<style>
-    .custom-select {
-        background-position: left 0.75rem center;
-        padding: 0.375rem 0.75rem 0.375rem 2.25rem;
-    }
-</style>

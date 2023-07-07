@@ -72,12 +72,9 @@ var handleRenderTableData = function () {
 	var table = $('#datatableOrderDraft').DataTable({
 		language: {
 			search: "_INPUT_",
+			//search: '<i class="fas fa-search"></i> Buscar: <input type="search" class="ps-35px mx-0">',
 			searchPlaceholder: "Búsqueda de órdenes",
 			url: '//cdn.datatables.net/plug-ins/1.13.4/i18n/es-ES.json'
-			//paginate: {
-			//	previous: '<i class="fas fa-chevron-left"></i>',
-			//	next: '<i class="fas fa-chevron-right"></i>'
-			//}
 		},
 		buttons: [],
 		dom: domHTML,
@@ -86,6 +83,10 @@ var handleRenderTableData = function () {
 		info: true,
 		lengthChange: false,
 		autoWidth: false,
+		ajax: {
+			url: '/api/draft/list',
+			dataSrc: ''
+		},
 		columns: [
 			{ data: "num_orden" },
 			{ data: "cliente_codigo" },
@@ -132,7 +133,14 @@ var handleRenderTableData = function () {
 			column0.html('<a href="' + url + '">' + id + '</a>');
 
 			var column4 = $('td:eq(4)', row);
-			column4.html('S/. ' + column4.html());
+
+			var column4Value = column4.html();
+			var formattedValue = parseFloat(column4Value).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+			var formattedContent = 'S/. ' + formattedValue;
+			column4.html(formattedContent);
+
+			/*
+			column4.html('S/. ' + column4.html().toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));*/
 
 			var column5 = $('td:eq(5)', row);
 			column5.html('<span class="badge border border-success text-success px-2 pt-5px pb-5px rounded fs-12px d-inline-flex align-items-center">' + column5.html() + '</span>');
@@ -146,9 +154,6 @@ var handleRenderTableData = function () {
 		},
 		initComplete: function () {
 
-			$.fn.DataTable.ext.pager.numbers_length = 4;
-
-			//$('#datatableOrderDraft_filter').addClass('input-group');
 			$('#datatableOrderDraft_filter input[type="search"]').removeClass('form-control-sm');
 			$('#datatableOrderDraft_filter input[type="search"]').addClass('ps-35px');
 			$('#datatableOrderDraft_filter input[type="search"]').addClass('mx-0');
@@ -174,6 +179,7 @@ var handleRenderTableData = function () {
 				table.column(columna).search(valor).draw();
 			});
 
+
 			$('.status-menu').on('click', '.dropdown-item', function (event) {
 				event.preventDefault();
 
@@ -185,6 +191,7 @@ var handleRenderTableData = function () {
 				table.column(columna).search(valor).draw();
 			});
 
+
 			$('#noEstado').click(function () {
 				table.search('').columns().search('').draw();
 			});
@@ -193,6 +200,9 @@ var handleRenderTableData = function () {
 				table.search('').columns().search('').draw();
 			});
 
+			table.draw();
+
+			manejarOrdenes();
 		}
 	});
 	/*END datatable */
@@ -203,13 +213,20 @@ var handleRenderTableData = function () {
 		try {
 			var response = await obtenerOrdenes();
 			obtenerFiltros(response);
-			setearOrdenes();
+			$.fn.DataTable.ext.pager.numbers_length = 4;
+
+			table
+				.column('0:visible')
+				.order('desc')
+				.draw();
+			
+
 		} catch (error) {
 			console.error(error);
 		}
 	}
 
-	manejarOrdenes();
+	//manejarOrdenes();
 	/*END Manejar metodos */
 
 
@@ -239,41 +256,58 @@ var handleRenderTableData = function () {
 
 	/*BEGIN eliminar */
 	$(document).on('click', '.eliminarOrden', function () {
-		var id = $(this).data('id');
+		var getId = $(this).data('id');
 
 		$('#myModal').modal('show');
-		$('#modal-body-text').text(`Se eliminará la orden ${id} .¿Desea Seguir?`);
-		$('#toast-body-text').text(`${id}`);
+		$('#modal-body-text').text(`Se eliminará la orden ${getId} .¿Desea Seguir?`);
+		$('#toast-body-text').text(`${getId}`);
+
+		$(document).on('click', '#btnAceptar', function () {
+			var toast = $('#liveToast');
+
+			$.ajax({
+				url: '/api/preorders/deletePreOrderById',
+				type: 'DELETE',
+				data: { id: getId },
+				success: function (response) {
+					$('#myModal').modal('hide');
+
+					if (toast.hasClass('hide')) {
+						toast.removeClass('hide');
+						toast.toast('show');
+						setTimeout(function () {
+							toast.toast('hide');
+						}, 2000);
+					} else {
+						toast.toast('dispose');
+						toast.addClass('hide');
+						setTimeout(function () {
+							toast.removeClass('hide');
+							toast.toast('show');
+							setTimeout(function () {
+								toast.toast('hide');
+							}, 2000);
+						}, 100);
+					}
+
+					table.ajax.reload();
+
+				},
+				error: function (error) {
+
+					console.error('Error al eliminar la preorden:', error);
+				}
+			});
+		});
+
+
 	});
 
-	$(document).on('click', '#btnAceptar', function () {
-
-		$('#myModal').modal('hide');
-
-		var toast = $('#liveToast');
-		if (toast.hasClass('hide')) {
-			toast.removeClass('hide');
-			toast.toast('show');
-			setTimeout(function () {
-				toast.toast('hide');
-			}, 2000);
-		} else {
-			toast.toast('dispose');
-			toast.addClass('hide');
-			setTimeout(function () {
-				toast.removeClass('hide');
-				toast.toast('show');
-				setTimeout(function () {
-					toast.toast('hide');
-				}, 2000);
-			}, 100);
-		}
-
-	});
 	/*END eliminar */
 
 
 	/*BEGIN llenar tabla */
+	/*
 	function setearOrdenes() {
 		obtenerOrdenes().then(function (ordenesPreliminares) {
 			$.each(ordenesPreliminares, function (index, value) {
@@ -282,7 +316,7 @@ var handleRenderTableData = function () {
 		}).catch(function (error) {
 			console.error(error);
 		});
-	};
+	};*/
 
 	/*END llenar tabla */
 

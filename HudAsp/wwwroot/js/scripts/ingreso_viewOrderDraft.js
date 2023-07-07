@@ -1,146 +1,4 @@
 ﻿
-var handleToastToggle = function () {
-	$('#showToastBtn').click(function () {
-		var toast = $('#liveToast');
-		if (toast.hasClass('hide')) {
-			toast.removeClass('hide');
-			toast.toast('show');
-			setTimeout(function () {
-				toast.toast('hide');
-			}, 2000);
-		} else {
-			toast.toast('dispose');
-			toast.addClass('hide');
-			setTimeout(function () {
-				toast.removeClass('hide');
-				toast.toast('show');
-				setTimeout(function () {
-					toast.toast('hide');
-				}, 2000);
-			}, 100);
-		}
-	});
-
-
-	$('#openModalBtn').click(function () {
-		$('#myModal').modal('show');
-	});
-
-	$('#acceptBtn').click(function () {
-		// Aquí puedes agregar la lógica que deseas ejecutar al hacer clic en el botón "Aceptar"
-		$('#myModal').modal('hide');
-	});
-};
-
-var handleRenderDatepicker = function () {
-
-	//const date = new Date();
-	//const options = {
-	//	day: '2-digit',
-	//	month: '2-digit',
-	//	year: 'numeric'
-	//	//hour: '2-digit',
-	//	//minute: '2-digit',
-	//	//second: '2-digit'
-	//}
-	//var fecha = new Intl.DateTimeFormat('es-Es', options).format(date);
-
-	////console.log(fecha);
-
-	//$('#datepicker-default').val(fecha);
-	//$('#datepicker-range').val(fecha);
-	//$('#datepicker-inline').val(fecha);
-
-	$('#datepicker-default').datepicker({
-		autoclose: true,
-		format: 'dd/mm/yyyy'
-	}).datepicker("setDate", new Date());
-
-	$('#datepicker-component').datepicker({
-		autoclose: true,
-		format: 'dd/mm/yyyy'
-	}).datepicker("setDate", new Date());
-
-	$('#datepicker-range').datepicker({
-		autoclose: true,
-		format: 'dd/mm/yyyy'
-	}).datepicker("setDate", new Date());
-
-	$('#datepicker-inline').datepicker({
-		autoclose: true,
-		format: 'dd/mm/yyyy'
-	}).datepicker("setDate", new Date());
-
-};
-var handleRenderTypeahead = function () {
-
-	//var get_cliente_cod = {
-	//	"url": "https://LAPTOP-4OBRKJSA:50000/b1s/v1/view.svc/DGP_GET_CLIENTE_COD_B1SLQuery",
-	//	"method": "GET",
-	//	"timeout": 0,
-	//	"xhrFields": {
-	//		"withCredentials": "true"
-	//	}
-	//}
-
-	//var clientePorCodigo = [];
-	//var clientePorNombre = [];
-
-	//$.ajax(get_cliente_cod).done(function (response) {
-	//	console.log(response);
-
-	//	clientePorCodigo = response.value;
-
-	//	console.log(clientes);
-	//});
-
-	//$('#inputCodigo').change(function () {
-	//	var letra = $(this).val();
-
-	//	var wanted = clientePorCodigo.filter(function (item) { return (item.CardCode == letra); });
-
-	//	console.log(wanted);
-
-	//	$('#inputCliente').val(wanted[0].CardName);
-	//	$('#inputContacto').val(wanted[0].ContactPerson);
-
-	//});
-
-	$.typeahead({
-		input: '#inputCodigoCliente',
-		order: "desc",
-		source: {
-			data: [
-				"A0001", "A0002", "A0003", "ART001", "ART002", "ART003", "P001", "P002", "P003"
-			]
-		},
-		minLength: 3
-	});
-
-	$.typeahead({
-		input: '#inputNombreCliente',
-		order: "desc",
-		source: {
-			data: [
-				"A0001", "A0002", "A0003", "ART001", "ART002", "ART003", "P001", "P002", "P003"
-			]
-		},
-		minLength: 3
-	});
-
-	$.typeahead({
-		input: '#inputPersonaContacto',
-		order: "desc",
-		source: {
-			data: [
-				"A0001", "A0002", "A0003", "ART001", "ART002", "ART003", "P001", "P002", "P003"
-			]
-		},
-		minLength: 3
-	});
-
-};
-
 var handleRenderTableData = function () {
 
 	var btnHTML = `
@@ -153,12 +11,12 @@ var handleRenderTableData = function () {
 	`;
 
 	var domHTML = `
-		<'row mb-3 px-3 pt-2'
-			<'col-4 p-0'
+		<'row mb-3 px-3 pt-2 gx-3'
+			<'col-5 p-0'
 				l
 			>
-			<'col-8 p-0'
-				f
+			<'#pBuscar.col-4 ms-auto px-3'
+				
 			>
 		>
 		t
@@ -172,242 +30,372 @@ var handleRenderTableData = function () {
 		>
 	`;
 
-	class DocumentLine {
-		constructor(ItemCode, WarehouseCode, UnitPrice, Quantity, DiscountPercent) {
-			this.ItemCode = ItemCode;
-			this.WarehouseCode = WarehouseCode;
-			this.UnitPrice = UnitPrice;
-			this.Quantity = Quantity;
-			this.DiscountPercent = DiscountPercent;
-		}
+	busquedaHTML = `
+		<div>
+			<label class="input-group">
+				<input type="text" id="busquedaCustom" class="form-control px-35px mx-0 rounded-end" placeholder="Búsqueda">
+				<div class="input-group-text position-absolute top-0 bottom-0 bg-none border-0 start-0">
+					<i class="fa fa-search opacity-5"></i>
+				</div>
+			</label>
+		</div>
+	`;
+
+
+	function obtenerFechaSinHora(fechaHora) {
+		var fechaSinHora = fechaHora.match(/^\d{1,2}\/\d{1,2}\/\d{4}/);
+		return fechaSinHora ? fechaSinHora[0] : '';
 	}
-
-	class OrdenPreliminar {
-		constructor(CardCode, ContactPersonCode, NumAtCard, ShipToCode, PayToCode, DocCurrency, DocDate, DocDueDate, TaxDate, GroupNum, Comments) {
-			this.CardCode = CardCode;
-			this.ContactPersonCode = ContactPersonCode;
-			this.NumAtCard = NumAtCard;
-			this.ShipToCode = ShipToCode;
-			this.PayToCode = PayToCode;
-			this.DocCurrency = DocCurrency;
-			this.DocObjectCode = 17;
-			this.DocDate = DocDate;
-			this.DocDueDate = DocDueDate;
-			this.TaxDate = TaxDate;
-			this.GroupNum = GroupNum;
-			this.Comments = Comments;
-			this.DocumentLines = [];
-		}
-
-		addDocumentLine(ItemCode, WarehouseCode, UnitPrice, Quantity, DiscountPercent) {
-			const documentLine = new DocumentLine(ItemCode, WarehouseCode, UnitPrice, Quantity, DiscountPercent);
-			this.DocumentLines.push(documentLine);
-		}
-	}
-
-	var counter = 0;
-	var filaEliminada = [];
 
 	var table = $('#datatableNewOrderDraft').DataTable({
-		lengthMenu: [10, 20, 30, 40, 50],
+		lengthMenu: [5, 10, 15, 20],
 		language: {
-			search: "_INPUT_",
-			searchPlaceholder: "🔍 Búsqueda",
 			url: '//cdn.datatables.net/plug-ins/1.13.4/i18n/es-ES.json'
 		},
 		dom: domHTML,
 		ordering: false,
 		buttons: [],
 		scrollX: true,
+		createdRow: function (row, data, dataIndex) {
+		},
 		initComplete: function () {
-			$('#datatableNewOrderDraft_filter').append(btnHTML);
-			$('#datatableNewOrderDraft_filter input[type="search"]').removeClass('form-control-sm');
 
-			var botonAgregar = $('#agregarFilaProducto').on('click', function () {
+			$('#pBuscar').append(busquedaHTML);
 
-				counter++;
-
-				var input01 = `
-					<div class="input-group px-2">
-                        <span class="input-group-text"><i class="fa-solid fa-magnifying-glass"></i></span>
-                        <input class="form-control bg-inverse bg-opacity-10" placeholder="A00001" name="inputCodigoArticulo${counter}" id="inputCodigoArticulo${counter}" disabled>
-                    </div>
-				`;
-
-				var input02 = `
-					<div class="input-group px-2">
-                        <span class="input-group-text"><i class="fa-solid fa-magnifying-glass"></i></span>
-                        <input class="form-control bg-inverse bg-opacity-10" placeholder="IBM Infoprint 1312" id="inputDescripcionArticulo${counter}" disabled>
-                    </div>
-				`;
-
-				var input03 = `
-					<div class="input-group px-3">
-                        <span class="input-group-text"><i class="fa-solid fa-magnifying-glass"></i></span>
-                        <input class="form-control bg-inverse bg-opacity-10" placeholder="01" name="inputCodigoAlmacen${counter}" id="inputCodigoAlmacen${counter}" disabled>
-                    </div>
-				`;
-
-				var input04 = `
-					<div class="input-group px-4">
-                        <input class="form-control bg-inverse bg-opacity-10" placeholder="1000" id="inputCantidadAlmacen${counter}" style="text-align: center;" disabled>
-                    </div>
-				`;
-
-				var input05 = `
-					<div class="input-group px-2">
-                        <input class="form-control bg-inverse bg-opacity-10" placeholder="2000" id="inputStockAlmacen${counter}" style="text-align: center;" disabled>
-                    </div>
-				`;
-
-				var input06 = `
-					<div class="input-group px-2">
-                        <input class="form-control bg-inverse bg-opacity-10" placeholder="xxxxxxxxxxxx" id="inputCodigoBarras${counter}" style="text-align: center;" disabled>
-                    </div>
-				`;
-
-				var input07 = `
-					<div class="input-group px-2">
-                        <input class="form-control bg-inverse bg-opacity-10" name="inputCantidad${counter}" id="inputCantidad${counter}" style="text-align: center;" disabled>
-                    </div>
-				`;
-
-				var input08 = `
-					<div class="input-group">
-                        <input class="form-control bg-inverse bg-opacity-10" placeholder="200" name="inputPrecio${counter}" id="inputPrecio${counter}" style="text-align: center;" disabled>
-                    </div>
-				`;
-
-				var input09 = `
-					<div class="input-group px-5">
-                        <input class="form-control bg-inverse bg-opacity-10" name="inputPorcentajeDescuento${counter}" placeholder="0" id="inputPorcentajeDescuento${counter}" style="text-align: center;" disabled>
-                    </div>
-				`;
-
-				var input10 = `
-					<div class="input-group">
-                        <input class="form-control bg-inverse bg-opacity-10" placeholder="18" id="inputIGV${counter}" style="text-align: center;" disabled>
-                    </div>
-				`;
-
-				const fila = [input01, input02, input03, input04, input05, input06, input07, input08, input09, input10];
-
-				var newRow = table.row.add(fila).draw(false).node();
-				$(newRow).find('.eliminarFila').attr('data-row-index', counter);
-
+			/*BEGIN busqueda en input */
+			$.fn.dataTable.ext.search.push(function (settings, data, dataIndex) {
+				var row = table.row(dataIndex);
+				var searchData = row.data().join(' ').toLowerCase();
+				var searchValue = $('#busquedaCustom').val().toLowerCase();
+				return searchData.includes(searchValue);
 			});
 
-			$(document).on('click', '.eliminarFila', function () {
-				var rowIndex = $(this).data('row-index');
-				var filaActual = $(this).closest('tr');
-
-				filaEliminada.push(rowIndex);
-				table.row(filaActual).remove().draw(false);
+			$('#busquedaCustom').on('input', function () {
+				table.draw();
 			});
-
-			$(document).on('click', '.duplicarFila', function () {
-
-				counter++;
-
-				var filaActual = $(this).closest('tr');
-				var nuevaFila = filaActual.clone();
-
-				var nuevaID = 'fila' + counter;
-
-				nuevaFila.attr('id', nuevaID);
-				nuevaFila.find('[id^=inputCodigoArticulo]').attr('id', 'inputCodigoArticulo' + counter);
-				nuevaFila.find('[id^=inputDescripcionArticulo]').attr('id', 'inputDescripcionArticulo' + counter);
-
-				table.row.add(nuevaFila).draw(false);
-
-			});
-
-			botonAgregar.click();
-
+			/*END busqueda en input */
 
 		}
 	});
 
-	$("#alertaConfirmacion").hide();
+	var orderData = $('#orderData').data('order');
+	//console.log(orderData);
 
-	$('#formNewOrderDraft').submit(function (e) {
+	function calcularTotales() {
+		var total = 0;
+		var totalImpuestos = 0;
+
+		$('#detalleRow tr').each(function () {
+			var cantidad = parseFloat($(this).find('input[name^="inputCantidad"]').val());
+			var precioUnitario = parseFloat($(this).find('input[name^="inputPrecio"]').val());
+			var descuento = parseFloat($(this).find('input[name^="inputPorcentajeDescuento"]').val());
+			var igv = parseFloat($(this).find('input[name^="inputIGV"]').data("valor"));
+
+			var precioDescuento = precioUnitario * (1 - descuento / 100);
+			var subtotal = precioDescuento * cantidad;
+
+			var subtotalConImpuesto = subtotal * (igv / 100);
+
+			total += subtotal;
+			totalImpuestos += subtotalConImpuesto;
+		});
+		/*
+		$('#inputTotal').val(total.toFixed(2));
+		$('#inputImpuestos').val(totalImpuestos.toFixed(2));
+		$('#inputTotalDocumento').val((total + totalImpuestos).toFixed(2));*/
+		var formattedTotal = total.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+		var formattedTotalImpuestos = totalImpuestos.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+		var formattedTotalDocumento = (total + totalImpuestos).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+		$('#inputTotal').val(formattedTotal);
+		$('#inputImpuestos').val(formattedTotalImpuestos);
+		$('#inputTotalDocumento').val(formattedTotalDocumento);
+	}
+
+
+	$(document).on('input', '#detalleRow input[name^="inputCantidad"], #detalleRow input[name^="inputPrecio"], #detalleRow input[name^="inputPorcentajeDescuento"]', function () {
+		calcularTotales();
+	});
+
+	llenarDatos();
+	function llenarDatos() {
+
+		$('#viewCodigoCliente').val(orderData[0].CodigoCliente);
+		$('#viewNombreCliente').val(orderData[0].NombreCliente);
+		$('#viewPersonaContacto').val(orderData[0].NombrePersonaContacto);
+		$('#viewNumeroReferencia').val(orderData[0].NumRef);
+		$('#viewDireccionDestino').val(orderData[0].CodDireEntrega);
+		$('#viewtDestinatarioFactura').val(orderData[0].CodDireFactura);
+
+		$('#viewSerieDoc').append(`
+			 <option selected>${orderData[0].SeriesNombre}</option>
+		`)
+
+		$('#viewCorrelativo').val(orderData[0].DocNumero);
+		$('#textAreaComentario').val(orderData[0].Comentario);
+		//$('#inputNumeroOrdenCompra').val(orderData[0].)
+
+		$('#textAreaDireccionDestino').val(orderData[0].DireEntrega);
+		$('#textAreaDestinatarioFactura').val(orderData[0].DireFactura);
+
+		/*FECHAS*/
+		$('#viewFechaContabilizacion').val(obtenerFechaSinHora(orderData[0].FechaContabilizacion));
+		$('#viewFechaEntrega').val(obtenerFechaSinHora(orderData[0].FechaEntrega));
+		$('#viewFechaDocumento').val(obtenerFechaSinHora(orderData[0].FechaDocumento));
+		/*FECHAS*/
+
+		$('#viewMoneda').val(orderData[0].Moneda);
+		$('#viewCondicionPago').val(orderData[0].TerminoPago);
+
+		$('#viewTransGrat').val(orderData[0].DescripcionTransferencia);
+		$('#viewConsignacion').val(orderData[0].DescripcionConsignacion);
+
+		$('#viewTransGrat').append(`
+			 <option selected>${orderData[0].DescripcionTransferencia}</option>
+		`);
+
+		$('#viewConsignacion').append(`
+			 <option selected>${orderData[0].DescripcionConsignacion}</option>
+		`)
+
+		orderData.forEach(function (item) {
+			var counter = table.rows().count(); 
+
+			var input01 = `
+				<div class="">
+				  <div class="">
+					<div class="input-group px-2">
+					  <span data-index="${counter}" class="input-group-text porCodigoArticulo"><i class="fa-solid fa-magnifying-glass"></i></span>
+					  <input value="${item.CodArticulo}" type="text" class="form-control bg-inverse bg-opacity-10" name="inputCodigoArticulo${counter}" id="inputCodigoArticulo${counter}" data-column="${counter}" autocomplete="off" disabled>
+					</div>
+				  </div>
+				</div>
+			  `;
+
+			var input02 = `
+				<div class="">
+				  <div class="">
+					<div class="input-group">
+					  <span data-index="${counter}" class="input-group-text porDescripcionArticulo"><i class="fa-solid fa-magnifying-glass"></i></span>
+					  <input value="${item.Descripcion}" type="text" class="form-control bg-inverse bg-opacity-10" name="inputDescripcionArticulo${counter}" id="inputDescripcionArticulo${counter}" data-column="${counter}" disabled>
+					</div>
+				  </div>
+				</div>
+			  `;
+
+			var input03 = `
+				<div class="">
+				  <div class="">
+					<div class="input-group px-2">
+					  <span data-index="${counter}" class="input-group-text porCodigoAlmacen"><i class="fa-solid fa-magnifying-glass"></i></span>
+					  <input value="${item.Almacen}" type="text" class="form-control bg-inverse bg-opacity-10" name="inputCodigoAlmacen${counter}" id="inputCodigoAlmacen${counter}" data-column="${counter}" autocomplete="off" disabled>
+					</div>
+				  </div>
+				</div>
+			  `;
+
+			var input04 = `
+				<div class="input-group px-4">
+				  <input value="${item.CantidadAlmacen}" class="form-control bg-inverse bg-opacity-10" id="inputCantidadAlmacen${counter}" style="text-align: center;" disabled>
+				</div>
+			  `;
+
+			var input05 = `
+				<div class="input-group px-2">
+				  <input value="${item.StockGeneral}" class="form-control bg-inverse bg-opacity-10" id="inputStockAlmacen${counter}" style="text-align: center;" disabled>
+				</div>
+			  `;
+
+			var input06 = `
+				<div class="input-group px-2">
+				  <input value="${item.CodigodeBarra}" class="form-control bg-inverse bg-opacity-10" id="inputCodigoBarras${counter}" style="text-align: center;" disabled>
+				</div>
+			  `;
+
+			var input07 = `
+				<div class="input-group px-2">
+				  <input value="${item.Cantidad}" class="form-control bg-inverse bg-opacity-10" name="inputCantidad${counter}" id="inputCantidad${counter}" style="text-align: center;" disabled>
+				</div>
+			  `;
+
+			var input08 = `
+				<div class="input-group">
+				  <input value="${item.PrecioUnitario}" class="form-control bg-inverse bg-opacity-10" name="inputPrecio${counter}" id="inputPrecio${counter}" style="text-align: center;" disabled>
+				</div>
+			  `;
+
+			var input09 = `
+				<div class="input-group">
+				  <span class="input-group-text">%</span>
+				  <input value="${item.Descuento}" class="form-control bg-inverse bg-opacity-10" name="inputPorcentajeDescuento${counter}" id="inputPorcentajeDescuento${counter}" style="text-align: center;" disabled>
+				</div>
+			  `;
+
+			var input10 = `
+				<div class="input-group">
+				  <input data-valor="${item.ValorImpuesto}" value="${item.IndicadorImpuesto}" class="form-control bg-inverse bg-opacity-10" name="inputIGV${counter}" id="inputIGV${counter}" style="text-align: center;" disabled>
+				</div>
+			  `;
+
+			var fila = [
+				input01,
+				input02,
+				input03,
+				input04,
+				input05,
+				input06,
+				input07,
+				input08,
+				input09,
+				input10
+			];
+
+			while (fila.length < table.columns().count()) {
+				fila.push("");
+			}
+
+			table.row.add(fila).draw(false);
+
+			calcularTotales();
+		});
+
+	}
+
+
+	function formatearFecha(fecha, formato) {
+		var partesFecha = fecha.split('/');
+		var dia = partesFecha[1];
+		var mes = partesFecha[0];
+		var anio = partesFecha[2];
+
+		var fechaFormateada = '';
+
+		switch (formato) {
+			case 'YYYY-MM-DD':
+				fechaFormateada = anio + '-' + dia + '-' + mes;
+				break;
+			case 'DD-MM-YYYY':
+				fechaFormateada = dia + '-' + mes + '-' + anio;
+				break;
+
+			default:
+				fechaFormateada = fecha;
+				break;
+		}
+
+		return fechaFormateada;
+	}
+
+
+	$("#formNewOrderDraft").on("submit", function (e) {
+
 		e.preventDefault();
 
-		var codigo = $('#inputCodigo').val();
+		var codigo = $('#inputCodigoCliente').val();
 		var personaContacto = $('#inputPersonaContacto').val();
 		var numeroReferencia = $('#inputNumeroReferencia').val();
 		var direccionDestino = $('#inputDireccionDestino').val();
 		var destinatarioFactura = $('#inputDestinatarioFactura').val();
 		var moneda = $('#inputMoneda').val();
+		var serie = $('#inputSerieDoc').val();
 
-		var momentFecha = moment($('#datepicker-default').val(), "MM/DD/YYYY");
-		var fechaFormateada = momentFecha.format("YYYY-MM-DD");
-		var fechaContabilización = fechaFormateada;
+		var fechaFormateada = $('#datepicker-default').val();
+		var fechaContabilizacion = formatearFecha(fechaFormateada, 'YYYY-MM-DD');
 
-		var momentFecha2 = moment($('#datepicker-range').val(), "MM/DD/YYYY");
-		var fechaFormateada2 = momentFecha2.format("YYYY-MM-DD");
-		var fechaEntrega = fechaFormateada2;
+		var fechaFormateada2 = $('#datepicker-range').val();
+		var fechaEntrega = formatearFecha(fechaFormateada2, 'YYYY-MM-DD');
 
-		var momentFecha3 = moment($('#datepicker-inline').val(), "MM/DD/YYYY");
-		var fechaFormateada3 = momentFecha3.format("YYYY-MM-DD");
-		var fechaDocumento = fechaFormateada3;
+		var fechaFormateada3 = $('#datepicker-inline').val();
+		var fechaDocumento = formatearFecha(fechaFormateada3, 'YYYY-MM-DD');
 
 		var condicionPago = $('#inputCondicionPago').val();
 		var comentario = $('#textAreaComentario').val();
 
-		var nuevaOrdenPreliminar = new OrdenPreliminar(codigo, personaContacto, numeroReferencia, direccionDestino, destinatarioFactura, moneda, fechaContabilización, fechaEntrega, fechaDocumento, condicionPago, comentario);
+		var nuevaOrdenPreliminar = new OrdenPreliminar(codigo, personaContacto, numeroReferencia, direccionDestino, destinatarioFactura, moneda, fechaContabilizacion, fechaEntrega, fechaDocumento, condicionPago, comentario, serie);
 
-		var detalle = [];
 		$('#detalleRow tr').each(function () {
 			var CodigoArticulo = $(this).find('[name^="inputCodigoArticulo"]').val();
 			var CodigoAlmacen = $(this).find('[name^="inputCodigoAlmacen"]').val();
 			var Precio = $(this).find('[name^="inputPrecio"]').val();
 			var Cantidad = $(this).find('[name^="inputCantidad"]').val();
 			var PorcentajeDescuento = $(this).find('[name^="inputPorcentajeDescuento"]').val();
+			var VatGroup = $(this).find('[name^="inputIGV"]').val();
 
-			nuevaOrdenPreliminar.addDocumentLine(CodigoArticulo, CodigoAlmacen, Precio, Cantidad, PorcentajeDescuento);
+			nuevaOrdenPreliminar.addDocumentLine(CodigoArticulo, CodigoAlmacen, Precio, Cantidad, PorcentajeDescuento, VatGroup);
 		});
-		console.log(nuevaOrdenPreliminar);
+
+		//console.log(nuevaOrdenPreliminar);
 
 		var dataDraft = JSON.stringify(nuevaOrdenPreliminar);
 
-		console.log(dataDraft);
+		//console.log(dataDraft);
 
-		var postDraft = {
-			"url": "https://LAPTOP-4OBRKJSA:50000/b1s/v1/Drafts",
-			"method": "POST",
-			"timeout": 0,
-			"xhrFields": {
-				"withCredentials": "true"
-			},
-			"headers": {
-				"Content-Type": "application/json"
-			},
-			"data": dataDraft,
+		var DRAFT = {
+			CardCode: nuevaOrdenPreliminar.CardCode,
+			ContactPersonCode: nuevaOrdenPreliminar.ContactPersonCode,
+			NumAtCard: nuevaOrdenPreliminar.NumAtCard,
+			ShipToCode: nuevaOrdenPreliminar.ShipToCode,
+			PayToCode: nuevaOrdenPreliminar.PayToCode,
+			DocCurrency: nuevaOrdenPreliminar.DocCurrency,
+			DocObjectCode: 17,
+			DocDate: nuevaOrdenPreliminar.DocDate,
+			DocDueDate: nuevaOrdenPreliminar.DocDueDate,
+			TaxDate: nuevaOrdenPreliminar.TaxDate,
+			GroupNum: nuevaOrdenPreliminar.GroupNum,
+			Comments: nuevaOrdenPreliminar.Comments,
+			Series: nuevaOrdenPreliminar.Series,
+			DocumentLines:
+				[
+					{
+						ItemCode: nuevaOrdenPreliminar.DocumentLines[0].ItemCode,
+						WarehouseCode: nuevaOrdenPreliminar.DocumentLines[0].WarehouseCode,
+						UnitPrice: nuevaOrdenPreliminar.DocumentLines[0].UnitPrice,
+						Quantity: nuevaOrdenPreliminar.DocumentLines[0].Quantity,
+						DiscountPercent: nuevaOrdenPreliminar.DocumentLines[0].DiscountPercent,
+						VatGroup: nuevaOrdenPreliminar.DocumentLines[0].VatGroup
+					}
+				]
 		};
 
-		$.ajax(postDraft).done(function (response, textStatus, jqXHR) {
-			var respuestaError = response.error;
 
-			$("#alertaConfirmacion").show();
-			$("#alertaConfirmacion").removeClass("alert-danger").addClass("alert-success");
-			$("#alertaConfirmacion").text("La orden de venta preliminar fue creada correctamente.").fadeIn();;
-			ocultarMensaje();
+		function mostrarToastExitoso(mensaje) {
+			$('#myModal').modal('hide');
+			var toast = $('#liveToast');
+			toast.find('.toast-body').text(mensaje);
+			toast.removeClass("alert-danger").addClass("alert-success");
+			toast.toast('show');
+			setTimeout(function () {
+				toast.toast('hide');
+				window.location.href = "/Ingreso/OrderDraft";
+			}, 2000);
+		}
 
-		}).fail(function (jqXHR, textStatus, errorThrown) {
-			console.log(jqXHR.status);
+		function mostrarToastError(mensaje) {
+			$('#myModal').modal('hide');
 
-			$("#alertaConfirmacion").show();
-			$("#alertaConfirmacion").removeClass("alert-success").addClass("alert-danger");
-			$("#alertaConfirmacion").text("Se produjo un error en la solicitud.").fadeIn();
-			ocultarMensaje();
+			var toast = $('#liveToast');
+			toast.find('.toast-body').text(mensaje);
+			toast.removeClass("alert-success").addClass("alert-danger");
+			toast.toast('show');
+			setTimeout(function () {
+				toast.toast('hide');
+				//window.location.href = "/Ingreso/OrderDraft";
+			}, 2000);
+		}
+
+		$.ajax({
+			url: "/Ingreso/CreatePreOrder",
+			type: "POST",
+			dataType: "json",
+			data: DRAFT,
+			success: function (response) {
+				mostrarToastExitoso("La orden de venta preliminar fue creada correctamente.");
+			},
+			error: function (xhr, status, error) {
+				mostrarToastError("Se produjo un error en la solicitud.");
+			}
 		});
 
-		function ocultarMensaje() {
-			setTimeout(function () {
-				$("#alertaConfirmacion").fadeOut();
-			}, 5000);
-		};
 
 	});
 
@@ -418,7 +406,4 @@ var handleRenderTableData = function () {
 ------------------------------------------------ */
 $(document).ready(function () {
 	handleRenderTableData();
-	handleRenderTypeahead();
-	handleToastToggle();
-	handleRenderDatepicker();
 });

@@ -55,14 +55,13 @@ public class LoginController : Controller
         }
     }*/
 
-
+	/*
 	[HttpPost]
-	[Route("api/Ejemplo")]
-	public IActionResult Ejemplo([FromBody] JObject datos)
+	public JsonResult postEjemplo(DatosEjemplo persona)
 	{
-		var respuesta = JsonConvert.SerializeObject(datos);
-		return Ok(respuesta);
-	}
+		var respuesta = JsonConvert.SerializeObject(persona);
+		return new JsonResult (Ok(respuesta));
+	}*/
 
 
 	public class DatosEjemplo

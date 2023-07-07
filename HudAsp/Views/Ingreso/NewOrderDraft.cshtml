@@ -29,6 +29,10 @@
             padding: 0.375rem 0.75rem 0.375rem 2.25rem;
         }
 
+        .dataTables_scrollBody{
+            height: 300px;
+        }
+
     </style>
 
 }
@@ -104,18 +108,18 @@
                 <div class="row gx-3">
                     <div class="col-12 col-sm-12 col-mb-7 col-lg-7">
                         <div class="row gx-3 mb-2">
-                            <div class="col-12 col-sm-6 col-md-4 col-lg-4">
+                            <div class="col-12 col-sm-6 col-md-4 col-lg-4" style="width: 28%;">
                                 <div class="typeahead__container">
                                     <label class="form-label" style="font-size: 12px">Código de Cliente</label>
                                     <div class="typeahead__field">
                                         <div class="typeahead__query input-group">
                                             <span id="porCodigoCliente" class="input-group-text"><i class="fa fa-search"></i></span>
-                                            <input type="text" class="form-control" name="inputCodigoCliente[query]" id="inputCodigoCliente" autocomplete="off" required>
+                                            <input type="text" data-codPriceList="" class="form-control" name="inputCodigoCliente[query]" id="inputCodigoCliente" autocomplete="off" required>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-12 col-sm-6 col-md-4 col-lg-4">
+                                <div class="col-12 col-sm-6 col-md-4 col-lg-4" style="width: 37%;">
                                 <div class="typeahead__container">
                                     <label class="form-label" style="font-size: 12px">Nombre de Cliente</label>
                                     <div class="typeahead__field">
@@ -129,14 +133,14 @@
                             <div class="col-12 col-sm-6 col-md-4 col-lg-4">
                                     <label for="inputPersonaContacto" class="form-label" style="font-size: 12px">Persona de contacto</label>
                                 <div class="input-group mb-3">
-                                    <select id="inputPersonaContacto" name="inputPersonaContacto" class="form-select custom-select" required>
+                                    <select id="inputPersonaContacto" name="inputPersonaContacto" class="form-select custom-select">
                                         @*<option selected></option>*@
                                     </select>
                                 </div>
                             </div>
                         </div>
                         <div class="row gx-3">
-                            <div class="col-12 col-sm-6 col-md-4 col-lg-4">
+                            <div class="col-12 col-sm-6 col-md-4 col-lg-4" style="width: 28%;">
                                 <div class="container-fluid px-0 mx-0 mb-3">
                                     <label for="inputNumeroReferencia" class="form-label" style="font-size: 12px">Número de referencia</label>
                                     <div class="container-fluid px-0 mx-0 nowrap">
@@ -164,7 +168,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-12 col-sm-6 col-md-4 col-lg-4">
+                            <div class="col-12 col-sm-6 col-md-4 col-lg-4"  style="width: 37%;">
                                 <label for="inputDireccionDestino" class="form-label" style="font-size: 12px">Dirección destino</label>
                                 <div class="input-group mb-3">
                                     <select id="inputDireccionDestino" name="inputDireccionDestino" class="form-select custom-select" required>
@@ -186,7 +190,7 @@
                     </div>
                     <div class="col-12 col-sm-6 col-md-6 col-lg-2 px-3">
                         <div class="row g-2 mb-2">
-                            <div class="col-12 col-sm-12 col-md-12 col-lg-12">
+                            <div class="col-12 col-sm-12 col-md-12 col-lg-12" >
                                 <label for="inputFechaContabilizacion" class="form-label" style="font-size: 12px">Fecha de Contabilización</label>
                                 <div class="input-group text-end mb-2">
                                     <span class="input-group-text"><i class="fa-regular fa-calendar"></i></span>
@@ -218,7 +222,7 @@
                             <div class="col-12 col-sm-4 col-md-4 col-lg-4 text-end">
                                 <label for="inputMoneda" class="form-label" style="font-size: 12px">Moneda</label>
                                 <div class="input-group mb-3 text-end">
-                                    <input id="inputMoneda" name="inputMoneda" type="text" class="form-control bg-inverse bg-opacity-10" style="font-size: 12px" placeholder="PEN" disabled>
+                                    <input id="inputMoneda" name="inputMoneda" type="text" class="form-control bg-inverse bg-opacity-10" style="font-size: 12px" disabled>
                                 </div>
                             </div>
                             <div class="col-12 col-sm-8 col-md-8 col-lg-8 text-end">
@@ -261,16 +265,20 @@
                         <thead>
                             <tr>
                                 <th class="border-top-0 pt-0 px-2"></th>
-                                <th class="border-top-0 pt-0 px-2">Código del Artículo</th>
-                                <th class="border-top-0 pt-0 px-2">Descripción del Artículo</th>
-                                <th class="border-top-0 pt-0 px-2">Código de almacén</th>
+                                <th class="border-top-0 pt-0 px-3">Código de Artículo</th>
+                                @*<th class="border-top-0 pt-0 px-2 text-wrap">
+                                    <span class="d-inline-block">Código</span>
+                                    <span class="d-inline-block">del Artículo</span>
+                                </th>*@
+                                <th class="border-top-0 pt-0" style="padding-left: 6rem; padding-right: 6rem;">Descripción de Artículo</th>
+                                <th class="border-top-0 pt-0 px-3">Código de almacén</th>
                                 <th class="border-top-0 pt-0 px-2">Cantidad en almacén</th>
                                 <th class="border-top-0 pt-0 px-2">Stock General</th>
-                                <th class="border-top-0 pt-0 px-2">Código de barras</th>
-                                <th class="border-top-0 pt-0 px-2">Cantidad</th>
-                                <th class="border-top-0 pt-0 px-2">Precio</th>
-                                <th class="border-top-0 pt-0 px-2">Porcentaje de descuento</th>
-                                <th class="border-top-0 pt-0 px-2">IGV</th>
+                                <th class="border-top-0 pt-0 px-4">Código de barras</th>
+                                <th class="border-top-0 pt-0 px-3">Cantidad</th>
+                                <th class="border-top-0 pt-0 px-4">Precio</th>
+                                <th class="border-top-0 pt-0 px-4">Descuento</th>
+                                <th class="border-top-0 pt-0 px-5">IGV</th>
                             </tr>
                         </thead>
                         <tbody id="detalleRow">
@@ -299,20 +307,17 @@
                         <label for="inputTransferenciaGratuita" class="form-label" style="font-size: 12px">Transferencia gratuita</label>
                         <div class="input-group mb-3">
                             <select id="inputTransferenciaGratuita" name="inputTransferenciaGratuita" class="form-select custom-select">
-                                <option selected></option>
                             </select>
                         </div>
                         <label for="inputConsignacion" class="form-label" style="font-size: 12px">Consignación</label>
                         <div class="input-group mb-3">
                             <select id="inputConsignacion" name="inputConsignacion" class="form-select custom-select">
-                                <option selected></option>
                             </select>
                         </div>
                         <div class="mb-3">
                             <label for="inputNumeroOrdenCompra" class="form-label" style="font-size: 12px">Numero de orden de compra</label>
                             <input id="inputNumeroOrdenCompra" name="inputNumeroOrdenCompra" type="text" class="form-control">
                         </div>
-
                     </div>
 
                     <div class="card-arrow">
@@ -331,13 +336,13 @@
 
                     <div class="card-body align-items-center fw-light p-4">
                         <label for="inputTotal" class="form-label" style="font-size: 12px">Total</label>
-                        <input id="inputTotal" name="inputTotal" type="text" class="form-control mb-3 bg-inverse bg-opacity-10" disabled>
+                            <input id="inputTotal" name="inputTotal" type="text" class="form-control mb-3 bg-inverse text-end bg-opacity-10" disabled>
 
                         <label for="inputImpuestos" class="form-label" style="font-size: 12px">Impuestos</label>
-                        <input id="inputImpuestos" name="inputImpuestos" type="text" class="form-control mb-3 bg-inverse bg-opacity-10" disabled>
+                            <input id="inputImpuestos" name="inputImpuestos" type="text" class="form-control mb-3 bg-inverse text-end bg-opacity-10" disabled>
 
                         <label for="inputTotalDocumento" class="form-label" style="font-size: 12px">Total Documento</label>
-                        <input id="inputTotalDocumento" name="inputTotalDocumento" type="text" class="form-control mb-3 bg-inverse bg-opacity-10" disabled>
+                        <input id="inputTotalDocumento" name="inputTotalDocumento" type="text" class="form-control text-end mb-3 bg-inverse bg-opacity-10" disabled>
                     </div>
 
                     <div class="card-arrow">
@@ -369,7 +374,7 @@
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                            <input type="submit" class="btn btn-danger" value="Aceptar">
+                            <input id="btnAceptar" type="submit" class="btn btn-danger" value="Aceptar">
                         </div>
                     </div>
                 </div>

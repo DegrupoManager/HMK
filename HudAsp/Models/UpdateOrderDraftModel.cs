@@ -1,5 +1,6 @@
-﻿public class PreOrderModel
+﻿public class UpdateOrderDraftModel
 {
+    public string? DocEntry { get; set; }
     public string? CardCode { get; set; }
     public string? ContactPersonCode { get; set; }
     public string? NumAtCard { get; set; }
@@ -17,10 +18,10 @@
     public string? U_DGP_DropConsignment { get; set; }
     public string? U_DGP_NumAtCardSup { get; set; }
     public string? U_DGP_OwnerCode { get; set; }
-    public List<DocumentLines>? DocumentLines { get; set; }
+    public List<DocumentLinesUpdate>? DocumentLines { get; set; }
 }
 
-public class DocumentLines
+public class DocumentLinesUpdate
 {
     public string? ItemCode { get; set; }
     public string? WarehouseCode { get; set; }
