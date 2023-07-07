@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using System.Text.Json;
 using System.Text;
+using Microsoft.Extensions.Options;
 
 namespace HudAsp.Controllers
 {
@@ -9,9 +10,17 @@ namespace HudAsp.Controllers
     public class IngresoController : Controller
 	{
 
-		private static readonly HttpClient _client = new HttpClient();
+		//private static readonly HttpClient _client = new HttpClient();
+        private readonly HttpClient _client;
+        private readonly string _apiBaseUrl;
 
-		public IActionResult OrderDraft()
+        public IngresoController(IHttpClientFactory httpClientFactory, IOptions<ApiSettings> apiSettings)
+        {
+            _client = httpClientFactory.CreateClient();
+            _apiBaseUrl = apiSettings.Value.BaseUrl;
+        }
+
+        public IActionResult OrderDraft()
 		{
 
 			if (Request.Cookies.TryGetValue("Rol", out var rol) && (rol == "Revisor" || rol == "Editor"))
@@ -43,7 +52,7 @@ namespace HudAsp.Controllers
 		[HttpGet]
         public async Task<IActionResult> ViewOrderDraft(int id)
         {
-            var apiUrl = $"http://169.47.224.163:5024/api/PreOrders?Id={id}";
+            var apiUrl = $"{_apiBaseUrl}/PreOrders?Id={id}";
             var response = await _client.GetAsync(apiUrl);
             response.EnsureSuccessStatusCode();
             var content = await response.Content.ReadAsStringAsync();
@@ -58,7 +67,7 @@ namespace HudAsp.Controllers
         [HttpGet]
         public async Task<IActionResult> EditOrderDraft(int id)
         {
-            var apiUrl = $"http://169.47.224.163:5024/api/PreOrders?Id={id}";
+            var apiUrl = $"{_apiBaseUrl}/PreOrders?Id={id}";
             var response = await _client.GetAsync(apiUrl);
             response.EnsureSuccessStatusCode();
             var content = await response.Content.ReadAsStringAsync();
@@ -76,7 +85,7 @@ namespace HudAsp.Controllers
 		[Route("api/draft/list")]
 		public async Task<string> GetDraftListAsync()
 		{
-			var request = new HttpRequestMessage(HttpMethod.Get, "http://169.47.224.163:5024/api/preOrders/list");
+			var request = new HttpRequestMessage(HttpMethod.Get, $"{_apiBaseUrl}/preOrders/list");
 			var response = await _client.SendAsync(request);
 			response.EnsureSuccessStatusCode();
 			var content = await response.Content.ReadAsStringAsync();
@@ -88,7 +97,7 @@ namespace HudAsp.Controllers
 		[Route("api/PreOrders/getTransferenciaGratuita")]
 		public async Task<string> GetTrasnferenciaGratuitaAsync()
 		{
-			var request = new HttpRequestMessage(HttpMethod.Get, "http://169.47.224.163:5024/api/PreOrders/getTransferenciaGratuita");
+			var request = new HttpRequestMessage(HttpMethod.Get, $"{_apiBaseUrl}/PreOrders/getTransferenciaGratuita");
 			var response = await _client.SendAsync(request);
 			response.EnsureSuccessStatusCode();
 			var content = await response.Content.ReadAsStringAsync();
@@ -100,7 +109,7 @@ namespace HudAsp.Controllers
 		[Route("api/PreOrders/getConsignacion")]
 		public async Task<string> GetConsignacionAsync()
 		{
-			var request = new HttpRequestMessage(HttpMethod.Get, "http://169.47.224.163:5024/api/PreOrders/getConsignacion");
+			var request = new HttpRequestMessage(HttpMethod.Get, $"{_apiBaseUrl}/PreOrders/getConsignacion");
 			var response = await _client.SendAsync(request);
 			response.EnsureSuccessStatusCode();
 			var content = await response.Content.ReadAsStringAsync();
@@ -112,7 +121,7 @@ namespace HudAsp.Controllers
 		[Route("api/customer/getCustomerById")]
 		public async Task<string> GetCustomerByIdAsync(string customerCode)
 		{
-			var url = $"http://169.47.224.163:5024/api/customer/getCustomerById?customerId={customerCode}";
+			var url = $"{_apiBaseUrl}/customer/getCustomerById?customerId={customerCode}";
 
 			var request = new HttpRequestMessage(HttpMethod.Get, url);
 			var response = await _client.SendAsync(request);
@@ -126,7 +135,7 @@ namespace HudAsp.Controllers
 		[Route("api/customer/getPersonContactsByCustomerId")]
 		public async Task<string> GetPersonContactsByCustomerIdAsync(string customerId)
 		{
-			var url = $"http://169.47.224.163:5024/api/customer/getPersonContactsByCustomerId?customerId={customerId}";
+			var url = $"{_apiBaseUrl}/customer/getPersonContactsByCustomerId?customerId={customerId}";
 
 			var request = new HttpRequestMessage(HttpMethod.Get, url);
 			var response = await _client.SendAsync(request);
@@ -154,7 +163,7 @@ namespace HudAsp.Controllers
 		{
 			var preOrderData = JsonConvert.SerializeObject(DRAFT);
 
-			var request = new HttpRequestMessage(HttpMethod.Post, "http://169.47.224.163:5024/api/PreOrders");
+			var request = new HttpRequestMessage(HttpMethod.Post, $"{_apiBaseUrl}/PreOrders");
 			request.Content = new StringContent(JsonConvert.SerializeObject(DRAFT), Encoding.UTF8, "application/json");
 			var response = await _client.SendAsync(request);
 			response.EnsureSuccessStatusCode();
@@ -169,7 +178,7 @@ namespace HudAsp.Controllers
         {
             var preOrderData = JsonConvert.SerializeObject(DRAFT);
 
-            var request = new HttpRequestMessage(new HttpMethod("PATCH"), "http://169.47.224.163:5024/api/PreOrders");
+            var request = new HttpRequestMessage(new HttpMethod("PATCH"), $"{_apiBaseUrl}/PreOrders");
             request.Content = new StringContent(JsonConvert.SerializeObject(DRAFT), Encoding.UTF8, "application/json");
             var response = await _client.SendAsync(request);
             response.EnsureSuccessStatusCode();
@@ -184,7 +193,7 @@ namespace HudAsp.Controllers
 		[Route("api/product/getProductById")]
 		public async Task<string> GetProductByIdAsync(string productCode)
 		{
-			var url = $"http://169.47.224.163:5024/api/product/getProductById?productId={productCode}";
+			var url = $"{_apiBaseUrl}/product/getProductById?productId={productCode}";
 
 			var request = new HttpRequestMessage(HttpMethod.Get, url);
 			var response = await _client.SendAsync(request);
@@ -198,7 +207,7 @@ namespace HudAsp.Controllers
 		[Route("api/product/getProductList")]
 		public async Task<string> GetProducListAsync()
 		{
-			var request = new HttpRequestMessage(HttpMethod.Get, "http://169.47.224.163:5024/api/product/getProductList");
+			var request = new HttpRequestMessage(HttpMethod.Get, $"{_apiBaseUrl}/product/getProductList");
 			var response = await _client.SendAsync(request);
 			response.EnsureSuccessStatusCode();
 			var content = await response.Content.ReadAsStringAsync();
@@ -210,7 +219,7 @@ namespace HudAsp.Controllers
 		[Route("api/product/getStoragesByProduct")]
 		public async Task<string> GetStoragesByProductAsync(string productCode)
 		{
-			var url = $"http://169.47.224.163:5024/api/product/getStoragesByProductId?productId={productCode}";
+			var url = $"{_apiBaseUrl}/product/getStoragesByProductId?productId={productCode}";
 
 			var request = new HttpRequestMessage(HttpMethod.Get, url);
 			var response = await _client.SendAsync(request);
@@ -224,7 +233,7 @@ namespace HudAsp.Controllers
         [Route("api/PreOrders/getPorcentajeDescuento")]
         public async Task<string> GetPorcentajeDescuentoAsync(string productId, string storageId)
         {
-            var url = $"http://169.47.224.163:5024/api/PreOrders/getPorcentajeDescuento?productId={productId}&storageId={storageId}";
+            var url = $"{_apiBaseUrl}/PreOrders/getPorcentajeDescuento?productId={productId}&storageId={storageId}";
 
             var request = new HttpRequestMessage(HttpMethod.Get, url);
             var response = await _client.SendAsync(request);
@@ -238,7 +247,7 @@ namespace HudAsp.Controllers
         [Route("api/PreOrders/getLineArt")]
         public async Task<string> GetAsync(string codListaPrecio, string productCode, string storageCode)
         {
-            var url = $"http://169.47.224.163:5024/api/PreOrders/getLineArt?codListaPrecio={codListaPrecio}&productId={productCode}&storageId={storageCode}";
+            var url = $"{_apiBaseUrl}/PreOrders/getLineArt?codListaPrecio={codListaPrecio}&productId={productCode}&storageId={storageCode}";
 
             var request = new HttpRequestMessage(HttpMethod.Get, url);
             var response = await _client.SendAsync(request);
@@ -252,7 +261,7 @@ namespace HudAsp.Controllers
 		[Route("api/draft/getSerieDoc")]
 		public async Task<string> GetSerieDocAsync(string serieCode)
 		{
-			var url = $"http://169.47.224.163:5024/api/preOrders/getSerieDoc?SerieCodigo={serieCode}";
+			var url = $"{_apiBaseUrl}/preOrders/getSerieDoc?SerieCodigo={serieCode}";
 
 			var request = new HttpRequestMessage(HttpMethod.Get, url);
 			var response = await _client.SendAsync(request);
@@ -266,7 +275,7 @@ namespace HudAsp.Controllers
 		[Route("api/draft/getSerieList")]
 		public async Task<string> GetSerieListAsync()
 		{
-			var request = new HttpRequestMessage(HttpMethod.Get, "http://169.47.224.163:5024/api/preOrders/getSerieList");
+			var request = new HttpRequestMessage(HttpMethod.Get, $"{_apiBaseUrl}/preOrders/getSerieList");
 			var response = await _client.SendAsync(request);
 			response.EnsureSuccessStatusCode();
 			var content = await response.Content.ReadAsStringAsync();
@@ -278,7 +287,7 @@ namespace HudAsp.Controllers
         [Route("api/preorders/deletePreOrderById")]
         public async Task<string> DeletePreOrderByIAsync(string id)
         {
-            var url = $"http://169.47.224.163:5024/api/PreOrders?Id={id}";
+            var url = $"{_apiBaseUrl}/PreOrders?Id={id}";
 
             var request = new HttpRequestMessage(HttpMethod.Delete, url);
             var response = await _client.SendAsync(request);
@@ -292,7 +301,7 @@ namespace HudAsp.Controllers
         [Route("api/Customer/getCustomerAddressByType")]
         public async Task<string> GetCustomerAddressByTypeAsync(string addressType, string customerId)
         {
-            var url = $"http://169.47.224.163:5024/api/Customer/getCustomerAddressByType?addressType={addressType}&customerId={customerId}";
+            var url = $"{_apiBaseUrl}/Customer/getCustomerAddressByType?addressType={addressType}&customerId={customerId}";
 
             var request = new HttpRequestMessage(HttpMethod.Get, url);
             var response = await _client.SendAsync(request);

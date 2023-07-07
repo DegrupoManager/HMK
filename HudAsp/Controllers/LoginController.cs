@@ -1,14 +1,22 @@
 ﻿using HudAsp.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Net.Http;
 using System.Text;
+using Microsoft.Extensions.Options;
 
 namespace HudAsp.Controllers;
 
 public class LoginController : Controller
 {
+    private readonly string _apiBaseUrl;
+
+    public LoginController(IOptions<ApiSettings> apiSettings)
+    {
+        _apiBaseUrl = apiSettings.Value.BaseUrl;
+    }
     public IActionResult Login()
 	{
 
@@ -87,7 +95,7 @@ public class LoginController : Controller
 				var jsonBody = JsonConvert.SerializeObject(requestBody);
 				var content = new StringContent(jsonBody, Encoding.UTF8, "application/json");
 
-				var loginURL = "http://169.47.224.163:5024/api/auth/login";
+				var loginURL = $"{_apiBaseUrl}/auth/login";
 				var response = httpClient.PostAsync(loginURL, content).GetAwaiter().GetResult();
 
 

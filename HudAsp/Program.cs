@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using HudAsp.Data;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using NuGet.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -36,6 +37,9 @@ builder.Services.ConfigureApplicationCookie(options =>
 
 builder.Services.AddSession();
 builder.Services.AddHttpContextAccessor();
+
+builder.Services.Configure<ApiSettings>(builder.Configuration.GetSection("ApiSettings"));//
+builder.Services.AddHttpClient(); //
 
 //END agregado
 
