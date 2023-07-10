@@ -79,7 +79,7 @@ var handleRenderTableData = function () {
 	});
 
 	var orderData = $('#orderData').data('order');
-	//console.log(orderData);
+	console.log(orderData);
 
 	function calcularTotales() {
 		var total = 0;
@@ -133,10 +133,11 @@ var handleRenderTableData = function () {
 
 		$('#viewCorrelativo').val(orderData[0].DocNumero);
 		$('#textAreaComentario').val(orderData[0].Comentario);
-		//$('#inputNumeroOrdenCompra').val(orderData[0].)
 
 		$('#textAreaDireccionDestino').val(orderData[0].DireEntrega);
 		$('#textAreaDestinatarioFactura').val(orderData[0].DireFactura);
+
+		$('#inputNumeroOrdenCompra').val(orderData[0].OrdenDeCompra);
 
 		/*FECHAS*/
 		$('#viewFechaContabilizacion').val(obtenerFechaSinHora(orderData[0].FechaContabilizacion));

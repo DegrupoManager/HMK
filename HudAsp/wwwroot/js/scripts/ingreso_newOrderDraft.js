@@ -1,6 +1,7 @@
 ﻿
 var handleToastToggle = function () {
 
+	
 	$('#openModalBtn').click(function () {
 		$('#myModal').modal('show');
 	});
@@ -8,6 +9,7 @@ var handleToastToggle = function () {
 	$('#acceptBtn').click(function () {
 		$('#myModal').modal('hide');
 	});
+
 };
 
 var handleRenderDatepicker = function () {
@@ -481,6 +483,8 @@ var handleRenderTypeahead = function () {
 			var selectElement = $('#inputTransferenciaGratuita');
 
 			selectElement.empty();
+			selectElement.append('<option value=""></option>');
+
 
 			dataTransGrat.forEach(function (transGrat) {
 				var option = $('<option></option>');
@@ -523,6 +527,7 @@ var handleRenderTypeahead = function () {
 			var selectElement = $('#inputConsignacion');
 
 			selectElement.empty();
+			selectElement.append('<option value=""></option>');
 
 			dataConsignacion.forEach(function (consignacion) {
 				var option = $('<option></option>');
@@ -678,7 +683,8 @@ var handleRenderTableData = function () {
 	var filaEliminada = [];
 
 	var table = $('#datatableNewOrderDraft').DataTable({
-		lengthMenu: [5, 10, 15, 20],
+		//lengthMenu: [5, 10, 15, 20],
+		pageLength: 100,
 		language: {
 			url: '//cdn.datatables.net/plug-ins/1.13.4/i18n/es-ES.json'
 		},
@@ -709,7 +715,7 @@ var handleRenderTableData = function () {
 
 			var botonAgregar = $('#agregarFilaProducto').on('click', function () {
 
-				counter++;
+				var counter = table.rows().count(); 
 
 				var opciones = `
 					<div class="px-2">
@@ -805,7 +811,6 @@ var handleRenderTableData = function () {
 				$(newRow).find('.eliminarFila').attr('data-row-index', counter);
 
 
-
 				$.typeahead({
 					input: `#inputCodigoArticulo${counter}`,
 					order: "desc",
@@ -834,6 +839,7 @@ var handleRenderTableData = function () {
 
 				filaEliminada.push(rowIndex);
 				table.row(filaActual).remove().draw(false);
+				calcularTotales() 
 			});
 
 			$(document).on('click', '.duplicarFila', function () {
@@ -850,6 +856,7 @@ var handleRenderTableData = function () {
 				nuevaFila.find('[id^=inputDescripcionArticulo]').attr('id', 'inputDescripcionArticulo' + counter);
 
 				table.row.add(nuevaFila).draw(false);
+				calcularTotales() 
 
 			});
 
@@ -876,6 +883,7 @@ var handleRenderTableData = function () {
 			/*END busqueda en input */
 
 			$(document).on('click', '.porCodigoAlmacen', function () {
+
 				var index = $(this).data('index');
 
 				var codListaPrecio = $('#inputCodigoCliente').attr('data-codPriceList');
@@ -1068,30 +1076,6 @@ var handleRenderTableData = function () {
 
 			/*BEGIN Calcular resumen */
 
-			/*
-			function calcularTotales() {
-				var total = 0;
-				var totalImpuestos = 0;
-
-				$('#detalleRow tr').each(function () {
-					var cantidad = parseFloat($(this).find('input[name^="inputCantidad"]').val());
-					var precioUnitario = parseFloat($(this).find('input[name^="inputPrecio"]').val());
-					var descuento = parseFloat($(this).find('input[name^="inputPorcentajeDescuento"]').val());
-
-					var precioDescuento = precioUnitario * (1 - descuento / 100);
-					var subtotal = precioDescuento * cantidad;
-
-					total += subtotal;
-					totalImpuestos += subtotal * impuesto;
-				});
-
-				var totalDocumento = total + totalImpuestos;
-
-				$('#inputTotal').val(total.toFixed(2));
-				$('#inputTotalImpuestos').val(totalImpuestos.toFixed(2));
-				$('#inputTotalDocumento').val(totalDocumento.toFixed(2));
-			}*/
-
 			function calcularTotales() {
 				var total = 0;
 				var totalImpuestos = 0;
@@ -1111,11 +1095,6 @@ var handleRenderTableData = function () {
 					totalImpuestos += subtotalConImpuesto;
 				});
 
-				/*
-				$('#inputTotal').val(total.toFixed(2));
-				$('#inputImpuestos').val(totalImpuestos.toFixed(2));
-				$('#inputTotalDocumento').val((total + totalImpuestos).toFixed(2));*/
-
 				var formattedTotal = total.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 				var formattedTotalImpuestos = totalImpuestos.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 				var formattedTotalDocumento = (total + totalImpuestos).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
@@ -1126,14 +1105,24 @@ var handleRenderTableData = function () {
 
 			}
 
-
 			$(document).on('input', '#detalleRow input[name^="inputCantidad"], #detalleRow input[name^="inputPrecio"], #detalleRow input[name^="inputPorcentajeDescuento"]', function () {
 				calcularTotales();
 			});
 
-
 			/*END Calcular resumen*/
 
+			var changeCount = 0;
+
+			$('#inputCodigoCliente').change(function () {
+				changeCount++;
+
+				if (changeCount >= 2) {
+					var CodPriceList = $(this).attr('data-codPriceList');
+					alert('Cambiar de cliente genera cambios en el detalle')
+				}
+
+				calcularTotales();
+			});
 
 		}
 	});
@@ -1270,10 +1259,112 @@ var handleRenderTableData = function () {
 
 		return fechaFormateada;
 	}
+	$("#formNewOrderDraft").on("submit", function (e) {
+		e.preventDefault();
 
+		var codigo = $('#inputCodigoCliente').val();
+		var personaContacto = $('#inputPersonaContacto').val();
+		var numeroReferencia = $('#inputNumeroReferencia').val();
+		var direccionDestino = $('#inputDireccionDestino').val();
+		var destinatarioFactura = $('#inputDestinatarioFactura').val();
+		var moneda = $('#inputMoneda').val();
+		var serie = $('#inputSerieDoc').val();
+
+		var fechaFormateada = $('#datepicker-default').val();
+		var fechaContabilizacion = formatearFecha(fechaFormateada, 'YYYY-MM-DD');
+
+		var fechaFormateada2 = $('#datepicker-range').val();
+		var fechaEntrega = formatearFecha(fechaFormateada2, 'YYYY-MM-DD');
+
+		var fechaFormateada3 = $('#datepicker-inline').val();
+		var fechaDocumento = formatearFecha(fechaFormateada3, 'YYYY-MM-DD');
+
+		var condicionPago = $('#inputCondicionPago').val();
+		var comentario = $('#textAreaComentario').val();
+
+		var U_HMK_TRANS = $('#inputTransferenciaGratuita').val();
+		var U_DGP_DropConsignment = $('#inputConsignacion').val();
+		var U_DGP_NumAtCardSup = $('#inputNumeroOrdenCompra').val();
+		var U_DGP_OwnerCode = $("#usuarioAplicacion").data("user");
+
+		var nuevaOrdenPreliminar = new OrdenPreliminar(codigo, personaContacto, numeroReferencia, direccionDestino
+			, destinatarioFactura, moneda, fechaContabilizacion, fechaEntrega
+			, fechaDocumento, condicionPago, comentario, serie, U_HMK_TRANS
+			, U_DGP_DropConsignment, U_DGP_NumAtCardSup, U_DGP_OwnerCode);
+
+		$('#detalleRow tr').each(function () {
+			var CodigoArticulo = $(this).find('[name^="inputCodigoArticulo"]').val();
+			var CodigoAlmacen = $(this).find('[name^="inputCodigoAlmacen"]').val();
+			var Precio = $(this).find('[name^="inputPrecio"]').val();
+			var Cantidad = $(this).find('[name^="inputCantidad"]').val();
+			var PorcentajeDescuento = $(this).find('[name^="inputPorcentajeDescuento"]').val();
+			var VatGroup = $(this).find('[name^="inputIGV"]').val();
+
+			nuevaOrdenPreliminar.addDocumentLine(CodigoArticulo, CodigoAlmacen, Precio, Cantidad, PorcentajeDescuento, VatGroup);
+		});
+
+		console.log(nuevaOrdenPreliminar);
+		var DRAFT = JSON.stringify(nuevaOrdenPreliminar);
+
+		console.log(DRAFT);
+
+		$('#myModal').modal('show');
+
+		$('#btnAceptar').on('click', function () {
+
+			$('#loadingSpinner').show();
+
+			$.ajax({
+				url: "/Ingreso/CreatePreOrder",
+				type: "POST",
+				dataType: "json",
+				data: nuevaOrdenPreliminar,
+				success: function (response) {
+					mostrarToastExitoso("La orden de venta preliminar fue creada correctamente.");
+					$('#loadingSpinner').hide();
+				},
+				error: function (xhr, status, error) {
+					mostrarToastError("Se produjo un error en la solicitud.");
+					$('#loadingSpinner').hide();
+				}
+			});
+		});
+
+	});
+
+	function mostrarToastExitoso(mensaje) {
+		$('#myModal').modal('hide');
+		var toast = $('#liveToast');
+		toast.find('.toast-body').text(mensaje);
+		toast.removeClass("alert-danger").addClass("alert-success");
+		toast.toast('show');
+		setTimeout(function () {
+			toast.toast('hide');
+			window.location.href = "/Ingreso/OrderDraft";
+		}, 2000);
+	}
+
+	function mostrarToastError(mensaje) {
+		$('#myModal').modal('hide');
+
+		var toast = $('#liveToast');
+		toast.find('.toast-body').text(mensaje);
+		toast.removeClass("alert-success").addClass("alert-danger");
+		toast.toast('show');
+		setTimeout(function () {
+			toast.toast('hide');
+		}, 2000);
+	}
+
+	/*
 	$("#formNewOrderDraft").on("submit", function (e) {
 
 		e.preventDefault();
+
+		if (validarCampos()) {
+			$('#myModal').modal('hide');
+			return;
+		}
 		
 		var codigo = $('#inputCodigoCliente').val();
 		var personaContacto = $('#inputPersonaContacto').val();
@@ -1347,6 +1438,8 @@ var handleRenderTableData = function () {
 			}, 2000);
 		}
 
+		$('#loadingSpinner').show();
+
 		$.ajax({
 			url: "/Ingreso/CreatePreOrder",
 			type: "POST",
@@ -1354,15 +1447,17 @@ var handleRenderTableData = function () {
 			data: nuevaOrdenPreliminar,
 			success: function (response) {
 				mostrarToastExitoso("La orden de venta preliminar fue creada correctamente.");
+				$('#loadingSpinner').hide();
 			},
 			error: function (xhr, status, error) {
 				mostrarToastError("Se produjo un error en la solicitud.");
+				$('#loadingSpinner').hide();
 			}
 		});
 
 		
 	});
-	
+	*/
 };
 
 

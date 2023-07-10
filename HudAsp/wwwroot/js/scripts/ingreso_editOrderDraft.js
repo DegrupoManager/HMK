@@ -65,13 +65,11 @@ var handleRenderTypeahead = function () {
 		`)
 
 
-		$('#inputSerieDoc').append(`
-			 <option selected>${orderData[0].SeriesNombre}</option>
-		`)
+		$('#inputSerieDoc').val(orderData[0].SerieDocumento);
 
 		$('#inputCorrelativo').val(orderData[0].DocNumero);
 		$('#textAreaComentario').val(orderData[0].Comentario);
-		//$('#inputNumeroOrdenCompra').val(orderData[0].)
+		$('#inputNumeroOrdenCompra').val(orderData[0].OrdenDeCompra);
 
 		$('#textAreaDireccionDestino').val(orderData[0].DireEntrega);
 		$('#textAreaDestinatarioFactura').val(orderData[0].DireFactura);
@@ -85,16 +83,10 @@ var handleRenderTypeahead = function () {
 		$('#inputMoneda').val(orderData[0].Moneda);
 		$('#inputCondicionPago').val(orderData[0].TerminoPago);
 			
-		$('#inputTransGrat').val(orderData[0].DescripcionTransferencia);
-		$('#inputConsignacion').val(orderData[0].DescripcionConsignacion);
-			
-		$('#inputTransGrat').append(`
-			 <option selected>${orderData[0].DescripcionTransferencia}</option>
-		`);
+		$('#inputTransferenciaGratuita').val(orderData[0].IdTransferencia);
+		$('#inputConsignacion').val(orderData[0].IdConsignacion);
 
-		$('#inputConsignacion').append(`
-			 <option selected>${orderData[0].DescripcionConsignacion}</option>
-		`)
+
 	}
 
 	function obtenerFechaSinHora(fechaHora) {
@@ -529,7 +521,7 @@ var handleRenderTypeahead = function () {
 			var selectElement = $('#inputTransferenciaGratuita');
 
 			selectElement.empty();
-
+			selectElement.append('<option value=""></option>');
 			dataTransGrat.forEach(function (transGrat) {
 				var option = $('<option></option>');
 
@@ -571,6 +563,7 @@ var handleRenderTypeahead = function () {
 			var selectElement = $('#inputConsignacion');
 
 			selectElement.empty();
+			selectElement.append('<option value=""></option>');
 
 			dataConsignacion.forEach(function (consignacion) {
 				var option = $('<option></option>');
@@ -649,7 +642,7 @@ var handleRenderTypeahead = function () {
 						selectElement.append(option);
 					}
 				});
-
+				/*
 				getSerieDoc(Series[0].CodSerie)
 					.then(function (serie) {
 						$('#inputCorrelativo').val(serie[0].Correlativo);
@@ -657,7 +650,7 @@ var handleRenderTypeahead = function () {
 					})
 					.catch(function (error) {
 						console.log(error);
-					});
+					});*/
 			})
 			.catch(function (error) {
 				console.log(error);
@@ -1306,7 +1299,16 @@ var handleRenderTableData = function () {
 
 
 			/*END Calcular resumen*/
+			$('#inputCodigoCliente').change(function () {
+				changeCount++;
 
+				if (changeCount >= 2) {
+					var CodPriceList = $(this).attr('data-codPriceList');
+					alert('Cambiar de cliente genera cambios en el detalle')
+				}
+
+				calcularTotales();
+			});
 
 		}
 	});

@@ -1,5 +1,5 @@
 ﻿@{
-	ViewData["Title"] = "QueryPreliminarySalesOrder";
+	ViewData["Title"] = "Consulta";
 }
 
 @section Styles {
@@ -51,7 +51,10 @@
     <script src="~/lib/bootstrap-table/dist/bootstrap-table.min.js"></script>
     <!--END Datatable-->
 
-    <script src="~/js/scripts/consulta_typeahead.js"></script>
+    <script src="~/lib/pdfmake/build/pdfmake.js"></script>
+    <script src="~/lib/pdfmake/build/vfs_fonts.js"></script>
+
+    <script src="~/js/scripts/consulta_Orders.js"></script>
 }
 
 
@@ -65,7 +68,7 @@
 	</div>
 </div>
 
-<form id="formNewOrderDraft">
+<form id="formConsulta">
 <div class="row">
     <div class="col-12 col-sm-12 col-md-12 col-lg-12">
         <div class="card mb-3">
@@ -82,7 +85,7 @@
                                     <div class="typeahead__field">
                                         <div class="typeahead__query input-group">
                                             <span class="input-group-text"><i class="fa fa-search"></i></span>
-                                            <input class="form-control" name="inputCodigoCliente[query]" id="inputCodigoCliente" placeholder="" autocomplete="off">
+                                            <input class="form-control" name="inputCodigoCliente" id="inputCodigoCliente" placeholder="" autocomplete="off">
                                         </div>
                                     </div>
                                 </div>
@@ -93,7 +96,7 @@
                                     <div class="typeahead__field">
                                         <div class="typeahead__query input-group">
                                             <span class="input-group-text"><i class="fa fa-search"></i></span>
-                                            <input class="form-control" name="typeahead_NombreCliente" id="typeahead_NombreCliente" placeholder="" autocomplete="off">
+                                            <input class="form-control" name="inputNombreCliente" id="inputNombreCliente" placeholder="" autocomplete="off">
                                         </div>
                                     </div>
                                 </div>
@@ -104,13 +107,13 @@
                                     <div class="col-6">
                                         <div class="input-group mb-3 w-auto">
                                             <span class="input-group-text" id="basic-addon1"><i class="fa-regular fa-calendar"></i></span>
-                                            <input id="datepicker-inline" name="nombreCliente" type="text" class="form-control">
+                                            <input id="datepicker-inline" name="fechaInicio" type="text" class="form-control">
                                         </div>
                                     </div>
                                     <div class="col-6">
                                         <div class="input-group mb-3 w-auto">
                                             <span class="input-group-text" id="basic-addon1"><i class="fa-regular fa-calendar"></i></span>
-                                                <input id="datepicker-default" name="nombreCliente" type="text" class="form-control">
+                                            <input id="datepicker-default" name="fechaFin" type="text" class="form-control">
                                         </div>
                                     </div>
                                 </div>
@@ -118,24 +121,10 @@
                             <div class="col-12 col-sm-6 col-mb-3 col-lg-3">
                                 <label for="timepicker" class="form-label" style="font-size: 12px">Rango de horas</label>
                                 <div class="input-group">
-                                    <input id="timepicker-inicio" name="timepicker-inicio" type="text" class="form-control" value="10:35 AM">
+                                    <input id="timepicker-inicio" name="timepicker-inicio" type="text" class="form-control">
                                     <span class="input-group-text"><i class="fa-regular fa-clock"></i></span>
-                                    <input id="timepicker-final" name="timepicker-final" type="text" class="form-control" value="10:35 AM">
+                                    <input id="timepicker-final" name="timepicker-final" type="text" class="form-control">
                                 </div>
-                                @*<div class="row gx-3">
-                                    <div class="col-6">
-                                        <div class="input-group mb-3 w-auto bootstrap-timepicker">
-                                            <span class="input-group-text"><i class="fa-regular fa-clock"></i></span>
-                                            <input id="timepicker-inicio" name="timepicker-inicio" type="text" class="form-control" value="10:35 AM">
-                                        </div>
-                                    </div>
-                                    <div class="col-6">
-                                        <div class="input-group mb-3 w-auto bootstrap-timepicker">
-                                            <span class="input-group-text"><i class="fa-regular fa-clock"></i></span>
-                                            <input id="timepicker-final" name="timepicker-final" type="text" class="form-control" value="10:35 AM">
-                                        </div>
-                                    </div>
-                                </div>*@
                             </div>
                         </div>
                          <div class="row gx-4">
@@ -145,7 +134,7 @@
                                     <div class="typeahead__field">
                                         <div class="typeahead__query input-group">
                                             <span class="input-group-text"><i class="fa fa-search"></i></span>
-                                            <input class="form-control" name="typeahead_CodigoProducto" id="typeahead_CodigoProducto" placeholder="" autocomplete="off">
+                                            <input class="form-control" name="inputCodigoProducto" id="inputCodigoProducto" placeholder="" autocomplete="off">
                                         </div>
                                     </div>
                                 </div>
@@ -156,7 +145,7 @@
                                     <div class="typeahead__field">
                                         <div class="typeahead__query input-group">
                                             <span class="input-group-text"><i class="fa fa-search"></i></span>
-                                            <input class="form-control" name="typeahead_DescripcionProducto" id="typeahead_DescripcionProducto" placeholder="" autocomplete="off">
+                                            <input class="form-control" name="inputDescripcionProducto" id="inputDescripcionProducto" placeholder="" autocomplete="off">
                                         </div>
                                     </div>
                                 </div>
@@ -167,15 +156,15 @@
                                     <div class="typeahead__field">
                                         <div class="typeahead__query input-group">
                                             <span class="input-group-text"><i class="fa fa-search"></i></span>
-                                            <input class="form-control" name="typeahead_Vendedor" id="typeahead_Vendedor" placeholder="" autocomplete="off">
+                                            <input class="form-control" name="inputVendedor" id="inputVendedor" placeholder="" autocomplete="off">
                                         </div>
                                     </div>
                                 </div>
                             </div>
                             <div class="col-12 col-sm-6 col-mb-3 col-lg-3">
-                                <label for="inputSerieDoc" class="form-label" style="font-size: 12px">Dirección destino</label>
+                                    <label for="inputDireccion" class="form-label" style="font-size: 12px">Dirección destino</label>
                                 <div class="input-group mb-3">
-                                        <select id="inputSerieDoc" name="inputSerieDoc" class="form-select custom-select">
+                                    <select id="inputDireccion" name="inputDireccion" class="form-select custom-select">
                                         <option selected></option>
                                     </select>
                                 </div>
@@ -188,7 +177,7 @@
                                     <div class="typeahead__field">
                                         <div class="typeahead__query input-group">
                                             <span class="input-group-text"><i class="fa fa-search"></i></span>
-                                            <input class="form-control" name="typeahead_OrdenCompra" id="typeahead_OrdenCompra" placeholder="" autocomplete="off">
+                                            <input class="form-control" name="inputOrdenCompra" id="inputOrdenCompra" placeholder="" autocomplete="off">
                                         </div>
                                     </div>
                                 </div>
@@ -199,7 +188,7 @@
                                     <div class="typeahead__field">
                                         <div class="typeahead__query input-group">
                                             <span class="input-group-text"><i class="fa fa-search"></i></span>
-                                            <input class="form-control" name="typeahead_Comentario" id="typeahead_Comentario" autocomplete="off">
+                                            <input class="form-control" name="inputComentario" id="inputComentario" autocomplete="off">
                                         </div>
                                     </div>
                                 </div>
@@ -210,7 +199,7 @@
                                     <div class="typeahead__field">
                                         <div class="typeahead__query input-group">
                                             <span class="input-group-text"><i class="fa fa-search"></i></span>
-                                            <input class="form-control" name="typeahead_Almacen" id="typeahead_Almacen" placeholder="" autocomplete="off">
+                                            <input class="form-control" name="inputCodigoAlmacen" id="inputCodigoAlmacen" placeholder="" autocomplete="off">
                                         </div>
                                     </div>
                                 </div>
@@ -220,9 +209,9 @@
                     <div class="col-12 col-sm-6 col-mb-2 col-lg-2">
                         <div class="row g-0">
                             <div class="col-12 col-sm-12 col-mb-12 col-lg-12">
-                                <label for="inputSerieDoc" class="form-label" style="font-size: 12px">Estado</label>
+                                <label for="inputEstado" class="form-label" style="font-size: 12px">Estado</label>
                                 <div class="input-group mb-3">
-                                        <select id="inputSerieDoc" name="inputSerieDoc" class="form-select custom-select">
+                                        <select id="inputEstado" name="inputEstado" class="form-select custom-select">
                                         <option selected></option>
                                     </select>
                                 </div>
@@ -230,9 +219,9 @@
                         </div>
                         <div class="row g-0">
                             <div class="col-12 col-sm-12 col-mb-12 col-lg-12">
-                                <label for="inputSerieDoc" class="form-label" style="font-size: 12px">Status</label>
+                                <label for="inputStatus" class="form-label" style="font-size: 12px">Status</label>
                                 <div class="input-group mb-3">
-                                        <select id="inputSerieDoc" name="inputSerieDoc" class="form-select custom-select">
+                                        <select id="inputStatus" name="inputStatus" class="form-select custom-select">
                                         <option selected></option>
                                     </select>
                                 </div>
@@ -264,10 +253,13 @@
 <div class="mb-md-3 d-md-flex">
     <div class="mt-md-0 mt-2">
         <a href="#" class="text-inverse text-opacity-75 text-decoration-none">
-            <i class="fa fa-download fa-fw me-1 text-theme"></i> Exportar PDF / XLS
+            <i class="fa fa-download fa-fw me-1 text-theme"></i> 
+            Exportar 
+            <span id="btnPDF">PDF</span> / <span id="btnXLS">XLS</span>
         </a>
     </div>
 </div>
+
 
 <!--BEGIN RESULTADO-->
 <div class="row mb-2">
@@ -283,7 +275,7 @@
                         <thead>
                             <tr>
                                 <th class="border-top-0 pt-0 pb-2 text-sm">N° de orden</th>
-                                <th class="border-top-0 pt-0 pb-2 text-sm">Codigo de Cliente</th>
+                                <th class="border-top-0 pt-0 pb-2 text-sm">Código de Cliente</th>
                                 <th class="border-top-0 pt-0 pb-2 text-sm">Nombre de Cliente</th>
                                 <th class="border-top-0 pt-0 pb-2 text-sm">Fecha</th>
                                 <th class="border-top-0 pt-0 pb-2 text-sm">Hora</th>
@@ -295,7 +287,6 @@
                                 <th class="border-top-0 pt-0 pb-2 text-sm">Total</th>
                                 <th class="border-top-0 pt-0 pb-2 text-sm">Dirección destino</th>
                                 <th class="border-top-0 pt-0 pb-2 text-sm">Número de entrega</th>
-                                <th class="border-top-0 pt-0 pb-2 text-sm">Número de factura</th>
                             </tr>
                         </thead>
                         <tbody>

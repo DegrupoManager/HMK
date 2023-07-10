@@ -79,21 +79,34 @@ namespace HudAsp.Controllers
             return View();
         }
 
+        [HttpGet]
+        [Route("api/draft/list")]
+        public async Task<string> GetDraftListAsync()
+        {
+            string id = Request.Cookies["Usuario"];
+            string rol = Request.Cookies["Rol"];
 
-		//GET lista de ordenes
-		[HttpGet]
-		[Route("api/draft/list")]
-		public async Task<string> GetDraftListAsync()
-		{
-			var request = new HttpRequestMessage(HttpMethod.Get, $"{_apiBaseUrl}/preOrders/list");
-			var response = await _client.SendAsync(request);
-			response.EnsureSuccessStatusCode();
-			var content = await response.Content.ReadAsStringAsync();
-			return content;
-		}
+            string url;
+            if (rol == "administrador")
+            {
+                url = $"{_apiBaseUrl}/preOrders/list";
+            }
+            else
+            {
+                url = $"{_apiBaseUrl}/preOrders/list?Id={id}";
+            }
 
-		//GET transferencia gratuita
-		[HttpGet]
+            var request = new HttpRequestMessage(HttpMethod.Get, url);
+            var response = await _client.SendAsync(request);
+            response.EnsureSuccessStatusCode();
+            var content = await response.Content.ReadAsStringAsync();
+            return content;
+        }
+
+
+
+        //GET transferencia gratuita
+        [HttpGet]
 		[Route("api/PreOrders/getTransferenciaGratuita")]
 		public async Task<string> GetTrasnferenciaGratuitaAsync()
 		{
@@ -147,10 +160,10 @@ namespace HudAsp.Controllers
 
 		//GET obtener lista clientes
 		[HttpGet]
-		[Route("api/customer/getCustomerList")]
+		[Route("api/customer/getCustomerList2")]
 		public async Task<string> GetCustomerListAsync()
 		{
-			var request = new HttpRequestMessage(HttpMethod.Get, "http://169.47.224.163:5024/api/customer/getCustomerList");
+			var request = new HttpRequestMessage(HttpMethod.Get, $"{_apiBaseUrl}/customer/getCustomerList");
 			var response = await _client.SendAsync(request);
 			response.EnsureSuccessStatusCode();
 			var content = await response.Content.ReadAsStringAsync();

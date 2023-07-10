@@ -42,5 +42,6 @@ public class OrderDraftModel
     public string Comentario { get; set; }
     public string DocNumero { get; set; }
     public string ValorImpuesto { get; set; }
+    public string OrdenDeCompra { get; set; }
 }
 
