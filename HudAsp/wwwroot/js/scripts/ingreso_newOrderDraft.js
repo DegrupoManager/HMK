@@ -198,7 +198,7 @@ var handleRenderTypeahead = function () {
 				.then(function (dataCliente) {
 
 					/*BEGIN Autocompletar */
-					$('#inputCodigoCliente').attr('data-codPriceList', dataCliente.Cod_Lista_Precio)
+					$('#inputCodigoCliente').attr('data-codPriceList', dataCliente.Cod_Lista_Precio);
 					$('#inputNombreCliente').val(dataCliente.Nombre_Cliente);
 
 					var personaContacto = $('#inputPersonaContacto');
