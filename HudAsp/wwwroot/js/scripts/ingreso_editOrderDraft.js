@@ -91,8 +91,22 @@ var handleRenderTypeahead = function () {
 
 	function obtenerFechaSinHora(fechaHora) {
 		var fechaSinHora = fechaHora.match(/^\d{1,2}\/\d{1,2}\/\d{4}/);
-		return fechaSinHora ? fechaSinHora[0] : '';
+		if (fechaSinHora) {
+			var fecha = new Date(fechaSinHora[0]);
+			var dia = fecha.getDate();
+			var mes = fecha.getMonth() + 1;
+			var anio = fecha.getFullYear();
+
+			// Añadir ceros iniciales si es necesario
+			dia = dia < 10 ? '0' + dia : dia;
+			mes = mes < 10 ? '0' + mes : mes;
+
+			return dia + '/' + mes + '/' + anio;
+		} else {
+			return '';
+		}
 	}
+
 
 	function getCustomerList(){
 		return new Promise(function (resolve, reject) {
@@ -714,44 +728,44 @@ var handleRenderTableData = function () {
 
 			var input04 = `
 				<div class="input-group px-4">
-				  <input value="${item.CantidadAlmacen}" class="form-control bg-inverse bg-opacity-10" id="inputCantidadAlmacen${counter}" style="text-align: center;" disabled>
+				  <input value="${item.CantidadAlmacen}" class="form-control bg-inverse bg-opacity-10" id="inputCantidadAlmacen${counter}" style="text-align: center;" autocomplete="off" disabled>
 				</div>
 			  `;
 
 			var input05 = `
 				<div class="input-group px-2">
-				  <input value="${item.StockGeneral}" class="form-control bg-inverse bg-opacity-10" id="inputStockAlmacen${counter}" style="text-align: center;" disabled>
+				  <input value="${item.StockGeneral}" class="form-control bg-inverse bg-opacity-10" id="inputStockAlmacen${counter}" style="text-align: center;" autocomplete="off" disabled>
 				</div>
 			  `;
 
 			var input06 = `
 				<div class="input-group px-2">
-				  <input value="${item.CodigodeBarra}" class="form-control bg-inverse bg-opacity-10" id="inputCodigoBarras${counter}" style="text-align: center;" disabled>
+				  <input value="${item.CodigodeBarra}" class="form-control bg-inverse bg-opacity-10" id="inputCodigoBarras${counter}" style="text-align: center;" autocomplete="off" disabled>
 				</div>
 			  `;
 
 			var input07 = `
 				<div class="input-group px-2">
-				  <input value="${item.Cantidad}" class="form-control" name="inputCantidad${counter}" id="inputCantidad${counter}" style="text-align: center;">
+				  <input value="${item.Cantidad}" class="form-control" name="inputCantidad${counter}" id="inputCantidad${counter}" style="text-align: center;" autocomplete="off">
 				</div>
 			  `;
 
 			var input08 = `
 				<div class="input-group">
-				  <input value="${item.PrecioUnitario}" class="form-control bg-inverse bg-opacity-10" name="inputPrecio${counter}" id="inputPrecio${counter}" style="text-align: center;" disabled>
+				  <input value="${item.PrecioUnitario}" class="form-control bg-inverse bg-opacity-10" name="inputPrecio${counter}" id="inputPrecio${counter}" style="text-align: center;" autocomplete="off" disabled>
 				</div>
 			  `;
 
 			var input09 = `
 				<div class="input-group">
 				  <span class="input-group-text">%</span>
-				  <input value="${item.Descuento}" class="form-control" name="inputPorcentajeDescuento${counter}" id="inputPorcentajeDescuento${counter}" style="text-align: center;">
+				  <input value="${item.Descuento}" class="form-control" name="inputPorcentajeDescuento${counter}" id="inputPorcentajeDescuento${counter}" style="text-align: center;" autocomplete="off">
 				</div>
 			  `;
 
 			var input10 = `
 				<div class="input-group">
-				  <input data-valor="${item.ValorImpuesto}" value="${item.IndicadorImpuesto}" class="form-control bg-inverse bg-opacity-10" name="inputIGV${counter}" id="inputIGV${counter}" style="text-align: center;" disabled>
+				  <input data-valor="${item.ValorImpuesto}" value="${item.IndicadorImpuesto}" class="form-control bg-inverse bg-opacity-10" name="inputIGV${counter}" id="inputIGV${counter}" style="text-align: center;" autocomplete="off" disabled>
 				</div>
 			  `;
 
@@ -868,7 +882,8 @@ var handleRenderTableData = function () {
 	var filaEliminada = [];
 
 	var table = $('#datatableNewOrderDraft').DataTable({
-		lengthMenu: [5, 10, 15, 20],
+		//lengthMenu: [5, 10, 15, 20],
+		pageLength: 100,
 		language: {
 			url: '//cdn.datatables.net/plug-ins/1.13.4/i18n/es-ES.json'
 		},
@@ -951,44 +966,44 @@ var handleRenderTableData = function () {
 
 				var input04 = `
 					<div class="input-group px-4">
-                        <input class="form-control bg-inverse bg-opacity-10" id="inputCantidadAlmacen${counter}" style="text-align: center;" disabled>
+                        <input class="form-control bg-inverse bg-opacity-10" id="inputCantidadAlmacen${counter}" style="text-align: center;" autocomplete="off" disabled>
                     </div>
 				`;
 
 				var input05 = `
 					<div class="input-group px-2">
-                        <input class="form-control bg-inverse bg-opacity-10" id="inputStockAlmacen${counter}" style="text-align: center;" disabled>
+                        <input class="form-control bg-inverse bg-opacity-10" id="inputStockAlmacen${counter}" style="text-align: center;" autocomplete="off" disabled>
                     </div>
 				`;
 
 				var input06 = `
 					<div class="input-group px-2">
-                        <input class="form-control bg-inverse bg-opacity-10" id="inputCodigoBarras${counter}" style="text-align: center;" disabled>
+                        <input class="form-control bg-inverse bg-opacity-10" id="inputCodigoBarras${counter}" style="text-align: center;" autocomplete="off" disabled>
                     </div>
 				`;
 
 				var input07 = `
 					<div class="input-group px-2">
-                        <input class="form-control" name="inputCantidad${counter}" id="inputCantidad${counter}" style="text-align: center;">
+                        <input class="form-control" name="inputCantidad${counter}" id="inputCantidad${counter}" style="text-align: center;" autocomplete="off">
                     </div>
 				`;
 
 				var input08 = `
 					<div class="input-group">
-                        <input class="form-control bg-inverse bg-opacity-10" name="inputPrecio${counter}" id="inputPrecio${counter}" style="text-align: center;" disabled>
+                        <input class="form-control bg-inverse bg-opacity-10" name="inputPrecio${counter}" id="inputPrecio${counter}" style="text-align: center;" autocomplete="off" disabled>
                     </div>
 				`;
 
 				var input09 = `
 					<div class="input-group">
 						<span class="input-group-text">%</span>
-                        <input class="form-control" name="inputPorcentajeDescuento${counter}" id="inputPorcentajeDescuento${counter}" style="text-align: center;">
+                        <input class="form-control" name="inputPorcentajeDescuento${counter}" id="inputPorcentajeDescuento${counter}" style="text-align: center;" autocomplete="off">
                     </div>
 				`;
 
 				var input10 = `
 					<div class="input-group">
-                        <input class="form-control bg-inverse bg-opacity-10" name="inputIGV${counter}" id="inputIGV${counter}" style="text-align: center;" disabled>
+                        <input class="form-control bg-inverse bg-opacity-10" name="inputIGV${counter}" id="inputIGV${counter}" style="text-align: center;" autocomplete="off" disabled>
                     </div>
 				`;
 
@@ -1522,6 +1537,8 @@ var handleRenderTableData = function () {
 				//window.location.href = "/Ingreso/OrderDraft";
 			}, 2000);
 		}
+
+		console.log(nuevaOrdenPreliminar);
 
 		$.ajax({
 			url: "/Ingreso/UpdatePreOrder",

@@ -139,7 +139,7 @@
                                 <div class="col-12 col-sm-6 col-md-4 col-lg-4">
                                     <label for="inputPersonaContacto" class="form-label" style="font-size: 12px">Persona de contacto</label>
                                     <div class="input-group mb-3">
-                                        <select id="inputPersonaContacto" name="inputPersonaContacto" class="form-select custom-select">
+                                        <select id="inputPersonaContacto" name="inputPersonaContacto" class="form-select custom-select" autocomplete="off">
                                             @*<option selected></option>*@
                                         </select>
                                     </div>
@@ -152,23 +152,22 @@
                                         <div class="container-fluid px-0 mx-0 nowrap">
                                             <div class="input-group" sytle="flex-wrap: nowrap;">
                                                 <span class="input-group-text"><i class="fa-solid fa-magnifying-glass"></i></span>
-                                                <input id="inputNumeroReferencia" name="inputNumeroReferencia" type="text" class="form-control w-75" required>
+                                                <input id="inputNumeroReferencia" name="inputNumeroReferencia" type="text" class="form-control w-75" autocomplete="off">
                                             </div>
                                         </div>
                                     </div>
-
                                     <div class="row g-2">
                                         <div class="col-6">
                                             <label for="inputSerieDoc" class="form-label" style="font-size: 12px">Serie de doc.</label>
                                             <div class="input-group mb-3">
-                                                <select id="inputSerieDoc" name="inputSerieDoc" class="form-select custom-select" required>
+                                                <select id="inputSerieDoc" name="inputSerieDoc" class="form-select custom-select" autocomplete="off" required>
                                                 </select>
                                             </div>
                                         </div>
                                         <div class="col-6">
                                             <label for="inputCorrelativo" class="form-label" style="font-size: 12px">Correlativo</label>
                                             <div class="input-group mb-3">
-                                                <input id="inputCorrelativo" name="inputCorrelativo" type="text" class="form-control bg-inverse bg-opacity-10" disabled>
+                                                <input id="inputCorrelativo" name="inputCorrelativo" type="text" class="form-control bg-inverse bg-opacity-10" autocomplete="off" disabled>
                                             </div>
                                         </div>
                                     </div>
@@ -176,7 +175,7 @@
                                 <div class="col-12 col-sm-6 col-md-4 col-lg-4" style="width: 38%;">
                                     <label for="inputDireccionDestino" class="form-label" style="font-size: 12px">Dirección destino</label>
                                     <div class="input-group mb-3">
-                                        <select id="inputDireccionDestino" name="inputDireccionDestino" class="form-select custom-select" required>
+                                        <select id="inputDireccionDestino" name="inputDireccionDestino" class="form-select custom-select">
                                             @*<option selected></option>*@
                                         </select>
                                     </div>
@@ -199,7 +198,7 @@
                                     <label for="inputFechaContabilizacion" class="form-label" style="font-size: 12px">Fecha de Contabilización</label>
                                     <div class="input-group text-end mb-2">
                                         <span class="input-group-text"><i class="fa-regular fa-calendar"></i></span>
-                                        <input type="text" class="form-control" id="datepicker-default" name="inputFechaContabilizacion" placeholder="dd/mm/yyyy" required>
+                                        <input type="text" class="form-control" id="datepicker-default" name="inputFechaContabilizacion" autocomplete="off" placeholder="dd/mm/yyyy" required>
                                     </div>
                                 </div>
                             </div>
@@ -208,7 +207,7 @@
                                     <label for="inputFechaEntrega" class="form-label" style="font-size: 12px">Fecha de Entrega</label>
                                     <div class="input-group text-end mb-2">
                                         <span class="input-group-text"><i class="fa-regular fa-calendar"></i></span>
-                                        <input type="text" class="form-control" id="datepicker-range" name="inputFechaEntrega" placeholder="dd/mm/yyyy" required>
+                                        <input type="text" class="form-control" id="datepicker-range" name="inputFechaEntrega" autocomplete="off" placeholder="dd/mm/yyyy" required>
                                     </div>
                                 </div>
                             </div>
@@ -217,7 +216,7 @@
                                     <label for="inputFechaDocumento" class="form-label" style="font-size: 12px">Fecha de Documento</label>
                                     <div class="input-group text-end mb-2">
                                         <span class="input-group-text" id="basic-addon1"><i class="fa-regular fa-calendar"></i></span>
-                                        <input type="text" class="form-control" id="datepicker-inline" name="inputFechaDocumento" placeholder="dd/mm/yyyy" required>
+                                        <input type="text" class="form-control" id="datepicker-inline" name="inputFechaDocumento" autocomplete="off" placeholder="dd/mm/yyyy" required>
                                     </div>
                                 </div>
                             </div>
@@ -240,7 +239,7 @@
                             <div class="row g-2 mb-2">
                                 <div class="col-12 col-sm-12 col-md-12 col-lg-12">
                                     <label for="textAreaComentario" class="form-label" style="font-size: 12px">Comentario</label>
-                                    <textarea class="form-control" style="resize: none;" id="textAreaComentario" name="textAreaComentario" rows="5"></textarea>
+                                    <textarea class="form-control" style="resize: none;" id="textAreaComentario" name="textAreaComentario" autocomplete="off" rows="5"></textarea>
                                 </div>
                             </div>
                         </div>

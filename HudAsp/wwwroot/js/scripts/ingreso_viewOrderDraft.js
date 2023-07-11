@@ -44,11 +44,25 @@ var handleRenderTableData = function () {
 
 	function obtenerFechaSinHora(fechaHora) {
 		var fechaSinHora = fechaHora.match(/^\d{1,2}\/\d{1,2}\/\d{4}/);
-		return fechaSinHora ? fechaSinHora[0] : '';
+		if (fechaSinHora) {
+			var fecha = new Date(fechaSinHora[0]);
+			var dia = fecha.getDate();
+			var mes = fecha.getMonth() + 1;
+			var anio = fecha.getFullYear();
+
+			// Añadir ceros iniciales si es necesario
+			dia = dia < 10 ? '0' + dia : dia;
+			mes = mes < 10 ? '0' + mes : mes;
+
+			return dia + '/' + mes + '/' + anio;
+		} else {
+			return '';
+		}
 	}
 
 	var table = $('#datatableNewOrderDraft').DataTable({
-		lengthMenu: [5, 10, 15, 20],
+		//lengthMenu: [5, 10, 15, 20],
+		pageLength: 100,
 		language: {
 			url: '//cdn.datatables.net/plug-ins/1.13.4/i18n/es-ES.json'
 		},
@@ -79,7 +93,7 @@ var handleRenderTableData = function () {
 	});
 
 	var orderData = $('#orderData').data('order');
-	console.log(orderData);
+	//console.log(orderData);
 
 	function calcularTotales() {
 		var total = 0;
@@ -263,142 +277,6 @@ var handleRenderTableData = function () {
 	}
 
 
-	function formatearFecha(fecha, formato) {
-		var partesFecha = fecha.split('/');
-		var dia = partesFecha[1];
-		var mes = partesFecha[0];
-		var anio = partesFecha[2];
-
-		var fechaFormateada = '';
-
-		switch (formato) {
-			case 'YYYY-MM-DD':
-				fechaFormateada = anio + '-' + dia + '-' + mes;
-				break;
-			case 'DD-MM-YYYY':
-				fechaFormateada = dia + '-' + mes + '-' + anio;
-				break;
-
-			default:
-				fechaFormateada = fecha;
-				break;
-		}
-
-		return fechaFormateada;
-	}
-
-
-	$("#formNewOrderDraft").on("submit", function (e) {
-
-		e.preventDefault();
-
-		var codigo = $('#inputCodigoCliente').val();
-		var personaContacto = $('#inputPersonaContacto').val();
-		var numeroReferencia = $('#inputNumeroReferencia').val();
-		var direccionDestino = $('#inputDireccionDestino').val();
-		var destinatarioFactura = $('#inputDestinatarioFactura').val();
-		var moneda = $('#inputMoneda').val();
-		var serie = $('#inputSerieDoc').val();
-
-		var fechaFormateada = $('#datepicker-default').val();
-		var fechaContabilizacion = formatearFecha(fechaFormateada, 'YYYY-MM-DD');
-
-		var fechaFormateada2 = $('#datepicker-range').val();
-		var fechaEntrega = formatearFecha(fechaFormateada2, 'YYYY-MM-DD');
-
-		var fechaFormateada3 = $('#datepicker-inline').val();
-		var fechaDocumento = formatearFecha(fechaFormateada3, 'YYYY-MM-DD');
-
-		var condicionPago = $('#inputCondicionPago').val();
-		var comentario = $('#textAreaComentario').val();
-
-		var nuevaOrdenPreliminar = new OrdenPreliminar(codigo, personaContacto, numeroReferencia, direccionDestino, destinatarioFactura, moneda, fechaContabilizacion, fechaEntrega, fechaDocumento, condicionPago, comentario, serie);
-
-		$('#detalleRow tr').each(function () {
-			var CodigoArticulo = $(this).find('[name^="inputCodigoArticulo"]').val();
-			var CodigoAlmacen = $(this).find('[name^="inputCodigoAlmacen"]').val();
-			var Precio = $(this).find('[name^="inputPrecio"]').val();
-			var Cantidad = $(this).find('[name^="inputCantidad"]').val();
-			var PorcentajeDescuento = $(this).find('[name^="inputPorcentajeDescuento"]').val();
-			var VatGroup = $(this).find('[name^="inputIGV"]').val();
-
-			nuevaOrdenPreliminar.addDocumentLine(CodigoArticulo, CodigoAlmacen, Precio, Cantidad, PorcentajeDescuento, VatGroup);
-		});
-
-		//console.log(nuevaOrdenPreliminar);
-
-		var dataDraft = JSON.stringify(nuevaOrdenPreliminar);
-
-		//console.log(dataDraft);
-
-		var DRAFT = {
-			CardCode: nuevaOrdenPreliminar.CardCode,
-			ContactPersonCode: nuevaOrdenPreliminar.ContactPersonCode,
-			NumAtCard: nuevaOrdenPreliminar.NumAtCard,
-			ShipToCode: nuevaOrdenPreliminar.ShipToCode,
-			PayToCode: nuevaOrdenPreliminar.PayToCode,
-			DocCurrency: nuevaOrdenPreliminar.DocCurrency,
-			DocObjectCode: 17,
-			DocDate: nuevaOrdenPreliminar.DocDate,
-			DocDueDate: nuevaOrdenPreliminar.DocDueDate,
-			TaxDate: nuevaOrdenPreliminar.TaxDate,
-			GroupNum: nuevaOrdenPreliminar.GroupNum,
-			Comments: nuevaOrdenPreliminar.Comments,
-			Series: nuevaOrdenPreliminar.Series,
-			DocumentLines:
-				[
-					{
-						ItemCode: nuevaOrdenPreliminar.DocumentLines[0].ItemCode,
-						WarehouseCode: nuevaOrdenPreliminar.DocumentLines[0].WarehouseCode,
-						UnitPrice: nuevaOrdenPreliminar.DocumentLines[0].UnitPrice,
-						Quantity: nuevaOrdenPreliminar.DocumentLines[0].Quantity,
-						DiscountPercent: nuevaOrdenPreliminar.DocumentLines[0].DiscountPercent,
-						VatGroup: nuevaOrdenPreliminar.DocumentLines[0].VatGroup
-					}
-				]
-		};
-
-
-		function mostrarToastExitoso(mensaje) {
-			$('#myModal').modal('hide');
-			var toast = $('#liveToast');
-			toast.find('.toast-body').text(mensaje);
-			toast.removeClass("alert-danger").addClass("alert-success");
-			toast.toast('show');
-			setTimeout(function () {
-				toast.toast('hide');
-				window.location.href = "/Ingreso/OrderDraft";
-			}, 2000);
-		}
-
-		function mostrarToastError(mensaje) {
-			$('#myModal').modal('hide');
-
-			var toast = $('#liveToast');
-			toast.find('.toast-body').text(mensaje);
-			toast.removeClass("alert-success").addClass("alert-danger");
-			toast.toast('show');
-			setTimeout(function () {
-				toast.toast('hide');
-				//window.location.href = "/Ingreso/OrderDraft";
-			}, 2000);
-		}
-
-		$.ajax({
-			url: "/Ingreso/CreatePreOrder",
-			type: "POST",
-			dataType: "json",
-			data: DRAFT,
-			success: function (response) {
-				mostrarToastExitoso("La orden de venta preliminar fue creada correctamente.");
-			},
-			error: function (xhr, status, error) {
-				mostrarToastError("Se produjo un error en la solicitud.");
-			}
-		});
-
-
-	});
 
 };
 

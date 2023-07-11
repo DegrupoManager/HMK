@@ -764,44 +764,44 @@ var handleRenderTableData = function () {
 
 				var input04 = `
 					<div class="input-group px-4">
-                        <input class="form-control bg-inverse bg-opacity-10" id="inputCantidadAlmacen${counter}" style="text-align: center;" disabled>
+                        <input class="form-control bg-inverse bg-opacity-10" id="inputCantidadAlmacen${counter}" style="text-align: center;" autocomplete="off" disabled>
                     </div>
 				`;
 
 				var input05 = `
 					<div class="input-group px-2">
-                        <input class="form-control bg-inverse bg-opacity-10" id="inputStockAlmacen${counter}" style="text-align: center;" disabled>
+                        <input class="form-control bg-inverse bg-opacity-10" id="inputStockAlmacen${counter}" style="text-align: center;" autocomplete="off" disabled>
                     </div>
 				`;
 
 				var input06 = `
 					<div class="input-group px-2">
-                        <input class="form-control bg-inverse bg-opacity-10" id="inputCodigoBarras${counter}" style="text-align: center;" disabled>
+                        <input class="form-control bg-inverse bg-opacity-10" id="inputCodigoBarras${counter}" style="text-align: center;" autocomplete="off" disabled>
                     </div>
 				`;
 
 				var input07 = `
 					<div class="input-group px-2">
-                        <input class="form-control" name="inputCantidad${counter}" id="inputCantidad${counter}" style="text-align: center;">
+                        <input class="form-control" name="inputCantidad${counter}" id="inputCantidad${counter}" style="text-align: center;" autocomplete="off">
                     </div>
 				`;
 
 				var input08 = `
 					<div class="input-group">
-                        <input class="form-control bg-inverse bg-opacity-10" name="inputPrecio${counter}" id="inputPrecio${counter}" style="text-align: center;" disabled>
+                        <input class="form-control bg-inverse bg-opacity-10" name="inputPrecio${counter}" id="inputPrecio${counter}" style="text-align: center;" autocomplete="off" disabled>
                     </div>
 				`;
 
 				var input09 = `
 					<div class="input-group">
 						<span class="input-group-text">%</span>
-                        <input class="form-control" name="inputPorcentajeDescuento${counter}" id="inputPorcentajeDescuento${counter}" style="text-align: center;">
+                        <input class="form-control" name="inputPorcentajeDescuento${counter}" id="inputPorcentajeDescuento${counter}" style="text-align: center;" autocomplete="off">
                     </div>
 				`;
 
 				var input10 = `
 					<div class="input-group">
-                        <input class="form-control bg-inverse bg-opacity-10" name="inputIGV${counter}" id="inputIGV${counter}" style="text-align: center;" disabled>
+                        <input class="form-control bg-inverse bg-opacity-10" name="inputIGV${counter}" id="inputIGV${counter}" style="text-align: center;" autocomplete="off" disabled>
                     </div>
 				`;
 
@@ -1356,108 +1356,6 @@ var handleRenderTableData = function () {
 		}, 2000);
 	}
 
-	/*
-	$("#formNewOrderDraft").on("submit", function (e) {
-
-		e.preventDefault();
-
-		if (validarCampos()) {
-			$('#myModal').modal('hide');
-			return;
-		}
-		
-		var codigo = $('#inputCodigoCliente').val();
-		var personaContacto = $('#inputPersonaContacto').val();
-		var numeroReferencia = $('#inputNumeroReferencia').val();
-		var direccionDestino = $('#inputDireccionDestino').val();
-		var destinatarioFactura = $('#inputDestinatarioFactura').val();
-		var moneda = $('#inputMoneda').val();
-		var serie = $('#inputSerieDoc').val();
-
-		var fechaFormateada = $('#datepicker-default').val();
-		var fechaContabilizacion = formatearFecha(fechaFormateada, 'YYYY-MM-DD');
-
-		var fechaFormateada2 = $('#datepicker-range').val();
-		var fechaEntrega = formatearFecha(fechaFormateada2, 'YYYY-MM-DD');
-
-		var fechaFormateada3 = $('#datepicker-inline').val();
-		var fechaDocumento = formatearFecha(fechaFormateada3, 'YYYY-MM-DD');
-
-		var condicionPago = $('#inputCondicionPago').val();
-		var comentario = $('#textAreaComentario').val();
-
-		var U_HMK_TRANS = $('#inputTransferenciaGratuita').val();
-		var U_DGP_DropConsignment = $('#inputConsignacion').val();
-		var U_DGP_NumAtCardSup = $('#inputNumeroOrdenCompra').val();
-		var U_DGP_OwnerCode = $("#usuarioAplicacion").data("user");
-
-		var nuevaOrdenPreliminar = new OrdenPreliminar(codigo, personaContacto, numeroReferencia, direccionDestino
-													, destinatarioFactura, moneda, fechaContabilizacion, fechaEntrega
-													, fechaDocumento, condicionPago, comentario, serie, U_HMK_TRANS
-													, U_DGP_DropConsignment, U_DGP_NumAtCardSup, U_DGP_OwnerCode);
-
-		$('#detalleRow tr').each(function () {
-			var CodigoArticulo = $(this).find('[name^="inputCodigoArticulo"]').val();
-			var CodigoAlmacen = $(this).find('[name^="inputCodigoAlmacen"]').val();
-			var Precio = $(this).find('[name^="inputPrecio"]').val();
-			var Cantidad = $(this).find('[name^="inputCantidad"]').val();
-			var PorcentajeDescuento = $(this).find('[name^="inputPorcentajeDescuento"]').val();
-			var VatGroup = $(this).find('[name^="inputIGV"]').val();
-
-			nuevaOrdenPreliminar.addDocumentLine(CodigoArticulo, CodigoAlmacen, Precio, Cantidad, PorcentajeDescuento, VatGroup);
-		});
-
-		//console.log(nuevaOrdenPreliminar);
-
-		var DRAFT = JSON.stringify(nuevaOrdenPreliminar);
-
-		console.log(DRAFT);
-
-		function mostrarToastExitoso(mensaje) {
-			$('#myModal').modal('hide');
-			var toast = $('#liveToast');
-			toast.find('.toast-body').text(mensaje);
-			toast.removeClass("alert-danger").addClass("alert-success");
-			toast.toast('show');
-			setTimeout(function () {
-				toast.toast('hide');
-				window.location.href = "/Ingreso/OrderDraft";
-			}, 2000);
-		}
-
-		function mostrarToastError(mensaje) {
-			$('#myModal').modal('hide');
-
-			var toast = $('#liveToast');
-			toast.find('.toast-body').text(mensaje);
-			toast.removeClass("alert-success").addClass("alert-danger");
-			toast.toast('show');
-			setTimeout(function () {
-				toast.toast('hide');
-				//window.location.href = "/Ingreso/OrderDraft";
-			}, 2000);
-		}
-
-		$('#loadingSpinner').show();
-
-		$.ajax({
-			url: "/Ingreso/CreatePreOrder",
-			type: "POST",
-			dataType: "json",
-			data: nuevaOrdenPreliminar,
-			success: function (response) {
-				mostrarToastExitoso("La orden de venta preliminar fue creada correctamente.");
-				$('#loadingSpinner').hide();
-			},
-			error: function (xhr, status, error) {
-				mostrarToastError("Se produjo un error en la solicitud.");
-				$('#loadingSpinner').hide();
-			}
-		});
-
-		
-	});
-	*/
 };
 
 

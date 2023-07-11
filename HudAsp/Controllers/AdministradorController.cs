@@ -6,7 +6,7 @@ namespace HudAsp.Controllers
 	{
 		public IActionResult User()
 		{
-			if (Request.Cookies.TryGetValue("Rol", out var rol) && (rol == "Revisor" || rol == "Editor"))
+			if (Request.Cookies.TryGetValue("Rol", out var rol) && (rol == "Revisor" || rol == "Editor" || rol == "Administrador"))
 			{
 
 				return View();
@@ -20,7 +20,7 @@ namespace HudAsp.Controllers
 
 		public IActionResult NewUser()
 		{
-			if (Request.Cookies.TryGetValue("Rol", out var rol) && (rol == "Revisor" || rol == "Editor"))
+			if (Request.Cookies.TryGetValue("Rol", out var rol) && (rol == "Revisor" || rol == "Editor" || rol == "Administrador"))
 			{
 
 				return View();

@@ -23,7 +23,7 @@ namespace HudAsp.Controllers
         public IActionResult OrderDraft()
 		{
 
-			if (Request.Cookies.TryGetValue("Rol", out var rol) && (rol == "Revisor" || rol == "Editor"))
+			if (Request.Cookies.TryGetValue("Rol", out var rol) && (rol == "Revisor" || rol == "Editor" || rol == "Administrador"))
 			{
 
 				return View();
@@ -37,7 +37,7 @@ namespace HudAsp.Controllers
 
 		public IActionResult NewOrderDraft()
 		{
-			if (Request.Cookies.TryGetValue("Rol", out var rol) && (rol == "Revisor" || rol == "Editor"))
+			if (Request.Cookies.TryGetValue("Rol", out var rol) && (rol == "Revisor" || rol == "Editor" || rol == "Administrador"))
 			{
 
 				return View();
@@ -87,9 +87,9 @@ namespace HudAsp.Controllers
             string rol = Request.Cookies["Rol"];
 
             string url;
-            if (rol == "administrador")
+            if (rol == "Administrador")
             {
-                url = $"{_apiBaseUrl}/preOrders/list";
+                url = $"{_apiBaseUrl}/preOrders/list?Id=";
             }
             else
             {
