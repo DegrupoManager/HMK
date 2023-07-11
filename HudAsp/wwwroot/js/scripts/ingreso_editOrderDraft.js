@@ -746,7 +746,7 @@ var handleRenderTableData = function () {
 
 			var input07 = `
 				<div class="input-group px-2">
-				  <input value="${item.Cantidad}" class="form-control" name="inputCantidad${counter}" id="inputCantidad${counter}" style="text-align: center;" autocomplete="off">
+				  <input value="${item.Cantidad}" class="form-control" name="inputCantidad${counter}" id="inputCantidad${counter}" style="text-align: center;" autocomplete="off" required>
 				</div>
 			  `;
 
@@ -984,7 +984,7 @@ var handleRenderTableData = function () {
 
 				var input07 = `
 					<div class="input-group px-2">
-                        <input class="form-control" name="inputCantidad${counter}" id="inputCantidad${counter}" style="text-align: center;" autocomplete="off">
+                        <input class="form-control" name="inputCantidad${counter}" id="inputCantidad${counter}" style="text-align: center;" autocomplete="off" required>
                     </div>
 				`;
 
@@ -1042,6 +1042,7 @@ var handleRenderTableData = function () {
 
 				filaEliminada.push(rowIndex);
 				table.row(filaActual).remove().draw(false);
+				calcularTotales();
 			});
 
 			$(document).on('click', '.duplicarFila', function () {
@@ -1058,7 +1059,7 @@ var handleRenderTableData = function () {
 				nuevaFila.find('[id^=inputDescripcionArticulo]').attr('id', 'inputDescripcionArticulo' + counter);
 
 				table.row.add(nuevaFila).draw(false);
-
+				calcularTotales();
 			});
 
 
@@ -1280,9 +1281,22 @@ var handleRenderTableData = function () {
 				var totalImpuestos = 0;
 
 				$('#detalleRow tr').each(function () {
-					var cantidad = parseFloat($(this).find('input[name^="inputCantidad"]').val());
+					var cantidad = $(this).find('[name^="inputCantidad"]').val();
+					if (cantidad == '') {
+						cantidad = 0;
+					} else {
+						cantidad = parseFloat($(this).find('input[name^="inputCantidad"]').val());
+					}
+
 					var precioUnitario = parseFloat($(this).find('input[name^="inputPrecio"]').val());
-					var descuento = parseFloat($(this).find('input[name^="inputPorcentajeDescuento"]').val());
+
+					var descuento = $(this).find('[name^="inputPorcentajeDescuento"]').val();
+					if (descuento == '') {
+						descuento = 0;
+					} else {
+						descuento = parseFloat($(this).find('input[name^="inputPorcentajeDescuento"]').val());
+					}
+
 					var igv = parseFloat($(this).find('input[name^="inputIGV"]').data("valor"));
 
 					var precioDescuento = precioUnitario * (1 - descuento / 100);
@@ -1293,10 +1307,6 @@ var handleRenderTableData = function () {
 					total += subtotal;
 					totalImpuestos += subtotalConImpuesto;
 				});
-				/*
-				$('#inputTotal').val(total.toFixed(2));
-				$('#inputImpuestos').val(totalImpuestos.toFixed(2));
-				$('#inputTotalDocumento').val((total + totalImpuestos).toFixed(2));*/
 
 				var formattedTotal = total.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 				var formattedTotalImpuestos = totalImpuestos.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
@@ -1503,7 +1513,14 @@ var handleRenderTableData = function () {
 			var CodigoAlmacen = $(this).find('[name^="inputCodigoAlmacen"]').val();
 			var Precio = $(this).find('[name^="inputPrecio"]').val();
 			var Cantidad = $(this).find('[name^="inputCantidad"]').val();
+
 			var PorcentajeDescuento = $(this).find('[name^="inputPorcentajeDescuento"]').val();
+			if (PorcentajeDescuento == '') {
+				PorcentajeDescuento = 0;
+			} else {
+				PorcentajeDescuento = $(this).find('[name^="inputPorcentajeDescuento"]').val();
+			}
+
 			var VatGroup = $(this).find('[name^="inputIGV"]').val();
 
 			nuevaOrdenPreliminar.addDocumentLine(CodigoArticulo, CodigoAlmacen, Precio, Cantidad, PorcentajeDescuento, VatGroup);

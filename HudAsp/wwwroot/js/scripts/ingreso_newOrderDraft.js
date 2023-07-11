@@ -334,6 +334,7 @@ var handleRenderTypeahead = function () {
 							/*BEGIN Autocompletar */
 
 							$('#inputCodigoCliente').val(dataCliente.Codigo_Cliente);
+							$('#inputCodigoCliente').attr('data-codPriceList', dataCliente.Cod_Lista_Precio);
 
 							var personaContacto = $('#inputPersonaContacto');
 							personaContacto.append(`<option value="${dataCliente.contactoCodigo}" selected>${dataCliente.contactoNombre}</option>`);
@@ -782,7 +783,7 @@ var handleRenderTableData = function () {
 
 				var input07 = `
 					<div class="input-group px-2">
-                        <input class="form-control" name="inputCantidad${counter}" id="inputCantidad${counter}" style="text-align: center;" autocomplete="off">
+                        <input class="form-control" name="inputCantidad${counter}" id="inputCantidad${counter}" style="text-align: center;" autocomplete="off" required>
                     </div>
 				`;
 
@@ -1081,9 +1082,21 @@ var handleRenderTableData = function () {
 				var totalImpuestos = 0;
 
 				$('#detalleRow tr').each(function () {
-					var cantidad = parseFloat($(this).find('input[name^="inputCantidad"]').val());
+					var cantidad = $(this).find('[name^="inputCantidad"]').val();
+					if (cantidad == '') {
+						cantidad = 0;
+					} else {
+						cantidad = parseFloat($(this).find('input[name^="inputCantidad"]').val());
+					}
+
 					var precioUnitario = parseFloat($(this).find('input[name^="inputPrecio"]').val());
-					var descuento = parseFloat($(this).find('input[name^="inputPorcentajeDescuento"]').val());
+
+					var descuento = $(this).find('[name^="inputPorcentajeDescuento"]').val();
+					if (descuento == '') {
+						descuento = 0;
+					} else {
+						descuento = parseFloat($(this).find('input[name^="inputPorcentajeDescuento"]').val());
+					}
 					var igv = parseFloat($(this).find('input[name^="inputIGV"]').data("valor"));
 
 					var precioDescuento = precioUnitario * (1 - descuento / 100);
@@ -1262,55 +1275,65 @@ var handleRenderTableData = function () {
 	$("#formNewOrderDraft").on("submit", function (e) {
 		e.preventDefault();
 
-		var codigo = $('#inputCodigoCliente').val();
-		var personaContacto = $('#inputPersonaContacto').val();
-		var numeroReferencia = $('#inputNumeroReferencia').val();
-		var direccionDestino = $('#inputDireccionDestino').val();
-		var destinatarioFactura = $('#inputDestinatarioFactura').val();
-		var moneda = $('#inputMoneda').val();
-		var serie = $('#inputSerieDoc').val();
-
-		var fechaFormateada = $('#datepicker-default').val();
-		var fechaContabilizacion = formatearFecha(fechaFormateada, 'YYYY-MM-DD');
-
-		var fechaFormateada2 = $('#datepicker-range').val();
-		var fechaEntrega = formatearFecha(fechaFormateada2, 'YYYY-MM-DD');
-
-		var fechaFormateada3 = $('#datepicker-inline').val();
-		var fechaDocumento = formatearFecha(fechaFormateada3, 'YYYY-MM-DD');
-
-		var condicionPago = $('#inputCondicionPago').val();
-		var comentario = $('#textAreaComentario').val();
-
-		var U_HMK_TRANS = $('#inputTransferenciaGratuita').val();
-		var U_DGP_DropConsignment = $('#inputConsignacion').val();
-		var U_DGP_NumAtCardSup = $('#inputNumeroOrdenCompra').val();
-		var U_DGP_OwnerCode = $("#usuarioAplicacion").data("user");
-
-		var nuevaOrdenPreliminar = new OrdenPreliminar(codigo, personaContacto, numeroReferencia, direccionDestino
-			, destinatarioFactura, moneda, fechaContabilizacion, fechaEntrega
-			, fechaDocumento, condicionPago, comentario, serie, U_HMK_TRANS
-			, U_DGP_DropConsignment, U_DGP_NumAtCardSup, U_DGP_OwnerCode);
-
-		$('#detalleRow tr').each(function () {
-			var CodigoArticulo = $(this).find('[name^="inputCodigoArticulo"]').val();
-			var CodigoAlmacen = $(this).find('[name^="inputCodigoAlmacen"]').val();
-			var Precio = $(this).find('[name^="inputPrecio"]').val();
-			var Cantidad = $(this).find('[name^="inputCantidad"]').val();
-			var PorcentajeDescuento = $(this).find('[name^="inputPorcentajeDescuento"]').val();
-			var VatGroup = $(this).find('[name^="inputIGV"]').val();
-
-			nuevaOrdenPreliminar.addDocumentLine(CodigoArticulo, CodigoAlmacen, Precio, Cantidad, PorcentajeDescuento, VatGroup);
-		});
-
-		console.log(nuevaOrdenPreliminar);
-		var DRAFT = JSON.stringify(nuevaOrdenPreliminar);
-
-		console.log(DRAFT);
-
 		$('#myModal').modal('show');
 
 		$('#btnAceptar').on('click', function () {
+
+			$('#btnAceptar').prop('disabled', true);
+			delete nuevaOrdenPreliminar;
+
+			var codigo = $('#inputCodigoCliente').val();
+			var personaContacto = $('#inputPersonaContacto').val();
+			var numeroReferencia = $('#inputNumeroReferencia').val();
+			var direccionDestino = $('#inputDireccionDestino').val();
+			var destinatarioFactura = $('#inputDestinatarioFactura').val();
+			var moneda = $('#inputMoneda').val();
+			var serie = $('#inputSerieDoc').val();
+
+			var fechaFormateada = $('#datepicker-default').val();
+			var fechaContabilizacion = formatearFecha(fechaFormateada, 'YYYY-MM-DD');
+
+			var fechaFormateada2 = $('#datepicker-range').val();
+			var fechaEntrega = formatearFecha(fechaFormateada2, 'YYYY-MM-DD');
+
+			var fechaFormateada3 = $('#datepicker-inline').val();
+			var fechaDocumento = formatearFecha(fechaFormateada3, 'YYYY-MM-DD');
+
+			var condicionPago = $('#inputCondicionPago').val();
+			var comentario = $('#textAreaComentario').val();
+
+			var U_HMK_TRANS = $('#inputTransferenciaGratuita').val();
+			var U_DGP_DropConsignment = $('#inputConsignacion').val();
+			var U_DGP_NumAtCardSup = $('#inputNumeroOrdenCompra').val();
+			var U_DGP_OwnerCode = $("#usuarioAplicacion").data("user");
+
+			var nuevaOrdenPreliminar = new OrdenPreliminar(codigo, personaContacto, numeroReferencia, direccionDestino
+				, destinatarioFactura, moneda, fechaContabilizacion, fechaEntrega
+				, fechaDocumento, condicionPago, comentario, serie, U_HMK_TRANS
+				, U_DGP_DropConsignment, U_DGP_NumAtCardSup, U_DGP_OwnerCode);
+
+			$('#detalleRow tr').each(function () {
+				var CodigoArticulo = $(this).find('[name^="inputCodigoArticulo"]').val();
+				var CodigoAlmacen = $(this).find('[name^="inputCodigoAlmacen"]').val();
+				var Precio = $(this).find('[name^="inputPrecio"]').val();
+				var Cantidad = $(this).find('[name^="inputCantidad"]').val();
+				var PorcentajeDescuento = $(this).find('[name^="inputPorcentajeDescuento"]').val();
+
+				if (PorcentajeDescuento == '') {
+					PorcentajeDescuento = 0;
+				} else {
+					PorcentajeDescuento = $(this).find('[name^="inputPorcentajeDescuento"]').val();
+				}
+
+				var VatGroup = $(this).find('[name^="inputIGV"]').val();
+
+				nuevaOrdenPreliminar.addDocumentLine(CodigoArticulo, CodigoAlmacen, Precio, Cantidad, PorcentajeDescuento, VatGroup);
+			});
+
+			//console.log(nuevaOrdenPreliminar);
+			var DRAFT = JSON.stringify(nuevaOrdenPreliminar);
+
+			//console.log(DRAFT);
 
 			$('#loadingSpinner').show();
 
@@ -1322,6 +1345,7 @@ var handleRenderTableData = function () {
 				success: function (response) {
 					mostrarToastExitoso("La orden de venta preliminar fue creada correctamente.");
 					$('#loadingSpinner').hide();
+					$('#btnAceptar').prop('disabled', false);
 				},
 				error: function (xhr, status, error) {
 					mostrarToastError("Se produjo un error en la solicitud.");
