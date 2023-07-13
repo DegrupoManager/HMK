@@ -80,6 +80,10 @@
 	
 }
 
+@{
+    var orderData = ViewBag.OrderData;
+}
+
 <!--BEGIN Toast-->
 <div class="position-fixed top-1 end-0 p-3" style="z-index: 11">
     <div id="liveToast" class="toast align-items-center text-white bg-primary border-0" role="alert" aria-live="assertive" aria-atomic="true">
@@ -396,3 +400,5 @@
     </div>
 </div>
 </form>
+
+<div id="orderData" data-order='@Html.Raw(orderData)'></div>

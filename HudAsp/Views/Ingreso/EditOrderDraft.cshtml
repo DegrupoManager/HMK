@@ -34,6 +34,10 @@
             z-index: 999;
         }
 
+        #loadingSpinner {
+            display: none;
+        }
+
     </style>
 
 }
@@ -76,14 +80,14 @@
     var orderData = ViewBag.OrderData;
 }
 
-<div id="orderData" data-order='@Html.Raw(orderData)'></div>
+@*<div id="orderData" data-order='@Html.Raw(orderData)'></div>*@
 
 <!--BEGIN Toast-->
 <div class="position-fixed top-1 end-0 p-3" style="z-index: 11">
     <div id="liveToast" class="toast align-items-center text-white bg-primary border-0" role="alert" aria-live="assertive" aria-atomic="true">
         <div class="d-flex">
             <div class="toast-body">
-                La orden @ViewBag.OrderId se actualizo correctamente.
+                La orden @ViewBag.OrderId se actualizó correctamente.
             </div>
             <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
         </div>
@@ -361,30 +365,32 @@
         </div>
         <div class="row">
             <div class="col-3 gx-4 ms-auto">
-                <button type="button" id="openModalBtn" class="btn btn-danger px-4">Grabar</button>
-                <a href="/Ingreso/OrderDraft" class="btn btn-outline-theme px-3">
-                    <span class="text-dark">Cancelar</span>
-                </a>
-                <!--BEGIN Modal-->
-                <div id="myModal" class="modal" tabindex="-1" role="dialog">
-                    <div class="modal-dialog modal-dialog-centered">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title">Confirmación</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                            </div>
-                            <div class="modal-body">
-                                <p>Se actualizará la orden @ViewBag.OrderId .¿Desea Seguir?</p>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                                <input id="btnAceptar" type="submit" class="btn btn-danger" value="Aceptar">
+            <button type="submit" id="btnGrabar" class="btn btn-danger px-4">Grabar</button>
+            <a href="/Ingreso/OrderDraft" class="btn btn-outline-theme px-3">
+                <span class="text-dark">Cancelar</span>
+            </a>
+
+            <div id="myModal" class="modal" tabindex="-1" role="dialog">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Confirmación</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <p>Se actualizará la orden de venta preliminar @ViewBag.OrderId. ¿Desea Seguir?</p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                            <input id="btnAceptar" type="button" class="btn btn-danger" value="Aceptar">
+                            <div id="loadingSpinner" class="spinner-border text-danger" role="status">
+                                <span class="visually-hidden">Cargando...</span>
                             </div>
                         </div>
                     </div>
                 </div>
-                <!--END Modal-->
             </div>
         </div>
     </div>
 </form>
+<div id="orderData" data-order='@Html.Raw(orderData)'></div>

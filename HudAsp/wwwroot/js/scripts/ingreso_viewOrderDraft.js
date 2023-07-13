@@ -113,10 +113,7 @@ var handleRenderTableData = function () {
 			total += subtotal;
 			totalImpuestos += subtotalConImpuesto;
 		});
-		/*
-		$('#inputTotal').val(total.toFixed(2));
-		$('#inputImpuestos').val(totalImpuestos.toFixed(2));
-		$('#inputTotalDocumento').val((total + totalImpuestos).toFixed(2));*/
+
 		var formattedTotal = total.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 		var formattedTotalImpuestos = totalImpuestos.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 		var formattedTotalDocumento = (total + totalImpuestos).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });

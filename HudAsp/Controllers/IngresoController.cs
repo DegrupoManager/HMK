@@ -31,10 +31,36 @@ namespace HudAsp.Controllers
 			else
 			{
 
-				return RedirectToAction("Login", "Login");
+				return RedirectToAction("Login", "Login"); 
 			}
 		}
 
+        public async Task<IActionResult> NewOrderDraft(int? id)
+        {
+            if (Request.Cookies.TryGetValue("Rol", out var rol) && (rol == "Revisor" || rol == "Editor" || rol == "Administrador"))
+            {
+                if (id.HasValue)
+                {
+                    var apiUrl = $"{_apiBaseUrl}/PreOrders?Id={id}";
+                    var response = await _client.GetAsync(apiUrl);
+                    response.EnsureSuccessStatusCode();
+                    var content = await response.Content.ReadAsStringAsync();
+
+                    var model = JsonConvert.DeserializeObject<List<DetalleOrderDraftModel>>(content);
+                    ViewBag.OrderData = JsonConvert.SerializeObject(model);
+                }
+
+                return View();
+            }
+            else
+            {
+                return RedirectToAction("Login", "Login");
+            }
+        }
+
+
+
+        /*
 		public IActionResult NewOrderDraft()
 		{
 			if (Request.Cookies.TryGetValue("Rol", out var rol) && (rol == "Revisor" || rol == "Editor" || rol == "Administrador"))
@@ -47,9 +73,10 @@ namespace HudAsp.Controllers
 
 				return RedirectToAction("Login", "Login");
 			}
-		}
+		}*/
 
-		[HttpGet]
+
+        [HttpGet]
         public async Task<IActionResult> ViewOrderDraft(int id)
         {
             var apiUrl = $"{_apiBaseUrl}/PreOrders?Id={id}";

@@ -54,7 +54,6 @@ var handleRenderTypeahead = function () {
 			});
 		});
 	}
-
 	
 	getCustomerList()
 		.then(function (clientes) {
@@ -178,6 +177,7 @@ var handleRenderTypeahead = function () {
 
 		var destinatarioFactura = $('#inputDestinatarioFactura');
 		destinatarioFactura.empty();
+		destinatarioFactura.empty();
 		$('#textAreaDestinatarioFactura').val('');
 	}
 
@@ -209,10 +209,12 @@ var handleRenderTypeahead = function () {
 					$('#inputNumeroReferencia').val(dataCliente.Numero_Referencia);
 
 					var direccionDestino = $('#inputDireccionDestino');
+					direccionDestino.empty();
 					direccionDestino.append(`<option value="${dataCliente.direccionDestinoCodigo}" selected>${dataCliente.direccionDestinoCodigo}</option>`);
 					$('#textAreaDireccionDestino').val(dataCliente.Direccion_Destino);
 
 					var destinatarioFactura = $('#inputDestinatarioFactura');
+					destinatarioFactura.empty();
 					destinatarioFactura.append(`<option value="${dataCliente.direccionFacturaCodigo}" selected>${dataCliente.direccionFacturaCodigo}</option>`);
 					$('#textAreaDestinatarioFactura').val(dataCliente.Direccion_Factura);
 
@@ -264,25 +266,6 @@ var handleRenderTypeahead = function () {
 		}
 	});
 
-	/*
-	$('#inputCodigoCliente').on('input', function (event) {
-
-		$('#inputNombreCliente').val('')
-		$('#inputPersonaContacto').val('');
-		$('#inputCondicionPago').val('');
-		$('#inputMoneda').val('');
-		$('#inputNumeroReferencia').val('');
-
-		var direccionDestino = $('#inputDireccionDestino');
-		direccionDestino.empty();
-		$('#textAreaDireccionDestino').val('');
-
-		var destinatarioFactura = $('#inputDestinatarioFactura');
-		destinatarioFactura.empty();
-		$('#textAreaDestinatarioFactura').val('');
-
-	});*/
-
 	function manejarDDestino(data) {
 		$("#inputDireccionDestino").change(function () {
 			var direccionDestino = $(this).val();
@@ -312,6 +295,8 @@ var handleRenderTypeahead = function () {
 	/*BEGIN porNombreCliente */
 
 	$('#porNombreCliente').on('click', function () {
+
+		vaciarCabecera();
 		
 		var nombreCliente = $('#inputNombreCliente').val();
 
@@ -595,6 +580,120 @@ var handleRenderTypeahead = function () {
 
 var handleRenderTableData = function () {
 
+	function llenarDetalle(orderData) {
+		orderData.forEach(function (item) {
+			var counter = table.rows().count();
+
+			var opciones = `
+				<div class="px-2">
+					<button type="button" class="btn btn-icon text-theme duplicarFila" style="--bs-btn-padding-x: 0.25rem;">
+						<i class="fa-regular fa-copy"></i>
+					</button>
+					<button type="button" class="btn btn-icon text-theme eliminarFila" style="--bs-btn-padding-x: 0.25rem;" data-counter="${counter}">
+						<i class="fa-regular fa-trash-can"></i>
+					</button>
+				</div>
+			`;
+
+			var input01 = `
+				<div class="typeahead__container">
+				  <div class="typeahead__field">
+					<div class="typeahead__query input-group px-2">
+					  <span data-index="${counter}" class="input-group-text porCodigoArticulo"><i class="fa-solid fa-magnifying-glass"></i></span>
+					  <input type="text" value="${item.CodArticulo}"" class="form-control searchable" name="inputCodigoArticulo${counter}" id="inputCodigoArticulo${counter}" data-column="${counter}" autocomplete="off" required>
+					</div>
+				  </div>
+				</div>
+			  `;
+
+			var input02 = `
+				<div class="typeahead__container">
+				  <div class="typeahead__field">
+					<div class="typeahead__query input-group">
+					  <span data-index="${counter}" class="input-group-text porDescripcionArticulo"><i class="fa-solid fa-magnifying-glass"></i></span>
+					  <input type="text" value="${item.Descripcion}" class="form-control" name="inputDescripcionArticulo${counter}" id="inputDescripcionArticulo${counter}" data-column="${counter}" autocomplete="off" required>
+					</div>
+				  </div>
+				</div>
+			  `;
+
+			var input03 = `
+				<div class="typeahead__container">
+				  <div class="typeahead__field">
+					<div class="typeahead__query input-group px-2">
+					  <span data-index="${counter}" class="input-group-text porCodigoAlmacen"><i class="fa-solid fa-magnifying-glass"></i></span>
+					  <input type="text" value="${item.Almacen}"  class="form-control" name="inputCodigoAlmacen${counter}" id="inputCodigoAlmacen${counter}" data-column="${counter}" autocomplete="off" required>
+					</div>
+				  </div>
+				</div>
+			  `;
+
+			var input04 = `
+				<div class="input-group px-4">
+				  <input value="${item.CantidadAlmacen}" class="form-control bg-inverse bg-opacity-10" id="inputCantidadAlmacen${counter}" style="text-align: center;" autocomplete="off" disabled>
+				</div>
+			  `;
+
+			var input05 = `
+				<div class="input-group px-2">
+				  <input value="${item.StockGeneral}" class="form-control bg-inverse bg-opacity-10" id="inputStockAlmacen${counter}" style="text-align: center;" autocomplete="off" disabled>
+				</div>
+			  `;
+
+			var input06 = `
+				<div class="input-group px-2">
+				  <input value="${item.CodigodeBarra}" class="form-control bg-inverse bg-opacity-10" id="inputCodigoBarras${counter}" style="text-align: center;" autocomplete="off" disabled>
+				</div>
+			  `;
+
+			var input07 = `
+				<div class="input-group px-2">
+				  <input value="${item.Cantidad}" class="form-control" name="inputCantidad${counter}" id="inputCantidad${counter}" style="text-align: center;" autocomplete="off" required>
+				</div>
+			  `;
+
+			var input08 = `
+				<div class="input-group">
+				  <input value="0" class="form-control bg-inverse bg-opacity-10" name="inputPrecio${counter}" id="inputPrecio${counter}" style="text-align: center;" autocomplete="off" disabled>
+				</div>
+			  `;
+
+			var input09 = `
+				<div class="input-group">
+				  <span class="input-group-text">%</span>
+				  <input value="${item.Descuento}" class="form-control" name="inputPorcentajeDescuento${counter}" id="inputPorcentajeDescuento${counter}" style="text-align: center;" autocomplete="off">
+				</div>
+			  `;
+
+			var input10 = `
+				<div class="input-group">
+				  <input data-valor="${item.ValorImpuesto}" value="${item.IndicadorImpuesto}" class="form-control bg-inverse bg-opacity-10" name="inputIGV${counter}" id="inputIGV${counter}" style="text-align: center;" autocomplete="off" disabled>
+				</div>
+			  `;
+
+			var fila = [
+				opciones,
+				input01,
+				input02,
+				input03,
+				input04,
+				input05,
+				input06,
+				input07,
+				input08,
+				input09,
+				input10
+			];
+
+			while (fila.length < table.columns().count()) {
+				fila.push("");
+			}
+
+			table.row.add(fila).draw(false);
+		});
+
+	}
+
 	var btnHTML = `
 		<label>
 			<button type="button" id="agregarFilaProducto" class="btn btn-outline-theme">
@@ -680,11 +779,15 @@ var handleRenderTableData = function () {
 		}
 	}
 
+	var orderData = $('#orderData').data('order');
+	if (orderData != '') {
+		console.log(orderData);
+	}
+
 	var counter = 0;
 	var filaEliminada = [];
 
 	var table = $('#datatableNewOrderDraft').DataTable({
-		//lengthMenu: [5, 10, 15, 20],
 		pageLength: 100,
 		language: {
 			url: '//cdn.datatables.net/plug-ins/1.13.4/i18n/es-ES.json'
@@ -708,6 +811,10 @@ var handleRenderTableData = function () {
 						articulos_descripcion.push(articulo.DescripcionArticulo);
 					});
 
+					if (orderData != '') {
+						llenarDetalle(orderData);
+					}
+					
 					botonAgregar.click();
 				})
 				.catch(function (error) {
@@ -845,7 +952,9 @@ var handleRenderTableData = function () {
 
 			$(document).on('click', '.duplicarFila', function () {
 
-				counter++;
+				//counter++;
+				var counterA = table.rows().count(); 
+				var counter = counterA + 1;
 
 				var filaActual = $(this).closest('tr');
 				var nuevaFila = filaActual.clone();
@@ -901,6 +1010,8 @@ var handleRenderTableData = function () {
 						$(`#inputCantidadAlmacen${index}`).val(linea.Stock);
 						$(`#inputStockAlmacen${index}`).val(linea.StockGeneral);
 						$(`#inputPrecio${index}`).val(linea.Precio);
+						$(`#inputCantidad${index}`).val(1);
+						$(`#inputPorcentajeDescuento${index}`).val(0);
 						getPorcentajeDescuento(codigoArticulo, codigoAlmacen)
 							.then(function (descuento) {
 								$(`#inputPorcentajeDescuento${index}`).val(descuento);
@@ -1082,22 +1193,25 @@ var handleRenderTableData = function () {
 				var totalImpuestos = 0;
 
 				$('#detalleRow tr').each(function () {
-					var cantidad = $(this).find('[name^="inputCantidad"]').val();
-					if (cantidad == '') {
+					var cantidad = parseFloat($(this).find('input[name^="inputCantidad"]').val());
+					if (isNaN(cantidad)) {
 						cantidad = 0;
-					} else {
-						cantidad = parseFloat($(this).find('input[name^="inputCantidad"]').val());
 					}
 
 					var precioUnitario = parseFloat($(this).find('input[name^="inputPrecio"]').val());
-
-					var descuento = $(this).find('[name^="inputPorcentajeDescuento"]').val();
-					if (descuento == '') {
-						descuento = 0;
-					} else {
-						descuento = parseFloat($(this).find('input[name^="inputPorcentajeDescuento"]').val());
+					if (isNaN(precioUnitario)) {
+						precioUnitario = 0;
 					}
+
+					var descuento = parseFloat($(this).find('input[name^="inputPorcentajeDescuento"]').val());
+					if (isNaN(descuento)) {
+						descuento = 0;
+					}
+
 					var igv = parseFloat($(this).find('input[name^="inputIGV"]').data("valor"));
+					if (isNaN(igv)) {
+						igv = 0;
+					}
 
 					var precioDescuento = precioUnitario * (1 - descuento / 100);
 					var subtotal = precioDescuento * cantidad;
@@ -1115,8 +1229,8 @@ var handleRenderTableData = function () {
 				$('#inputTotal').val(formattedTotal);
 				$('#inputImpuestos').val(formattedTotalImpuestos);
 				$('#inputTotalDocumento').val(formattedTotalDocumento);
-
 			}
+
 
 			$(document).on('input', '#detalleRow input[name^="inputCantidad"], #detalleRow input[name^="inputPrecio"], #detalleRow input[name^="inputPorcentajeDescuento"]', function () {
 				calcularTotales();

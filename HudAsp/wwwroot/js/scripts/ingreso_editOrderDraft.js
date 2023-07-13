@@ -336,26 +336,6 @@ var handleRenderTypeahead = function () {
 		}
 	});
 
-	/*
-	$('#inputCodigoCliente').on('input', function (event) {
-
-		$('#inputNombreCliente').val('')
-		$('#inputPersonaContacto').val('');
-		$('#inputCondicionPago').val('');
-		$('#inputMoneda').val('');
-		$('#inputNumeroReferencia').val('');
-
-		var direccionDestino = $('#inputDireccionDestino');
-		direccionDestino.empty();
-		$('#textAreaDireccionDestino').val('');
-
-		var destinatarioFactura = $('#inputDestinatarioFactura');
-		destinatarioFactura.empty();
-		$('#textAreaDestinatarioFactura').val('');
-
-	});*/
-
-	
 
 
 	/*BEGIN porNombreCliente */
@@ -605,39 +585,7 @@ var handleRenderTypeahead = function () {
 		})
 	}
 
-		/*
-	function primeraSerie() {
-		getSerieList()
-			.then(function (Series) {
 
-				var selectElement = $('#inputSerieDoc');
-
-				selectElement.empty();
-
-				Series.forEach(function (serie) {
-					var option = $('<option></option>');
-
-					option.val(serie.CodSerie);
-					option.text(serie.NombreSerie);
-
-					selectElement.append(option);
-				});
-
-				getSerieDoc(Series[0].CodSerie)
-					.then(function (serie) {
-
-						$('#inputCorrelativo').val(serie[0].Correlativo);
-						manejoSeries(serie)
-					})
-					.catch(function (error) {
-						console.log(error);
-					});
-
-			})
-			.catch(function (error) {
-				console.log(error);
-			});
-	}*/
 	function primeraSerie() {
 		getSerieList()
 			.then(function (Series) {
@@ -1281,23 +1229,25 @@ var handleRenderTableData = function () {
 				var totalImpuestos = 0;
 
 				$('#detalleRow tr').each(function () {
-					var cantidad = $(this).find('[name^="inputCantidad"]').val();
-					if (cantidad == '') {
+					var cantidad = parseFloat($(this).find('input[name^="inputCantidad"]').val());
+					if (isNaN(cantidad)) {
 						cantidad = 0;
-					} else {
-						cantidad = parseFloat($(this).find('input[name^="inputCantidad"]').val());
 					}
 
 					var precioUnitario = parseFloat($(this).find('input[name^="inputPrecio"]').val());
+					if (isNaN(precioUnitario)) {
+						precioUnitario = 0;
+					}
 
-					var descuento = $(this).find('[name^="inputPorcentajeDescuento"]').val();
-					if (descuento == '') {
+					var descuento = parseFloat($(this).find('input[name^="inputPorcentajeDescuento"]').val());
+					if (isNaN(descuento)) {
 						descuento = 0;
-					} else {
-						descuento = parseFloat($(this).find('input[name^="inputPorcentajeDescuento"]').val());
 					}
 
 					var igv = parseFloat($(this).find('input[name^="inputIGV"]').data("valor"));
+					if (isNaN(igv)) {
+						igv = 0;
+					}
 
 					var precioDescuento = precioUnitario * (1 - descuento / 100);
 					var subtotal = precioDescuento * cantidad;
@@ -1472,6 +1422,119 @@ var handleRenderTableData = function () {
 	}
 
 	$("#formNewOrderDraft").on("submit", function (e) {
+		e.preventDefault();
+
+		$('#myModal').modal('show');
+
+		$('#btnAceptar').on('click', function () {
+
+			$('#btnAceptar').prop('disabled', true);
+			delete nuevaOrdenPreliminar;
+
+			var orderData = $('#orderData').data('order');
+
+			var docEntry = orderData[0].NroOrden;
+			var codigo = $('#inputCodigoCliente').val();
+			var personaContacto = $('#inputPersonaContacto').val();
+			var numeroReferencia = $('#inputNumeroReferencia').val();
+			var direccionDestino = $('#inputDireccionDestino').val();
+			var destinatarioFactura = $('#inputDestinatarioFactura').val();
+			var moneda = $('#inputMoneda').val();
+			var serie = $('#inputSerieDoc').val();
+
+			var fechaFormateada = $('#datepicker-default').val();
+			var fechaContabilizacion = formatearFecha(fechaFormateada, 'YYYY-MM-DD');
+
+			var fechaFormateada2 = $('#datepicker-range').val();
+			var fechaEntrega = formatearFecha(fechaFormateada2, 'YYYY-MM-DD');
+
+			var fechaFormateada3 = $('#datepicker-inline').val();
+			var fechaDocumento = formatearFecha(fechaFormateada3, 'YYYY-MM-DD');
+
+			var condicionPago = $('#inputCondicionPago').val();
+			var comentario = $('#textAreaComentario').val();
+
+			var U_HMK_TRANS = $('#inputTransferenciaGratuita').val();
+			var U_DGP_DropConsignment = $('#inputConsignacion').val();
+			var U_DGP_NumAtCardSup = $('#inputNumeroOrdenCompra').val();
+
+			var nuevaOrdenPreliminar = new OrdenPreliminar(docEntry, codigo, personaContacto, numeroReferencia, direccionDestino
+				, destinatarioFactura, moneda, fechaContabilizacion, fechaEntrega
+				, fechaDocumento, condicionPago, comentario, serie, U_HMK_TRANS
+				, U_DGP_DropConsignment, U_DGP_NumAtCardSup);
+
+			$('#detalleRow tr').each(function () {
+				var CodigoArticulo = $(this).find('[name^="inputCodigoArticulo"]').val();
+				var CodigoAlmacen = $(this).find('[name^="inputCodigoAlmacen"]').val();
+				var Precio = $(this).find('[name^="inputPrecio"]').val();
+				var Cantidad = $(this).find('[name^="inputCantidad"]').val();
+				var PorcentajeDescuento = $(this).find('[name^="inputPorcentajeDescuento"]').val();
+
+				if (PorcentajeDescuento == '') {
+					PorcentajeDescuento = 0;
+				} else {
+					PorcentajeDescuento = $(this).find('[name^="inputPorcentajeDescuento"]').val();
+				}
+
+				var VatGroup = $(this).find('[name^="inputIGV"]').val();
+
+				nuevaOrdenPreliminar.addDocumentLine(CodigoArticulo, CodigoAlmacen, Precio, Cantidad, PorcentajeDescuento, VatGroup);
+			});
+
+			console.log(nuevaOrdenPreliminar);
+			var DRAFT = JSON.stringify(nuevaOrdenPreliminar);
+
+			console.log(DRAFT);
+
+			$('#loadingSpinner').show();
+
+			$.ajax({
+				url: "/Ingreso/UpdatePreOrder",
+				type: "PATCH",
+				dataType: "json",
+				data: nuevaOrdenPreliminar,
+				success: function (response) {
+					mostrarToastExitoso(`La orden de venta preliminar ${orderData[0].NroOrden} fue actualizada correctamente.`);
+					$('#loadingSpinner').hide();
+					$('#btnAceptar').prop('disabled', false);
+
+				},
+				error: function (xhr, status, error) {
+					mostrarToastError("Se produjo un error en la solicitud.");
+					$('#loadingSpinner').hide();
+					$('#btnAceptar').prop('disabled', false);
+				}
+			});
+		});
+
+	});
+
+	function mostrarToastExitoso(mensaje) {
+		$('#myModal').modal('hide');
+		var toast = $('#liveToast');
+		toast.find('.toast-body').text(mensaje);
+		toast.removeClass("alert-danger").addClass("alert-success");
+		toast.toast('show');
+		setTimeout(function () {
+			toast.toast('hide');
+			window.location.href = "/Ingreso/OrderDraft";
+		}, 2000);
+	}
+
+	function mostrarToastError(mensaje) {
+		$('#myModal').modal('hide');
+
+		var toast = $('#liveToast');
+		toast.find('.toast-body').text(mensaje);
+		toast.removeClass("alert-success").addClass("alert-danger");
+		toast.toast('show');
+		setTimeout(function () {
+			toast.toast('hide');
+		}, 2000);
+	}
+
+	/*
+	$("#formNewOrderDraft").on("submit", function (e) {
 
 		e.preventDefault();
 
@@ -1571,7 +1634,7 @@ var handleRenderTableData = function () {
 		});
 
 		
-	});
+	});*/
 	
 };
 
