@@ -600,7 +600,7 @@ var handleRenderTableData = function () {
 				  <div class="typeahead__field">
 					<div class="typeahead__query input-group px-2">
 					  <span data-index="${counter}" class="input-group-text porCodigoArticulo"><i class="fa-solid fa-magnifying-glass"></i></span>
-					  <input type="text" value="${item.CodArticulo}"" class="form-control searchable" name="inputCodigoArticulo${counter}" id="inputCodigoArticulo${counter}" data-column="${counter}" autocomplete="off" required>
+					  <input type="text" value="${item.CodArticulo}" class="form-control searchable" name="inputCodigoArticulo${counter}" id="inputCodigoArticulo${counter}" data-column="${counter}" autocomplete="off" required>
 					</div>
 				  </div>
 				</div>
@@ -809,6 +809,7 @@ var handleRenderTableData = function () {
 					articulos.forEach(function (articulo) {
 						articulos_codigo.push(articulo.CodigoArticulo);
 						articulos_descripcion.push(articulo.DescripcionArticulo);
+
 					});
 
 					if (orderData != '') {
@@ -992,6 +993,7 @@ var handleRenderTableData = function () {
 			});
 			/*END busqueda en input */
 
+			/* POR CODIGO ALMACEN */
 			$(document).on('click', '.porCodigoAlmacen', function () {
 
 				var index = $(this).data('index');
@@ -1009,9 +1011,19 @@ var handleRenderTableData = function () {
 
 						$(`#inputCantidadAlmacen${index}`).val(linea.Stock);
 						$(`#inputStockAlmacen${index}`).val(linea.StockGeneral);
-						$(`#inputPrecio${index}`).val(linea.Precio);
-						$(`#inputCantidad${index}`).val(1);
-						$(`#inputPorcentajeDescuento${index}`).val(0);
+						//$(`#inputPrecio${index}`).val(linea.Precio);
+						var inputValue1 = $(`#inputCantidad${index}`).val();
+
+						if (inputValue1 === '') {
+							$(`#inputCantidad${index}`).val(1);
+						}
+
+						var inputValue2 = $(`#inputPorcentajeDescuento${index}`).val();
+
+						if (inputValue2 === '') {
+							$(`#inputPorcentajeDescuento${index}`).val(0);
+						}
+
 						getPorcentajeDescuento(codigoArticulo, codigoAlmacen)
 							.then(function (descuento) {
 								$(`#inputPorcentajeDescuento${index}`).val(descuento);
@@ -1024,9 +1036,10 @@ var handleRenderTableData = function () {
 					.catch(function (error) {
 						console.log(error);
 					});
-		
 			});
+			
 
+			/* POR DESCRIPCION ALMACEN */
 			$(document).on('click', '.porDescripcionArticulo', function () {
 				var index = $(this).data('index');
 
@@ -1070,12 +1083,13 @@ var handleRenderTableData = function () {
 								console.log(error);
 							});
 
-						getProductById(codigoArticulo)
+						getProductById(codigoArticulo, codListaPrecio)
 							.then(function (dataArticulo) {
 
 								$(`#inputDescripcionArticulo${index}`).val(dataArticulo.DescripcionArticulo);
 								$(`#inputCodigoBarras${index}`).val(dataArticulo.CodigoBarra);
 								$(`#inputCodigoAlmacen${index}`).val(dataArticulo.StorageDefaultId);
+								$(`#inputPrecio${index}`).val(dataArticulo.precio);
 
 								var codigoAlmacen = dataArticulo.StorageDefaultId;
 
@@ -1085,10 +1099,20 @@ var handleRenderTableData = function () {
 										$(`#inputIGV${index}`).val(linea.Impuesto);
 										$(`#inputIGV${index}`).attr("data-valor", linea.VarlorImpuesto);
 
-										$(`#inputStockAlmacen${index}`).val(linea.Stock);
-										$(`#inputPrecio${index}`).val(linea.Precio);
-										$(`#inputCantidad${index}`).val(1);
-										$(`#inputPorcentajeDescuento${index}`).val(0);
+										$(`#inputCantidadAlmacen${index}`).val(linea.Stock);
+										$(`#inputStockAlmacen${index}`).val(linea.StockGeneral);
+										//$(`#inputPrecio${index}`).val(linea.Precio);
+										var inputValue1 = $(`#inputCantidad${index}`).val();
+
+										if (inputValue1 === '') {
+											$(`#inputCantidad${index}`).val(1);
+										}
+
+										var inputValue2 = $(`#inputPorcentajeDescuento${index}`).val();
+
+										if (inputValue2 === '') {
+											$(`#inputPorcentajeDescuento${index}`).val(0);
+										}
 										getPorcentajeDescuento(codigoArticulo, codigoAlmacen)
 											.then(function (descuento) {
 												$(`#inputPorcentajeDescuento${index}`).val(descuento);
@@ -1111,11 +1135,10 @@ var handleRenderTableData = function () {
 					.catch(function (error) {
 						console.log(error)
 					})
-
-				
 			});
 
 
+			/* POR CODIGO ARTICULO */
 			$(document).on('click', '.porCodigoArticulo', function () {
 				var index = $(this).data('index');
 
@@ -1146,11 +1169,12 @@ var handleRenderTableData = function () {
 						console.log(error);
 					});
 
-				getProductById(codigoArticulo)
+				getProductById(codigoArticulo, codListaPrecio)
 					.then(function (dataArticulo) {
 						$(`#inputDescripcionArticulo${index}`).val(dataArticulo.DescripcionArticulo);
 						$(`#inputCodigoBarras${index}`).val(dataArticulo.CodigoBarra);
 						$(`#inputCodigoAlmacen${index}`).val(dataArticulo.StorageDefaultId);
+						$(`#inputPrecio${index}`).val(dataArticulo.precio);
 
 						var codigoAlmacen = dataArticulo.StorageDefaultId;
 
@@ -1161,9 +1185,18 @@ var handleRenderTableData = function () {
 
 								$(`#inputCantidadAlmacen${index}`).val(linea.Stock);
 								$(`#inputStockAlmacen${index}`).val(linea.StockGeneral);
-								$(`#inputPrecio${index}`).val(linea.Precio);
-								$(`#inputCantidad${index}`).val(1);
-								$(`#inputPorcentajeDescuento${index}`).val(0);
+								//$(`#inputPrecio${index}`).val(linea.Precio);
+								var inputValue1 = $(`#inputCantidad${index}`).val();
+
+								if (inputValue1 === '') {
+									$(`#inputCantidad${index}`).val(1);
+								}
+
+								var inputValue2 = $(`#inputPorcentajeDescuento${index}`).val();
+
+								if (inputValue2 === '') {
+									$(`#inputPorcentajeDescuento${index}`).val(0);
+								}
 
 								getPorcentajeDescuento(codigoArticulo, codigoAlmacen)
 									.then(function (descuento) {
@@ -1254,11 +1287,12 @@ var handleRenderTableData = function () {
 		}
 	});
 
-	function getProductById(productCode) {
+	function getProductById(productCode, productListId) {
 		return new Promise(function (resolve, reject) {
 			var url = "/api/product/getProductById";
 			var parameters = {
-				productCode: productCode
+				productCode: productCode,
+				productListId: productListId
 			};
 
 			$.ajax({
@@ -1464,6 +1498,7 @@ var handleRenderTableData = function () {
 				error: function (xhr, status, error) {
 					mostrarToastError("Se produjo un error en la solicitud.");
 					$('#loadingSpinner').hide();
+					$('#btnAceptar').prop('disabled', false);
 				}
 			});
 		});

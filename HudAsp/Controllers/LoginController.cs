@@ -26,51 +26,6 @@ public class LoginController : Controller
         return View();
 	}
 
-	/*
-	private async Task ImprimirRespuestaAsync()
-	{
-		try
-		{
-			var responseContent = await Conexion();
-			Console.WriteLine(responseContent);
-		}
-		catch (Exception ex)
-		{
-			Console.WriteLine($"Error: {ex.Message}");
-		}
-	}*/
-
-	/*
-    static async Task<string> Conexion()
-    {
-        using (var client = new HttpClient())
-        {
-            var loginUrl = "https://LAPTOP-4OBRKJSA:50000/b1s/v1/Login";
-            var loginData = new
-            {
-                CompanyDB = "SBODEMOPE_DGP",
-                Password = "1234",
-                UserName = "manager"
-            };
-
-            var jsonContent = JsonConvert.SerializeObject(loginData);
-            var content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
-
-            var response = await client.PostAsync(loginUrl, content);
-            response.EnsureSuccessStatusCode();
-
-            return await response.Content.ReadAsStringAsync();
-        }
-    }*/
-
-	/*
-	[HttpPost]
-	public JsonResult postEjemplo(DatosEjemplo persona)
-	{
-		var respuesta = JsonConvert.SerializeObject(persona);
-		return new JsonResult (Ok(respuesta));
-	}*/
-
 
 	public class DatosEjemplo
 	{

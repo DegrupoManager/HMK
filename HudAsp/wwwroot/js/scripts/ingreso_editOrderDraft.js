@@ -1047,7 +1047,19 @@ var handleRenderTableData = function () {
 
 						$(`#inputCantidadAlmacen${index}`).val(linea.Stock);
 						$(`#inputStockAlmacen${index}`).val(linea.StockGeneral);
-						$(`#inputPrecio${index}`).val(linea.Precio);
+						//$(`#inputPrecio${index}`).val(linea.Precio);
+						var inputValue1 = $(`#inputCantidad${index}`).val();
+
+						if (inputValue1 === '') {
+							$(`#inputCantidad${index}`).val(1);
+						}
+
+						var inputValue2 = $(`#inputPorcentajeDescuento${index}`).val();
+
+						if (inputValue2 === '') {
+							$(`#inputPorcentajeDescuento${index}`).val(0);
+						}
+
 						getPorcentajeDescuento(codigoArticulo, codigoAlmacen)
 							.then(function (descuento) {
 								$(`#inputPorcentajeDescuento${index}`).val(descuento);
@@ -1063,6 +1075,7 @@ var handleRenderTableData = function () {
 		
 			});
 
+			/* POR DESCRIPCION ARTICULO */
 			$(document).on('click', '.porDescripcionArticulo', function () {
 				var index = $(this).data('index');
 
@@ -1106,11 +1119,12 @@ var handleRenderTableData = function () {
 								console.log(error);
 							});
 
-						getProductById(codigoArticulo)
+						getProductById(codigoArticulo, codListaPrecio)
 							.then(function (dataArticulo) {
 								$(`#inputDescripcionArticulo${index}`).val(dataArticulo.DescripcionArticulo);
 								$(`#inputCodigoBarras${index}`).val(dataArticulo.CodigoBarra);
 								$(`#inputCodigoAlmacen${index}`).val(dataArticulo.StorageDefaultId);
+								$(`#inputPrecio${index}`).val(dataArticulo.precio);
 
 								var codigoAlmacen = dataArticulo.StorageDefaultId;
 
@@ -1121,9 +1135,18 @@ var handleRenderTableData = function () {
 
 										$(`#inputCantidadAlmacen${index}`).val(linea.Stock);
 										$(`#inputStockAlmacen${index}`).val(linea.StockGeneral);
-										$(`#inputPrecio${index}`).val(linea.Precio);
-										$(`#inputCantidad${index}`).val(1);
-										$(`#inputPorcentajeDescuento${index}`).val(0);
+										//$(`#inputPrecio${index}`).val(linea.Precio);
+										var inputValue1 = $(`#inputCantidad${index}`).val();
+
+										if (inputValue1 === '') {
+											$(`#inputCantidad${index}`).val(1);
+										}
+
+										var inputValue2 = $(`#inputPorcentajeDescuento${index}`).val();
+
+										if (inputValue2 === '') {
+											$(`#inputPorcentajeDescuento${index}`).val(0);
+										}
 
 										getPorcentajeDescuento(codigoArticulo, codigoAlmacen)
 											.then(function (descuento) {
@@ -1151,7 +1174,7 @@ var handleRenderTableData = function () {
 				
 			});
 
-
+			/* POR CODIGO ARTICULO */
 			$(document).on('click', '.porCodigoArticulo', function () {
 				var index = $(this).data('index');
 
@@ -1182,11 +1205,12 @@ var handleRenderTableData = function () {
 						console.log(error);
 					});
 
-				getProductById(codigoArticulo)
+				getProductById(codigoArticulo, codListaPrecio)
 					.then(function (dataArticulo) {
 						$(`#inputDescripcionArticulo${index}`).val(dataArticulo.DescripcionArticulo);
 						$(`#inputCodigoBarras${index}`).val(dataArticulo.CodigoBarra);
 						$(`#inputCodigoAlmacen${index}`).val(dataArticulo.StorageDefaultId);
+						$(`#inputPrecio${index}`).val(dataArticulo.precio);
 
 						var codigoAlmacen = dataArticulo.StorageDefaultId;
 
@@ -1197,9 +1221,18 @@ var handleRenderTableData = function () {
 
 								$(`#inputCantidadAlmacen${index}`).val(linea.Stock);
 								$(`#inputStockAlmacen${index}`).val(linea.StockGeneral);
-								$(`#inputPrecio${index}`).val(linea.Precio);
-								$(`#inputCantidad${index}`).val(1);
-								$(`#inputPorcentajeDescuento${index}`).val(0);
+								//$(`#inputPrecio${index}`).val(linea.Precio);
+								var inputValue1 = $(`#inputCantidad${index}`).val();
+
+								if (inputValue1 === '') {
+									$(`#inputCantidad${index}`).val(1);
+								}
+
+								var inputValue2 = $(`#inputPorcentajeDescuento${index}`).val();
+
+								if (inputValue2 === '') {
+									$(`#inputPorcentajeDescuento${index}`).val(0);
+								}
 
 								getPorcentajeDescuento(codigoArticulo, codigoAlmacen)
 									.then(function (descuento) {
@@ -1288,11 +1321,12 @@ var handleRenderTableData = function () {
 		}
 	});
 
-	function getProductById(productCode) {
+	function getProductById(productCode, productListId) {
 		return new Promise(function (resolve, reject) {
 			var url = "/api/product/getProductById";
 			var parameters = {
-				productCode: productCode
+				productCode: productCode,
+				productListId: productListId
 			};
 
 			$.ajax({
@@ -1533,108 +1567,6 @@ var handleRenderTableData = function () {
 		}, 2000);
 	}
 
-	/*
-	$("#formNewOrderDraft").on("submit", function (e) {
-
-		e.preventDefault();
-
-		var orderData = $('#orderData').data('order');
-
-		var docEntry = orderData[0].NroOrden;
-		var codigo = $('#inputCodigoCliente').val();
-		var personaContacto = $('#inputPersonaContacto').val();
-		var numeroReferencia = $('#inputNumeroReferencia').val();
-		var direccionDestino = $('#inputDireccionDestino').val();
-		var destinatarioFactura = $('#inputDestinatarioFactura').val();
-		var moneda = $('#inputMoneda').val();
-		var serie = $('#inputSerieDoc').val();
-
-		var fechaFormateada = $('#datepicker-default').val();
-		var fechaContabilizacion = formatearFecha(fechaFormateada, 'YYYY-MM-DD');
-
-		var fechaFormateada2 = $('#datepicker-range').val();
-		var fechaEntrega = formatearFecha(fechaFormateada2, 'YYYY-MM-DD');
-
-		var fechaFormateada3 = $('#datepicker-inline').val();
-		var fechaDocumento = formatearFecha(fechaFormateada3, 'YYYY-MM-DD');
-
-		var condicionPago = $('#inputCondicionPago').val();
-		var comentario = $('#textAreaComentario').val();
-
-		var U_HMK_TRANS = $('#inputTransferenciaGratuita').val();
-		var U_DGP_DropConsignment = $('#inputConsignacion').val();
-		var U_DGP_NumAtCardSup = $('#inputNumeroOrdenCompra').val();
-		var U_DGP_OwnerCode = $("#usuarioAplicacion").data("user");
-
-		var nuevaOrdenPreliminar = new OrdenPreliminar(docEntry, codigo, personaContacto, numeroReferencia, direccionDestino
-													, destinatarioFactura, moneda, fechaContabilizacion, fechaEntrega
-													, fechaDocumento, condicionPago, comentario, serie, U_HMK_TRANS
-													, U_DGP_DropConsignment, U_DGP_NumAtCardSup, U_DGP_OwnerCode);
-
-		$('#detalleRow tr').each(function () {
-			var CodigoArticulo = $(this).find('[name^="inputCodigoArticulo"]').val();
-			var CodigoAlmacen = $(this).find('[name^="inputCodigoAlmacen"]').val();
-			var Precio = $(this).find('[name^="inputPrecio"]').val();
-			var Cantidad = $(this).find('[name^="inputCantidad"]').val();
-
-			var PorcentajeDescuento = $(this).find('[name^="inputPorcentajeDescuento"]').val();
-			if (PorcentajeDescuento == '') {
-				PorcentajeDescuento = 0;
-			} else {
-				PorcentajeDescuento = $(this).find('[name^="inputPorcentajeDescuento"]').val();
-			}
-
-			var VatGroup = $(this).find('[name^="inputIGV"]').val();
-
-			nuevaOrdenPreliminar.addDocumentLine(CodigoArticulo, CodigoAlmacen, Precio, Cantidad, PorcentajeDescuento, VatGroup);
-		});
-
-		var DRAFT = JSON.stringify(nuevaOrdenPreliminar);
-
-		console.log(DRAFT);
-
-		function mostrarToastExitoso(mensaje) {
-			$('#myModal').modal('hide');
-			var toast = $('#liveToast');
-			toast.find('.toast-body').text(mensaje);
-			toast.removeClass("alert-danger").addClass("alert-success");
-			toast.toast('show');
-			setTimeout(function () {
-				toast.toast('hide');
-				window.location.href = "/Ingreso/OrderDraft";
-			}, 2000);
-		}
-
-		function mostrarToastError(mensaje) {
-			$('#myModal').modal('hide');
-
-			var toast = $('#liveToast');
-			toast.find('.toast-body').text(mensaje);
-			toast.removeClass("alert-success").addClass("alert-danger");
-			toast.toast('show');
-			setTimeout(function () {
-				toast.toast('hide');
-				//window.location.href = "/Ingreso/OrderDraft";
-			}, 2000);
-		}
-
-		console.log(nuevaOrdenPreliminar);
-
-		$.ajax({
-			url: "/Ingreso/UpdatePreOrder",
-			type: "PATCH",
-			dataType: "json",
-			data: nuevaOrdenPreliminar,
-			success: function (response) {
-				mostrarToastExitoso("La orden de venta preliminar fue actulizada correctamente.");
-			},
-			error: function (xhr, status, error) {
-				mostrarToastError("Se produjo un error en la solicitud.");
-			}
-		});
-
-		
-	});*/
 	
 };
 

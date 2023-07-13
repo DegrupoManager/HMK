@@ -231,9 +231,9 @@ namespace HudAsp.Controllers
         //GET obtener producto
         [HttpGet]
 		[Route("api/product/getProductById")]
-		public async Task<string> GetProductByIdAsync(string productCode)
+		public async Task<string> GetProductByIdAsync(string productCode, string productListId)
 		{
-			var url = $"{_apiBaseUrl}/product/getProductById?productId={productCode}";
+			var url = $"{_apiBaseUrl}/product/getProductById?productId={productCode}&productListId={productListId}";
 
 			var request = new HttpRequestMessage(HttpMethod.Get, url);
 			var response = await _client.SendAsync(request);
