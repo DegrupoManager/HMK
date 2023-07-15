@@ -12,7 +12,7 @@
     },
     {
       "controller": "Consulta",
-      "action": "QueryPreliminarySalesOrder",
+      "action": "Consulta",
       "icon": "bi bi-record-circle-fill",
       "text": "Consulta"
     },

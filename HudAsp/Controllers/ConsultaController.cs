@@ -16,7 +16,7 @@ namespace HudAsp.Controllers
             _apiBaseUrl = apiSettings.Value.BaseUrl;
         }
 
-        public IActionResult QueryPreliminarySalesOrder()
+        public IActionResult Consulta()
 		{
 			if (Request.Cookies.TryGetValue("Rol", out var rol) && (rol == "Revisor" || rol == "Editor" || rol == "Administrador"))
 			{
@@ -30,7 +30,7 @@ namespace HudAsp.Controllers
 			}
 		}
 
-        //GET Estados
+        //GET Consulta
         [HttpGet]
         [Route("api/PreOrders/getConsulta")]
         public async Task<string> GetConsultaAsync(ConsultaParameters parameters)
@@ -87,6 +87,7 @@ namespace HudAsp.Controllers
             return content;
         }
 
+        /*
         //GET obtener lista clientes
         [HttpGet]
         [Route("api/customer/getCustomerList")]
@@ -97,7 +98,7 @@ namespace HudAsp.Controllers
             response.EnsureSuccessStatusCode();
             var content = await response.Content.ReadAsStringAsync();
             return content;
-        }
+        }*/
 
     }
 }

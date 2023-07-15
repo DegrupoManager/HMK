@@ -1,6 +1,9 @@
 ﻿@{
   ViewData["Title"] = "Órdenes de venta";
 }
+@*@{
+  ViewData["AppClass"] = "app-sidebar-collapsed";
+}*@
 
 @section Styles {
 	<link href="~/lib/datatables.net-bs5/css/dataTables.bootstrap5.min.css" rel="stylesheet">
@@ -8,7 +11,12 @@
 	<link href="~/lib/datatables.net-responsive-bs5/css/responsive.bootstrap5.min.css" rel="stylesheet">
 	<link href="~/lib/bootstrap-table/dist/bootstrap-table.min.css" rel="stylesheet">
 
+	<style>
+		body{
+			zoom: 75%;
+		}
 
+	</style>
 }
 
 @section Scripts {
@@ -85,11 +93,11 @@
 <div class="card">
 	<div class="tab-content p-4">
 		<div class="tab-pane fade show active" id="allTab">
-			<div class="container-fluid px-0">
+			<div class="container-fluid">
 				<!-- BEGIN table -->
-				<table id="datatableOrderDraft" class="table table-hover nowrap" width="100%">
+				<table id="datatableOrderDraft" class="table table-hover nowrap">
 					<thead>
-						<tr width="100%">
+						<tr>
 							<th class="border-top-0 pt-0 pb-2">N°</th>
 							<th class="border-top-0 pt-0 pb-2">Código de Cliente</th>
 							<th class="border-top-0 pt-0 pb-2">Nombre de Cliente</th>

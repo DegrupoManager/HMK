@@ -1,5 +1,5 @@
 ﻿@{
-    ViewData["Title"] = "NewOrderDraft";
+    ViewData["Title"] = "Nueva OV preliminar";
 }
 
 @section Styles {
@@ -19,6 +19,9 @@
     <!--Typehead END-->
 
     <style>
+        body {
+            zoom: 75%;
+        }
         .input-group {
             flex-wrap: nowrap;
 
@@ -30,7 +33,7 @@
         }
 
         .dataTables_scrollBody{
-            height: 500px;
+            height: 850px;
         }
 
         .typeahead__list{
@@ -40,6 +43,7 @@
         #loadingSpinner {
             display: none;
         }
+
 
     </style>
 
@@ -284,7 +288,7 @@
                                 </th>*@
                                 <th class="border-top-0 pt-0" style="padding-left: 6rem; padding-right: 6rem;">Descripción de Artículo</th>
                                 <th class="border-top-0 pt-0 px-3">Código de almacén</th>
-                                <th class="border-top-0 pt-0 px-2">Cantidad en almacén</th>
+                                <th class="border-top-0 pt-0 px-2">Cant. Almacén</th>
                                 <th class="border-top-0 pt-0 px-2">Stock General</th>
                                 <th class="border-top-0 pt-0 px-4">Código de barras</th>
                                 <th class="border-top-0 pt-0 px-3">Cantidad</th>
@@ -367,14 +371,20 @@
                     </div>
                 </div>
             </div>
+            <div class="col-12 col-sm-6 col-md-6 col-lg-12 align-items-center text-center">
+                <button type="submit" id="btnGrabar" class="btn btn-danger px-4">Grabar</button>
+                <a href="/Ingreso/OrderDraft" class="btn btn-outline-theme px-3">
+                    <span class="text-dark">Cancelar</span>
+                </a>
+            </div>
         </div>
     </div>
     <div class="row">
         <div class="col-3 gx-4 ms-auto">
-            <button type="submit" id="btnGrabar" class="btn btn-danger px-4">Grabar</button>
+            @*<button type="submit" id="btnGrabar" class="btn btn-danger px-4">Grabar</button>
             <a href="/Ingreso/OrderDraft" class="btn btn-outline-theme px-3">
                 <span class="text-dark">Cancelar</span>
-            </a>
+            </a>*@
 
             <div id="myModal" class="modal" tabindex="-1" role="dialog">
                 <div class="modal-dialog modal-dialog-centered">

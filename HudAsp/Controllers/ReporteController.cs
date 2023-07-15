@@ -17,5 +17,6 @@ namespace HudAsp.Controllers
 				return RedirectToAction("Login", "Login");
 			}
 		}
-	}
+
+    }
 }

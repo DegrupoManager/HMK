@@ -853,7 +853,7 @@ var handleRenderTableData = function () {
 						<div class="typeahead__field">
 							<div class="typeahead__query input-group">
 								<span data-index="${counter}" class="input-group-text porDescripcionArticulo"><i class="fa-solid fa-magnifying-glass"></i></span>
-								<input type="text" class="form-control" name="inputDescripcionArticulo${counter}" id="inputDescripcionArticulo${counter}" data-column="${counter}" autocomplete="off" required>
+								<input type="text" class="form-control" name="inputDescripcionArticulo${counter}" id="inputDescripcionArticulo${counter}" data-column="${counter}" autocomplete="off" style="font-size: 12px" required>
 							</div>
 						</div>
 					</div>
@@ -862,7 +862,7 @@ var handleRenderTableData = function () {
 				var input03 = `
 					<div class="typeahead__container">
 						<div class="typeahead__field">
-							<div class="typeahead__query input-group px-2">
+							<div class="typeahead__query input-group">
 								<span data-index="${counter}" class="input-group-text porCodigoAlmacen"><i class="fa-solid fa-magnifying-glass"></i></span>
 								<input type="text" class="form-control" name="inputCodigoAlmacen${counter}" id="inputCodigoAlmacen${counter}" data-column="${counter}" autocomplete="off" required>
 							</div>
@@ -872,7 +872,7 @@ var handleRenderTableData = function () {
 
 
 				var input04 = `
-					<div class="input-group px-4">
+					<div class="input-group">
                         <input class="form-control bg-inverse bg-opacity-10" id="inputCantidadAlmacen${counter}" style="text-align: center;" autocomplete="off" disabled>
                     </div>
 				`;

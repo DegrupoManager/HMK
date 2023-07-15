@@ -9,10 +9,6 @@
 
     <link href="~/lib/bootstrap-timepicker/css/bootstrap-timepicker.min.css" rel="stylesheet">
 
-@*    <link href="~/lib/bootstrap-slider/dist/css/bootstrap-slider.min.css" rel="stylesheet">
-    <link href="~/lib/blueimp-file-upload/css/jquery.fileupload.css" rel="stylesheet">
-    <link href="~/lib/summernote/dist/summernote-lite.css" rel="stylesheet">
-    <link href="~/lib/spectrum-colorpicker2/dist/spectrum.min.css" rel="stylesheet">*@
     <link href="~/lib/select-picker/dist/picker.min.css" rel="stylesheet">
     <link href="~/lib/jquery-typeahead/dist/jquery.typeahead.min.css" rel="stylesheet">
 
@@ -20,6 +16,31 @@
 	<link href="~/lib/datatables.net-buttons-bs5/css/buttons.bootstrap5.min.css" rel="stylesheet">
 	<link href="~/lib/datatables.net-responsive-bs5/css/responsive.bootstrap5.min.css" rel="stylesheet">
 	<link href="~/lib/bootstrap-table/dist/bootstrap-table.min.css" rel="stylesheet">
+
+    <style>
+        body{
+            zoom: 75%;
+        }
+
+        .input-group {
+            flex-wrap: nowrap;
+        }
+
+        .custom-select {
+            background-position: left 0.75rem center;
+            padding: 0.375rem 0.75rem 0.375rem 2.25rem;
+        }
+
+        .dataTables_scrollBody {
+            height: 400px;
+        }
+
+        .typeahead__list {
+            z-index: 999;
+        }
+
+    </style>
+
 }
 
 @section Scripts {
@@ -120,10 +141,19 @@
                             </div>
                             <div class="col-12 col-sm-6 col-mb-3 col-lg-3">
                                 <label for="timepicker" class="form-label" style="font-size: 12px">Rango de horas</label>
-                                <div class="input-group">
-                                    <input id="timepicker-inicio" name="timepicker-inicio" type="text" class="form-control">
-                                    <span class="input-group-text"><i class="fa-regular fa-clock"></i></span>
-                                    <input id="timepicker-final" name="timepicker-final" type="text" class="form-control">
+                                <div class="row gx-3">
+                                    <div class="col-6">
+                                        <div class="input-group mb-3 w-auto">
+                                            <span class="input-group-text"><i class="fa-regular fa-clock"></i></span>
+                                            <input id="timepicker-inicio" name="timepicker-inicio" type="text" class="form-control">
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="input-group mb-3 w-auto">
+                                            <span class="input-group-text"><i class="fa-regular fa-clock"></i></span>
+                                            <input id="timepicker-final" name="timepicker-final" type="text" class="form-control">
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -162,11 +192,14 @@
                                 </div>
                             </div>
                             <div class="col-12 col-sm-6 col-mb-3 col-lg-3">
-                                    <label for="inputDireccion" class="form-label" style="font-size: 12px">Dirección destino</label>
-                                <div class="input-group mb-3">
-                                    <select id="inputDireccion" name="inputDireccion" class="form-select custom-select">
-                                        <option selected></option>
-                                    </select>
+                                <div class="typeahead__container mb-1">
+                                    <label class="form-label" style="font-size: 12px">Dirección destino</label>
+                                    <div class="typeahead__field">
+                                        <div class="typeahead__query input-group">
+                                            <span class="input-group-text"><i class="fa fa-search"></i></span>
+                                            <input class="form-control" name="inputDireccion" id="inputDireccion" placeholder="" autocomplete="off">
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -250,7 +283,7 @@
 <!--END btnConsultar-->
 </form>
 
-<div class="mb-md-3 d-md-flex">
+<div class="mb-md-3 d-md-flex" style="z-index: 1;">
     <div class="mt-md-0 mt-2">
         <a href="#" class="text-inverse text-opacity-75 text-decoration-none">
             <i class="fa fa-download fa-fw me-1 text-theme"></i> 
@@ -264,7 +297,7 @@
 <!--BEGIN RESULTADO-->
 <div class="row mb-2">
     <div class="col-12 col-sm-12 col-md-12 col-lg-12 mb-3">
-        <div class="card mb-3">
+        <div class="card mb-3" style="z-index: 1;">
             <div class="card-header d-flex align-items-center bg-inverse bg-opacity-10 fw-light">
                 RESULTADOS
             </div>
@@ -273,8 +306,8 @@
                     <!-- BEGIN table -->
                     <table id="datatableConsulta" class="table table-hover text-nowrap w-100">
                         <thead>
-                            <tr>
-                                <th class="border-top-0 pt-0 pb-2 text-sm">N° de orden</th>
+                            <tr id="cabecera">
+                                <th class="border-top-0 pt-0 pb-2 text-sm">Nro de orden</th>
                                 <th class="border-top-0 pt-0 pb-2 text-sm">Código de Cliente</th>
                                 <th class="border-top-0 pt-0 pb-2 text-sm">Nombre de Cliente</th>
                                 <th class="border-top-0 pt-0 pb-2 text-sm">Fecha</th>
@@ -308,11 +341,3 @@
 @*<input type="text" id="timepicker-default">
 <button id="btn-get-time">Obtener hora seleccionada</button>
 <p id="selected-time"></p>*@
-
-
-<style>
-    .custom-select {
-        background-position: left 0.75rem center;
-        padding: 0.375rem 0.75rem 0.375rem 2.25rem;
-    }
-</style>

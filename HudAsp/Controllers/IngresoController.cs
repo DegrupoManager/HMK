@@ -6,11 +6,9 @@ using Microsoft.Extensions.Options;
 
 namespace HudAsp.Controllers
 {
-    //[Authorize]
     public class IngresoController : Controller
 	{
 
-		//private static readonly HttpClient _client = new HttpClient();
         private readonly HttpClient _client;
         private readonly string _apiBaseUrl;
 
@@ -57,23 +55,6 @@ namespace HudAsp.Controllers
                 return RedirectToAction("Login", "Login");
             }
         }
-
-
-
-        /*
-		public IActionResult NewOrderDraft()
-		{
-			if (Request.Cookies.TryGetValue("Rol", out var rol) && (rol == "Revisor" || rol == "Editor" || rol == "Administrador"))
-			{
-
-				return View();
-			}
-			else
-			{
-
-				return RedirectToAction("Login", "Login");
-			}
-		}*/
 
 
         [HttpGet]
@@ -184,7 +165,7 @@ namespace HudAsp.Controllers
 			return content;
 		}
 
-
+        /*
 		//GET obtener lista clientes
 		[HttpGet]
 		[Route("api/customer/getCustomerList2")]
@@ -195,7 +176,7 @@ namespace HudAsp.Controllers
 			response.EnsureSuccessStatusCode();
 			var content = await response.Content.ReadAsStringAsync();
 			return content;
-		}
+		}*/
 
 		//POST crear orden preliminar
 		[HttpPost]

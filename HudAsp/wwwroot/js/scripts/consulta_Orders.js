@@ -1,12 +1,17 @@
 ﻿
 var handleRenderTimepicker = function () {
-	$('#timepicker-inicio').timepicker();
-
-	$('#timepicker-final').timepicker();
-
-	$('#timepicker-default').timepicker({
+	$('#timepicker-inicio').timepicker({
+		minuteStep: 1,
+		appendWidgetTo: 'body',
 		showMeridian: false,
-		minuteStep: 1
+		defaultTime: false
+	});
+
+	$('#timepicker-final').timepicker({
+		minuteStep: 1,
+		appendWidgetTo: 'body',
+		showMeridian: false,
+		defaultTime: false
 	});
 
 };
@@ -33,7 +38,7 @@ var handleRenderTableData = function () {
 
 	getEstados().
 		then(function (estados) {
-			var selectEstados = $('#inputEstado');
+			var selectEstados = $('#inputStatus');
 
 			selectEstados.empty();
 			selectEstados.append('<option value=""></option>');
@@ -73,7 +78,7 @@ var handleRenderTableData = function () {
 
 	getStatus().
 		then(function (status) {
-			var selectStatus = $('#inputStatus');
+			var selectStatus = $('#inputEstado');
 
 			selectStatus.empty();
 			selectStatus.append('<option value=""></option>');
@@ -97,6 +102,7 @@ var handleRenderTableData = function () {
 		language: {
 			url: '//cdn.datatables.net/plug-ins/1.13.4/i18n/es-ES.json'
 		},
+		pageLength: 100,
 		searching: false,
 		buttons: [],
 		scrollX: true,
@@ -157,8 +163,15 @@ var handleRenderTableData = function () {
 		var nombreCliente = $('#inputNombreCliente').val();
 		var status = $('#inputStatus').val();
 		var ordenCompra = $('#inputOrdenCompra').val();
-		var horaFinal = $('#timepicker-inicio').val();
-		var horaInicio = $('#timepicker-final').val();
+
+		var horaFinal = formatarHora($('#timepicker-final').val());
+		var horaInicio = formatarHora($('#timepicker-inicio').val());
+
+		if (horaInicio === '2400' && horaFinal === '2400') {
+			horaInicio = '0001';
+			horaFinal = '2359';
+		}
+
 		var comentario = $('#inputComentario').val();
 		var codigoCliente = $('#inputCodigoCliente').val();
 		var fechaFormateada = $('#datepicker-inline').val();
@@ -175,11 +188,10 @@ var handleRenderTableData = function () {
 		parameters.CardName = nombreCliente;
 		parameters.StatusDraft = status;
 		parameters.OrdenCompra = ordenCompra;
-		parameters.OrdenCompraD = '';
-		parameters.HoraFinC = formatarHora(horaFinal);
+		parameters.HoraFinC = horaFinal;
 		parameters.Coment = comentario;
 		parameters.SlpNameV = '';
-		parameters.HoraInicioC = formatarHora(horaInicio);
+		parameters.HoraInicioC = horaInicio;
 		parameters.FechaInicioEmision = fechaInicio;
 		parameters.FechaFinEmision = fechaFinal;
 		parameters.EstadoDraft = estado;
@@ -189,6 +201,8 @@ var handleRenderTableData = function () {
 		parameters.NombVendedor = vendedor;
 		parameters.CodAlmacen = codigoAlmacen;
 
+		console.log(parameters);
+		
 		$.ajax({
 			url: '/api/PreOrders/getConsulta',
 			type: 'GET',
@@ -229,7 +243,6 @@ var handleRenderTableData = function () {
 				
 			}
 		});
-		
 
 	});
 
@@ -239,7 +252,6 @@ var handleRenderTableData = function () {
 			hour12: false,
 			hour: '2-digit',
 			minute: '2-digit',
-			second: '2-digit'
 		}).replace(/:/g, '');
 		return formattedHora;
 	}
@@ -265,7 +277,7 @@ var handleRenderTableData = function () {
 				break;
 
 			default:
-				fechaFormateada = fecha;
+				fechaFormateada = '';
 				break;
 		}
 
@@ -294,7 +306,7 @@ var handleRenderTableData = function () {
 				pageOrientation: 'landscape',
 				content: [
 					{ image: dataURL, width: 150 },
-					{ text: 'Tabla Ordenes de venta preliminares', style: 'header' },
+					{ text: 'Consulta de ordenes', style: 'header' },
 					{
 						table: {
 							body: [
@@ -352,8 +364,59 @@ var handleRenderTableData = function () {
 	/*END generarPDF */
 
 	$('#btnXLS').on('click', function () {
-		console.log('XLS');
+		var csvData = Array.from(document.querySelectorAll('#cabecera th'))
+			.map(th => th.textContent.trim())
+			.map(header => removeAccents(header)) 
+			.join(';') + '\n'; 
+
+		csvData += table
+			.rows()
+			.data()
+			.filter(row => row.length > 0)
+			.map(row => row.map(cell => cell.replace(/\r\r/g, ' ')))
+			.map(row => row.map(cell => cell.replace(/\r/g, ' ')))
+			.map(row => row.map(cell => removeAccents(cell)))
+			.map(row => row.join(';').replace(/"/g, ''))
+			.join('\n');
+
+		var link = document.createElement('a');
+		link.href = 'data:text/csv;charset=utf-8,' + encodeURI(csvData);
+		link.download = 'consulta';
+		link.style.display = 'none';
+		document.body.appendChild(link);
+
+		link.click();
+
+		document.body.removeChild(link);
 	});
+
+	function removeAccents(text) {
+		return text.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+	}
+
+
+	//$('#btnXLS').on('click', function () {
+	//	var csvData = table
+	//		.rows()
+	//		.data()
+	//		.filter(row => row.length > 0)
+	//		.map(row => row.map(cell => cell.replace(/\r\r/g, ' ')))
+	//		.map(row => row.map(cell => cell.replace(/\r/g, ' ')))
+	//		.map(row => row.join(';').replace(/"/g, ''))
+	//		.join('\n')
+
+	//	// Crea un enlace de descarga para el archivo CSV
+	//	var link = document.createElement('a');
+	//	link.href = 'data:text/csv;charset=utf-8,' + encodeURI(csvData);
+	//	link.download = 'datos.csv';
+	//	link.style.display = 'none';
+	//	document.body.appendChild(link);
+
+	//	link.click();
+
+	//	document.body.removeChild(link);
+	//});
+
 
 	class ConsultaParameters {
 		constructor() {
@@ -361,7 +424,6 @@ var handleRenderTableData = function () {
 			this.CardName = '';
 			this.StatusDraft = '';
 			this.OrdenCompra = '';
-			this.OrdenCompraD = '';
 			this.HoraFinC = '';
 			this.Coment = '';
 			this.SlpNameV = '';
@@ -386,25 +448,16 @@ var handleRenderDatepicker = function() {
 		format: 'dd/mm/yyyy'
 	}).datepicker("setDate", new Date());
 
-	$('#datepicker-component').datepicker({
-		autoclose: true,
-		format: 'dd/mm/yyyy'
-	}).datepicker("setDate", new Date());
-
-	$('#datepicker-range').datepicker({
-		autoclose: true,
-		format: 'dd/mm/yyyy'
-	}).datepicker("setDate", new Date());
 
 	$('#datepicker-inline').datepicker({
 		autoclose: true,
 		format: 'dd/mm/yyyy'
-	}).datepicker("setDate", new Date());
+	});
 };
 var handleRenderTypeahead = function () {
 	function getCustomerList() {
 		return new Promise(function (resolve, reject) {
-			var url = "/api/customer/getCustomerList2";
+			var url = "/api/customer/getCustomerList";
 
 			$.ajax({
 				url: url,
@@ -455,6 +508,61 @@ var handleRenderTypeahead = function () {
 		.catch(function (error) {
 			console.log(error);
 		});
+
+
+	function getProductList() {
+		return new Promise(function (resolve, reject) {
+			var url = "/api/product/getProductList";
+
+			$.ajax({
+				url: url,
+				type: "GET",
+				success: function (response) {
+					var articulos = JSON.parse(response);
+					resolve(articulos);
+				},
+				error: function (xhr, status, error) {
+					reject(error);
+				}
+			});
+		});
+	}
+
+	getProductList()
+		.then(function (articulos) {
+
+			var articulo_codigo = [];
+			var articulo_descripcion = [];
+
+			articulos.forEach(function (articulo) {
+				articulo_codigo.push(articulo.CodigoArticulo);
+				articulo_descripcion.push(articulo.DescripcionArticulo);
+			});
+
+
+			$.typeahead({
+				input: '#inputCodigoProducto',
+				order: "desc",
+				source: {
+					data: articulo_codigo
+				},
+				minLength: 3
+			});
+
+			$.typeahead({
+				input: '#inputDescripcionProducto',
+				order: "desc",
+				source: {
+					data: articulo_descripcion
+				},
+				minLength: 3
+			});
+
+		})
+		.catch(function (error) {
+			console.log(error);
+		});
+
 };
 
 
@@ -463,7 +571,6 @@ var handleRenderTypeahead = function () {
 $(document).ready(function () {
 
 	handleRenderTimepicker();
-
 	handleRenderTableData();
 	handleRenderDatepicker();
 	handleRenderTypeahead();

@@ -17,6 +17,14 @@
     <link href="~/css/site.css" rel="stylesheet" asp-append-version="true">
     <!-- ================== END core-css ================== -->
 
+    <style>
+        .modal-backdrop {
+            position: fixed;
+            background-color: rgba(0, 0, 0, 0.5);
+            transform: scale(1.75);
+        }
+    </style>
+
     @RenderSection("Styles", required: false)
 </head>
 <body class="theme-red @ViewData["BodyClass"]">
