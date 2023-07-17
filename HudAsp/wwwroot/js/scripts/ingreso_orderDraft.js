@@ -76,6 +76,7 @@ var handleRenderTableData = function () {
 			searchPlaceholder: "Búsqueda de órdenes",
 			url: '//cdn.datatables.net/plug-ins/1.13.4/i18n/es-ES.json'
 		},
+		pageLength: 100,
 		buttons: [],
 		dom: domHTML,
 		scrollX: true,
@@ -213,7 +214,7 @@ var handleRenderTableData = function () {
 		try {
 			var response = await obtenerOrdenes();
 			obtenerFiltros(response);
-			$.fn.DataTable.ext.pager.numbers_length = 4;
+			$.fn.DataTable.ext.pager.numbers_length = 5;
 
 			table
 				.column('0:visible')

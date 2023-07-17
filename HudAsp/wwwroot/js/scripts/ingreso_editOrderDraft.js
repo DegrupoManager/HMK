@@ -253,6 +253,85 @@ var handleRenderTypeahead = function () {
 		$('#textAreaDestinatarioFactura').val('');
 	}
 
+	function autocompletarCabecera(codigoCliente, tipo) {
+
+		getCustomerById(codigoCliente)
+			.then(function (dataCliente) {
+
+				/*BEGIN Autocompletar */
+				$('#inputCodigoCliente').attr('data-codPriceList', dataCliente.Cod_Lista_Precio);
+
+				if (tipo == "C") {
+					$('#inputNombreCliente').val(dataCliente.Nombre_Cliente);
+				} else if (tipo == "N") {
+					$('#inputCodigoCliente').val(dataCliente.Codigo_Cliente);
+				}
+
+				var personaContacto = $('#inputPersonaContacto');
+				personaContacto.empty();
+				personaContacto.append(`<option value="${dataCliente.contactoCodigo}" selected>${dataCliente.contactoNombre}</option>`);
+
+				$('#inputCondicionPago').val(dataCliente.Condicion_pago);
+				$('#inputMoneda').val(dataCliente.Moneda);
+				$('#inputNumeroReferencia').val(dataCliente.Numero_Referencia);
+
+				var direccionDestino = $('#inputDireccionDestino');
+				direccionDestino.empty();
+				direccionDestino.append(`<option value="${dataCliente.direccionDestinoCodigo}" selected>${dataCliente.direccionDestinoCodigo}</option>`);
+				$('#textAreaDireccionDestino').val(dataCliente.Direccion_Destino);
+
+				var destinatarioFactura = $('#inputDestinatarioFactura');
+				destinatarioFactura.empty();
+				destinatarioFactura.append(`<option value="${dataCliente.direccionFacturaCodigo}" selected>${dataCliente.direccionFacturaCodigo}</option>`);
+				$('#textAreaDestinatarioFactura').val(dataCliente.Direccion_Factura);
+
+				/*END Autocompletar */
+
+				getPersonContactsByCustomerId(codigoCliente)
+					.then(function (dataContacto) {
+						dataContacto.forEach(function (contacto) {
+							if (contacto.codigo !== dataCliente.contactoCodigo) {
+								personaContacto.append(`<option value="${contacto.codigo}" selected>${contacto.nombreCompleto}</option>`);
+							}
+						});
+					})
+					.catch(function (error) {
+						console.log(error);
+					});
+
+				//GET Direcciones Destino (B)
+				getCustomerAddressByType('S', codigoCliente)
+					.then(function (dataDirecciones) {
+						dataDirecciones.forEach(function (destino) {
+							if (dataCliente.direccionDestinoCodigo !== destino.codigo) {
+								direccionDestino.append(`<option value="${destino.codigo}">${destino.codigo}</option>`);
+							}
+						});
+						manejarDDestino(dataDirecciones);
+					})
+					.catch(function (error) {
+						console.log(error);
+					});
+				//GET Direcciones Factura (S)
+				getCustomerAddressByType('B', codigoCliente)
+					.then(function (dataDirecciones) {
+						//console.log(dataDirecciones);
+						dataDirecciones.forEach(function (factura) {
+							if (dataCliente.direccionFacturaCodigo !== factura.codigo) {
+								destinatarioFactura.append(`<option value="${factura.codigo}">${factura.codigo}</option>`);
+							}
+						});
+						manejarDFactura(dataDirecciones);
+					})
+					.catch(function (error) {
+						console.log(error);
+					});
+			})
+			.catch(function (error) {
+				console.log(error);
+			});
+	}
+
 	$("#inputCodigoCliente").on("input", function () {
 		if ($(this).val() === "") {
 			vaciarCabecera();
@@ -266,155 +345,109 @@ var handleRenderTypeahead = function () {
 		var codigoCliente = $('#inputCodigoCliente').val();
 
 		if (codigoCliente.length > 0) {
-			getCustomerById(codigoCliente)
-				.then(function (dataCliente) {
-
-					/*BEGIN Autocompletar */
-					$('#inputCodigoCliente').attr('data-codPriceList', dataCliente.Cod_Lista_Precio);
-					$('#inputNombreCliente').val(dataCliente.Nombre_Cliente);
-
-					var personaContacto = $('#inputPersonaContacto');
-					personaContacto.append(`<option value="${dataCliente.contactoCodigo}" selected>${dataCliente.contactoNombre}</option>`);
-
-					$('#inputCondicionPago').val(dataCliente.Condicion_pago);
-					$('#inputMoneda').val(dataCliente.Moneda);
-					$('#inputNumeroReferencia').val(dataCliente.Numero_Referencia);
-
-					var direccionDestino = $('#inputDireccionDestino');
-					direccionDestino.append(`<option value="${dataCliente.direccionDestinoCodigo}" selected>${dataCliente.direccionDestinoCodigo}</option>`);
-					$('#textAreaDireccionDestino').val(dataCliente.Direccion_Destino);
-
-					var destinatarioFactura = $('#inputDestinatarioFactura');
-					destinatarioFactura.append(`<option value="${dataCliente.direccionFacturaCodigo}" selected>${dataCliente.direccionFacturaCodigo}</option>`);
-					$('#textAreaDestinatarioFactura').val(dataCliente.Direccion_Factura);
-
-					/*END Autocompletar */
-
-					getPersonContactsByCustomerId(codigoCliente)
-						.then(function (dataContacto) {
-							dataContacto.forEach(function (contacto) {
-								if (contacto.codigo !== dataCliente.contactoCodigo) {
-									personaContacto.append(`<option value="${contacto.codigo}" selected>${contacto.nombreCompleto}</option>`);
-								}
-							});
-						})
-						.catch(function (error) {
-							console.log(error);
-						});
-
-					//GET Direcciones Destino (B)
-					getCustomerAddressByType('S', codigoCliente)
-						.then(function (dataDirecciones) {
-							dataDirecciones.forEach(function (destino) {
-								if (dataCliente.direccionDestinoCodigo !== destino.codigo) {
-									direccionDestino.append(`<option value="${destino.codigo}">${destino.codigo}</option>`);
-								}
-							});
-							manejarDDestino(dataDirecciones);
-						})
-						.catch(function (error) {
-							console.log(error);
-						});
-					//GET Direcciones Factura (S)
-					getCustomerAddressByType('B', codigoCliente)
-						.then(function (dataDirecciones) {
-							//console.log(dataDirecciones);
-							dataDirecciones.forEach(function (factura) {
-								if (dataCliente.direccionFacturaCodigo !== factura.codigo) {
-									destinatarioFactura.append(`<option value="${factura.codigo}">${factura.codigo}</option>`);
-								}
-							});
-							manejarDFactura(dataDirecciones);
-						})
-						.catch(function (error) {
-							console.log(error);
-						});
-				})
-				.catch(function (error) {
-					console.log(error);
-				});
+			autocompletarCabeceraC(codigoCliente);
 		}
 	});
 
+	$("#inputCodigoCliente").on("blur", function () {
 
+		var codigoCliente = $(this).val();
+		//vaciarCabecera();
+
+		if (codigoCliente.length > 0) {
+			autocompletarCabecera(codigoCliente, 'C');
+		}
+
+	});
+
+	function manejarDDestino(data) {
+		$("#inputDireccionDestino").change(function () {
+			var direccionDestino = $(this).val();
+			var descripcionDestino = $("#textAreaDireccionDestino");
+
+			data.forEach(function (destino) {
+				if (direccionDestino == destino.codigo) {
+					descripcionDestino.val(destino.descripcion);
+				}
+			});
+		})
+	}
+
+	function manejarDFactura(data) {
+		$("#inputDestinatarioFactura").change(function () {
+			var direccionFactura = $(this).val();
+			var descripcionFactura = $("#textAreaDireccionDestino");
+
+			data.forEach(function (factura) {
+				if (direccionFactura == factura.codigo) {
+					descripcionFactura.val(factura.descripcion);
+				}
+			});
+		})
+	}
 
 	/*BEGIN porNombreCliente */
 
-	$('#porCodigoCliente').on('click', function () {
+	$('#porNombreCliente').on('click', function () {
 
 		vaciarCabecera();
 
-		var codigoCliente = $('#inputCodigoCliente').val();
+		var nombreCliente = $('#inputNombreCliente').val();
 
-		if (codigoCliente.length > 0) {
-			getCustomerById(codigoCliente)
-				.then(function (dataCliente) {
+		getCustomerList()
+			.then(function (clientes) {
 
-					/*BEGIN Autocompletar */
-					$('#inputCodigoCliente').attr('data-codPriceList', dataCliente.Cod_Lista_Precio);
-					$('#inputNombreCliente').val(dataCliente.Nombre_Cliente);
-
-					var personaContacto = $('#inputPersonaContacto');
-					personaContacto.append(`<option value="${dataCliente.contactoCodigo}" selected>${dataCliente.contactoNombre}</option>`);
-
-					$('#inputCondicionPago').val(dataCliente.Condicion_pago);
-					$('#inputMoneda').val(dataCliente.Moneda);
-					$('#inputNumeroReferencia').val(dataCliente.Numero_Referencia);
-
-					var direccionDestino = $('#inputDireccionDestino');
-					direccionDestino.append(`<option value="${dataCliente.direccionDestinoCodigo}" selected>${dataCliente.direccionDestinoCodigo}</option>`);
-					$('#textAreaDireccionDestino').val(dataCliente.Direccion_Destino);
-
-					var destinatarioFactura = $('#inputDestinatarioFactura');
-					destinatarioFactura.append(`<option value="${dataCliente.direccionFacturaCodigo}" selected>${dataCliente.direccionFacturaCodigo}</option>`);
-					$('#textAreaDestinatarioFactura').val(dataCliente.Direccion_Factura);
-
-					/*END Autocompletar */
-
-					getPersonContactsByCustomerId(codigoCliente)
-						.then(function (dataContacto) {
-							dataContacto.forEach(function (contacto) {
-								if (contacto.codigo !== dataCliente.contactoCodigo) {
-									personaContacto.append(`<option value="${contacto.codigo}" selected>${contacto.nombreCompleto}</option>`);
-								}
-							});
-						})
-						.catch(function (error) {
-							console.log(error);
-						});
-
-					//GET Direcciones Destino (B)
-					getCustomerAddressByType('S', codigoCliente)
-						.then(function (dataDirecciones) {
-							dataDirecciones.forEach(function (destino) {
-								if (dataCliente.direccionDestinoCodigo !== destino.codigo) {
-									direccionDestino.append(`<option value="${destino.codigo}">${destino.codigo}</option>`);
-								}
-							});
-							manejarDDestino(dataDirecciones);
-						})
-						.catch(function (error) {
-							console.log(error);
-						});
-					//GET Direcciones Factura (S)
-					getCustomerAddressByType('B', codigoCliente)
-						.then(function (dataDirecciones) {
-							//console.log(dataDirecciones);
-							dataDirecciones.forEach(function (factura) {
-								if (dataCliente.direccionFacturaCodigo !== factura.codigo) {
-									destinatarioFactura.append(`<option value="${factura.codigo}">${factura.codigo}</option>`);
-								}
-							});
-							manejarDFactura(dataDirecciones);
-						})
-						.catch(function (error) {
-							console.log(error);
-						});
-				})
-				.catch(function (error) {
-					console.log(error);
+				var codigoClienteEncontrado;
+				clientes.forEach(function (cliente) {
+					if (cliente.Nombre_Cliente === nombreCliente) {
+						codigoClienteEncontrado = cliente.Codigo_Cliente;
+						return;
+					}
 				});
-		}
+
+				if (codigoClienteEncontrado !== null) {
+
+					autocompletarCabecera(codigoClienteEncontrado, 'N');
+
+				} else {
+					console.log('Cliente no encontrado');
+				}
+
+			})
+			.catch(function (error) {
+				console.log(error);
+			});
+	});
+
+	$("#inputNombreCliente").on("blur", function () {
+		//vaciarCabecera();
+
+		var nombreCliente = $('#inputNombreCliente').val();
+
+		getCustomerList()
+			.then(function (clientes) {
+
+				var codigoClienteEncontrado;
+				clientes.forEach(function (cliente) {
+					if (cliente.Nombre_Cliente === nombreCliente) {
+						codigoClienteEncontrado = cliente.Codigo_Cliente;
+						return;
+					}
+				});
+
+				if (codigoClienteEncontrado !== null) {
+
+					autocompletarCabecera(codigoClienteEncontrado, 'N');
+
+				} else {
+					console.log('Cliente no encontrado');
+				}
+
+			})
+			.catch(function (error) {
+				console.log(error);
+			});
+
 	});
 
 	/*END porNombreCliente*/
@@ -646,7 +679,7 @@ var handleRenderTableData = function () {
 				  <div class="typeahead__field">
 					<div class="typeahead__query input-group px-2">
 					  <span data-index="${counter}" class="input-group-text porCodigoArticulo"><i class="fa-solid fa-magnifying-glass"></i></span>
-					  <input type="text" value="${item.CodArticulo}"" class="form-control searchable" name="inputCodigoArticulo${counter}" id="inputCodigoArticulo${counter}" data-column="${counter}" autocomplete="off" required>
+					  <input data-index="${counter}" type="text" value="${item.CodArticulo}"" class="form-control codigoArticulo" name="inputCodigoArticulo${counter}" id="inputCodigoArticulo${counter}" data-column="${counter}" autocomplete="off" required>
 					</div>
 				  </div>
 				</div>
@@ -657,7 +690,7 @@ var handleRenderTableData = function () {
 				  <div class="typeahead__field">
 					<div class="typeahead__query input-group">
 					  <span data-index="${counter}" class="input-group-text porDescripcionArticulo"><i class="fa-solid fa-magnifying-glass"></i></span>
-					  <input type="text" value="${item.Descripcion}" class="form-control" name="inputDescripcionArticulo${counter}" id="inputDescripcionArticulo${counter}" data-column="${counter}" autocomplete="off" required>
+					  <input data-index="${counter}" type="text" value="${item.Descripcion}" class="form-control descripcionArticulo" name="inputDescripcionArticulo${counter}" id="inputDescripcionArticulo${counter}" data-column="${counter}" autocomplete="off" required>
 					</div>
 				  </div>
 				</div>
@@ -666,9 +699,9 @@ var handleRenderTableData = function () {
 			var input03 = `
 				<div class="typeahead__container">
 				  <div class="typeahead__field">
-					<div class="typeahead__query input-group px-2">
+					<div class="typeahead__query input-group">
 					  <span data-index="${counter}" class="input-group-text porCodigoAlmacen"><i class="fa-solid fa-magnifying-glass"></i></span>
-					  <input type="text" value="${item.Almacen}"  class="form-control" name="inputCodigoAlmacen${counter}" id="inputCodigoAlmacen${counter}" data-column="${counter}" autocomplete="off" required>
+					  <input data-index="${counter}" type="text" value="${item.Almacen}" class="form-control codigoAlmacen" name="inputCodigoAlmacen${counter}" id="inputCodigoAlmacen${counter}" data-column="${counter}" autocomplete="off" required>
 					</div>
 				  </div>
 				</div>
@@ -736,6 +769,25 @@ var handleRenderTableData = function () {
 			}
 
 			table.row.add(fila).draw(false);
+
+			$.typeahead({
+				input: `#inputCodigoArticulo${counter}`,
+				order: "desc",
+				source: {
+					data: articulos_codigo
+				},
+				minLength: 3
+			});
+
+			$.typeahead({
+				input: `#inputDescripcionArticulo${counter}`,
+				order: "desc",
+				source: {
+					data: articulos_descripcion
+				},
+				minLength: 3
+			});
+
 		});
 
 	}
@@ -883,7 +935,7 @@ var handleRenderTableData = function () {
 						<div class="typeahead__field">
 							<div class="typeahead__query input-group px-2">
 								<span data-index="${counter}" class="input-group-text porCodigoArticulo"><i class="fa-solid fa-magnifying-glass"></i></span>
-								<input type="text" class="form-control searchable" name="inputCodigoArticulo${counter}" id="inputCodigoArticulo${counter}" data-column="${counter}" autocomplete="off" required>
+								<input data-index="${counter}" type="text" class="form-control codigoArticulo" name="inputCodigoArticulo${counter}" id="inputCodigoArticulo${counter}" data-column="${counter}" autocomplete="off">
 							</div>
 						</div>
 					</div>
@@ -894,7 +946,7 @@ var handleRenderTableData = function () {
 						<div class="typeahead__field">
 							<div class="typeahead__query input-group">
 								<span data-index="${counter}" class="input-group-text porDescripcionArticulo"><i class="fa-solid fa-magnifying-glass"></i></span>
-								<input type="text" class="form-control" name="inputDescripcionArticulo${counter}" id="inputDescripcionArticulo${counter}" data-column="${counter}" autocomplete="off" required>
+								<input data-index="${counter}" type="text" class="form-control descripcionArticulo" name="inputDescripcionArticulo${counter}" id="inputDescripcionArticulo${counter}" data-column="${counter}" autocomplete="off" style="font-size: 12px">
 							</div>
 						</div>
 					</div>
@@ -903,14 +955,13 @@ var handleRenderTableData = function () {
 				var input03 = `
 					<div class="typeahead__container">
 						<div class="typeahead__field">
-							<div class="typeahead__query input-group px-2">
+							<div class="typeahead__query input-group">
 								<span data-index="${counter}" class="input-group-text porCodigoAlmacen"><i class="fa-solid fa-magnifying-glass"></i></span>
-								<input type="text" class="form-control" name="inputCodigoAlmacen${counter}" id="inputCodigoAlmacen${counter}" data-column="${counter}" autocomplete="off" required>
+								<input data-index="${counter}" type="text" class="form-control codigoAlmacen" name="inputCodigoAlmacen${counter}" id="inputCodigoAlmacen${counter}" data-column="${counter}" autocomplete="off">
 							</div>
 						</div>
 					</div>
 				`;
-
 
 				var input04 = `
 					<div class="input-group px-4">
@@ -932,7 +983,7 @@ var handleRenderTableData = function () {
 
 				var input07 = `
 					<div class="input-group px-2">
-                        <input class="form-control" name="inputCantidad${counter}" id="inputCantidad${counter}" style="text-align: center;" autocomplete="off" required>
+                        <input class="form-control" name="inputCantidad${counter}" id="inputCantidad${counter}" style="text-align: center;" autocomplete="off">
                     </div>
 				`;
 
@@ -959,7 +1010,6 @@ var handleRenderTableData = function () {
 
 				var newRow = table.row.add(fila).draw(false).node();
 				$(newRow).find('.eliminarFila').attr('data-row-index', counter);
-
 
 
 				$.typeahead({
@@ -995,7 +1045,8 @@ var handleRenderTableData = function () {
 
 			$(document).on('click', '.duplicarFila', function () {
 
-				counter++;
+				var counterA = table.rows().count();
+				var counter = counterA + 1;
 
 				var filaActual = $(this).closest('tr');
 				var nuevaFila = filaActual.clone();
@@ -1007,6 +1058,25 @@ var handleRenderTableData = function () {
 				nuevaFila.find('[id^=inputDescripcionArticulo]').attr('id', 'inputDescripcionArticulo' + counter);
 
 				table.row.add(nuevaFila).draw(false);
+
+				$.typeahead({
+					input: `#inputCodigoArticulo${counter}`,
+					order: "desc",
+					source: {
+						data: articulos_codigo
+					},
+					minLength: 3
+				});
+
+				$.typeahead({
+					input: `#inputDescripcionArticulo${counter}`,
+					order: "desc",
+					source: {
+						data: articulos_descripcion
+					},
+					minLength: 3
+				});
+
 				calcularTotales();
 			});
 
@@ -1031,14 +1101,18 @@ var handleRenderTableData = function () {
 			});
 			/*END busqueda en input */
 
+			/* POR CODIGO ALMACEN */
 			$(document).on('click', '.porCodigoAlmacen', function () {
+
 				var index = $(this).data('index');
 
 				var codListaPrecio = $('#inputCodigoCliente').attr('data-codPriceList');
 
 				var codigoArticulo = $(`#inputCodigoArticulo${index}`).val();
+				$(`#inputCodigoArticulo${index}`).attr('required', true);
 
 				var codigoAlmacen = $(`#inputCodigoAlmacen${index}`).val();
+				$(`#inputCodigoAlmacen${index}`).attr('required', true);
 
 				getLineArt(codListaPrecio, codigoArticulo, codigoAlmacen).
 					then(function (linea) {
@@ -1047,14 +1121,15 @@ var handleRenderTableData = function () {
 
 						$(`#inputCantidadAlmacen${index}`).val(linea.Stock);
 						$(`#inputStockAlmacen${index}`).val(linea.StockGeneral);
-						//$(`#inputPrecio${index}`).val(linea.Precio);
 						var inputValue1 = $(`#inputCantidad${index}`).val();
+						$(`#inputCantidad${index}`).attr('required', true);
 
 						if (inputValue1 === '') {
 							$(`#inputCantidad${index}`).val(1);
 						}
 
 						var inputValue2 = $(`#inputPorcentajeDescuento${index}`).val();
+						$(`#inputPorcentajeDescuento${index}`).attr('required', true);
 
 						if (inputValue2 === '') {
 							$(`#inputPorcentajeDescuento${index}`).val(0);
@@ -1072,10 +1147,57 @@ var handleRenderTableData = function () {
 					.catch(function (error) {
 						console.log(error);
 					});
-		
 			});
 
-			/* POR DESCRIPCION ARTICULO */
+			$(document).on('blur', '.codigoAlmacen', function () {
+
+				var index = $(this).data('index');
+
+				var codListaPrecio = $('#inputCodigoCliente').attr('data-codPriceList');
+
+				var codigoArticulo = $(`#inputCodigoArticulo${index}`).val();
+				$(`#inputCodigoArticulo${index}`).attr('required', true);
+
+				var codigoAlmacen = $(`#inputCodigoAlmacen${index}`).val();
+				$(`#inputCodigoAlmacen${index}`).attr('required', true);
+
+				getLineArt(codListaPrecio, codigoArticulo, codigoAlmacen).
+					then(function (linea) {
+						$(`#inputIGV${index}`).val(linea.Impuesto);
+						$(`#inputIGV${index}`).attr("data-valor", linea.VarlorImpuesto);
+
+						$(`#inputCantidadAlmacen${index}`).val(linea.Stock);
+						$(`#inputStockAlmacen${index}`).val(linea.StockGeneral);
+						var inputValue1 = $(`#inputCantidad${index}`).val();
+						$(`#inputCantidad${index}`).attr('required', true);
+
+						if (inputValue1 === '') {
+							$(`#inputCantidad${index}`).val(1);
+						}
+
+						var inputValue2 = $(`#inputPorcentajeDescuento${index}`).val();
+						$(`#inputPorcentajeDescuento${index}`).attr('required', true);
+
+						if (inputValue2 === '') {
+							$(`#inputPorcentajeDescuento${index}`).val(0);
+						}
+
+						getPorcentajeDescuento(codigoArticulo, codigoAlmacen)
+							.then(function (descuento) {
+								$(`#inputPorcentajeDescuento${index}`).val(descuento);
+								calcularTotales();
+							})
+							.catch(function (error) {
+
+							})
+					})
+					.catch(function (error) {
+						console.log(error);
+					});
+			});
+
+
+			/* POR DESCRIPCION ALMACEN */
 			$(document).on('click', '.porDescripcionArticulo', function () {
 				var index = $(this).data('index');
 
@@ -1096,83 +1218,110 @@ var handleRenderTableData = function () {
 
 						var codListaPrecio = $('#inputCodigoCliente').attr('data-codPriceList');
 
-						var arregloAlmacenes = [];
+						autocompletarDetalle(codigoArticulo, codListaPrecio, index);
 
-						getStoragesByProduct(codigoArticulo)
-							.then(function (dataAlmacenes) {
-
-								dataAlmacenes.forEach(function (almacen) {
-									arregloAlmacenes.push(almacen.storageId);
-								});
-
-								$.typeahead({
-									input: `#inputCodigoAlmacen${index}`,
-									order: "desc",
-									source: {
-										data: arregloAlmacenes
-									},
-									minLength: 3
-								});
-
-							})
-							.catch(function (error) {
-								console.log(error);
+						var inputCodigoArticulo = $(`#inputCodigoArticulo${index + 1}`);
+						if (!inputCodigoArticulo.length && $(`#inputCodigoArticulo${index}`).val() != '') {
+							botonAgregar.click();
+							$.typeahead({
+								input: `#inputCodigoArticulo${index + 1}`,
+								order: "desc",
+								source: {
+									data: articulos_codigo
+								},
+								minLength: 3
 							});
 
-						getProductById(codigoArticulo, codListaPrecio)
-							.then(function (dataArticulo) {
-								$(`#inputDescripcionArticulo${index}`).val(dataArticulo.DescripcionArticulo);
-								$(`#inputCodigoBarras${index}`).val(dataArticulo.CodigoBarra);
-								$(`#inputCodigoAlmacen${index}`).val(dataArticulo.StorageDefaultId);
-								$(`#inputPrecio${index}`).val(dataArticulo.precio);
-
-								var codigoAlmacen = dataArticulo.StorageDefaultId;
-
-								getLineArt(codListaPrecio, codigoArticulo, codigoAlmacen)
-									.then(function (linea) {
-										$(`#inputIGV${index}`).val(linea.Impuesto);
-										$(`#inputIGV${index}`).attr("data-valor", linea.VarlorImpuesto);
-
-										$(`#inputCantidadAlmacen${index}`).val(linea.Stock);
-										$(`#inputStockAlmacen${index}`).val(linea.StockGeneral);
-										//$(`#inputPrecio${index}`).val(linea.Precio);
-										var inputValue1 = $(`#inputCantidad${index}`).val();
-
-										if (inputValue1 === '') {
-											$(`#inputCantidad${index}`).val(1);
-										}
-
-										var inputValue2 = $(`#inputPorcentajeDescuento${index}`).val();
-
-										if (inputValue2 === '') {
-											$(`#inputPorcentajeDescuento${index}`).val(0);
-										}
-
-										getPorcentajeDescuento(codigoArticulo, codigoAlmacen)
-											.then(function (descuento) {
-												$(`#inputPorcentajeDescuento${index}`).val(descuento);
-												calcularTotales();
-											})
-											.catch(function (error) {
-
-											})
-									})
-									.catch(function (error) {
-										console.log(error);
-									});
-
-							})
-							.catch(function (error) {
-								console.log(error);
+							$.typeahead({
+								input: `#inputDescripcionArticulo${index + 1}`,
+								order: "desc",
+								source: {
+									data: articulos_descripcion
+								},
+								minLength: 3
 							});
+						}
+
 
 					})
 					.catch(function (error) {
 						console.log(error)
 					})
 
-				
+				var inputCodigoArticulo = $(`#inputCodigoArticulo${index + 1}`);
+				if (!inputCodigoArticulo.length && codigoArticulo != '') {
+					botonAgregar.click();
+					$.typeahead({
+						input: `#inputCodigoArticulo${index + 1}`,
+						order: "desc",
+						source: {
+							data: articulos_codigo
+						},
+						minLength: 3
+					});
+
+					$.typeahead({
+						input: `#inputDescripcionArticulo${index + 1}`,
+						order: "desc",
+						source: {
+							data: articulos_descripcion
+						},
+						minLength: 3
+					});
+				}
+
 			});
+
+			$(document).on('blur', '.descripcionArticulo', function () {
+				var index = $(this).data('index');
+
+				var descripcionArticulo = $(`#inputDescripcionArticulo${index}`).val();
+
+				getProductList()
+					.then(function (articulos) {
+
+						var codigoArticulo;
+						articulos.forEach(function (articulo) {
+							if (articulo.DescripcionArticulo === descripcionArticulo) {
+								codigoArticulo = articulo.CodigoArticulo;
+								return;
+							}
+						});
+
+						$(`#inputCodigoArticulo${index}`).val(codigoArticulo);
+
+						var codListaPrecio = $('#inputCodigoCliente').attr('data-codPriceList');
+
+						autocompletarDetalle(codigoArticulo, codListaPrecio, index);
+
+						var inputCodigoArticulo = $(`#inputCodigoArticulo${index + 1}`);
+						if (!inputCodigoArticulo.length && $(`#inputCodigoArticulo${index}`).val() != '') {
+							botonAgregar.click();
+							$.typeahead({
+								input: `#inputCodigoArticulo${index + 1}`,
+								order: "desc",
+								source: {
+									data: articulos_codigo
+								},
+								minLength: 3
+							});
+
+							$.typeahead({
+								input: `#inputDescripcionArticulo${index + 1}`,
+								order: "desc",
+								source: {
+									data: articulos_descripcion
+								},
+								minLength: 3
+							});
+						}
+
+					})
+					.catch(function (error) {
+						console.log(error)
+					})
+			});
+
 
 			/* POR CODIGO ARTICULO */
 			$(document).on('click', '.porCodigoArticulo', function () {
@@ -1182,77 +1331,61 @@ var handleRenderTableData = function () {
 
 				var codigoArticulo = $(`#inputCodigoArticulo${index}`).val();
 
-				var arregloAlmacenes = [];
+				autocompletarDetalle(codigoArticulo, codListaPrecio, index);
 
-				getStoragesByProduct(codigoArticulo)
-					.then(function (dataAlmacenes) {
-
-						dataAlmacenes.forEach(function (almacen) {
-							arregloAlmacenes.push(almacen.storageId);
-						});
-
-						$.typeahead({
-							input: `#inputCodigoAlmacen${index}`,
-							order: "desc",
-							source: {
-								data: arregloAlmacenes
-							},
-							minLength: 3
-						});
-
-					})
-					.catch(function (error) {
-						console.log(error);
+				var inputCodigoArticulo = $(`#inputCodigoArticulo${index + 1}`);
+				if (!inputCodigoArticulo.length && codigoArticulo != '') {
+					botonAgregar.click();
+					$.typeahead({
+						input: `#inputCodigoArticulo${index + 1}`,
+						order: "desc",
+						source: {
+							data: articulos_codigo
+						},
+						minLength: 3
 					});
 
-				getProductById(codigoArticulo, codListaPrecio)
-					.then(function (dataArticulo) {
-						$(`#inputDescripcionArticulo${index}`).val(dataArticulo.DescripcionArticulo);
-						$(`#inputCodigoBarras${index}`).val(dataArticulo.CodigoBarra);
-						$(`#inputCodigoAlmacen${index}`).val(dataArticulo.StorageDefaultId);
-						$(`#inputPrecio${index}`).val(dataArticulo.precio);
+					$.typeahead({
+						input: `#inputDescripcionArticulo${index + 1}`,
+						order: "desc",
+						source: {
+							data: articulos_descripcion
+						},
+						minLength: 3
+					});
+				}
 
-						var codigoAlmacen = dataArticulo.StorageDefaultId;
+			});
 
-						getLineArt(codListaPrecio, codigoArticulo, codigoAlmacen)
-							.then(function (linea) {
-								$(`#inputIGV${index}`).val(linea.Impuesto);
-								$(`#inputIGV${index}`).attr("data-valor", linea.VarlorImpuesto);
+			$(document).on('blur', '.codigoArticulo', function () {
+				var index = $(this).data('index');
+				var codListaPrecio = $('#inputCodigoCliente').attr('data-codPriceList');
+				var codigoArticulo = $(`#inputCodigoArticulo${index}`).val();
 
-								$(`#inputCantidadAlmacen${index}`).val(linea.Stock);
-								$(`#inputStockAlmacen${index}`).val(linea.StockGeneral);
-								//$(`#inputPrecio${index}`).val(linea.Precio);
-								var inputValue1 = $(`#inputCantidad${index}`).val();
+				autocompletarDetalle(codigoArticulo, codListaPrecio, index);
 
-								if (inputValue1 === '') {
-									$(`#inputCantidad${index}`).val(1);
-								}
-
-								var inputValue2 = $(`#inputPorcentajeDescuento${index}`).val();
-
-								if (inputValue2 === '') {
-									$(`#inputPorcentajeDescuento${index}`).val(0);
-								}
-
-								getPorcentajeDescuento(codigoArticulo, codigoAlmacen)
-									.then(function (descuento) {
-										$(`#inputPorcentajeDescuento${index}`).val(descuento);
-										calcularTotales();
-									})
-									.catch(function (error) {
-
-									})
-							})
-							.catch(function (error) {
-								console.log(error);
-							});
-
-					})
-					.catch(function (error) {
-						console.log(error);
+				var inputCodigoArticulo = $(`#inputCodigoArticulo${index + 1}`);
+				if (!inputCodigoArticulo.length && codigoArticulo != '') {
+					botonAgregar.click();
+					$.typeahead({
+						input: `#inputCodigoArticulo${index + 1}`,
+						order: "desc",
+						source: {
+							data: articulos_codigo
+						},
+						minLength: 3
 					});
 
-				
+					$.typeahead({
+						input: `#inputDescripcionArticulo${index + 1}`,
+						order: "desc",
+						source: {
+							data: articulos_descripcion
+						},
+						minLength: 3
+					});
+				}
+
 			});
 
 			/*BEGIN Calcular resumen */
@@ -1312,7 +1445,7 @@ var handleRenderTableData = function () {
 
 				if (changeCount >= 2) {
 					var CodPriceList = $(this).attr('data-codPriceList');
-					alert('Cambiar de cliente genera cambios en el detalle')
+					//alert('Cambiar de cliente genera cambios en el detalle')
 				}
 
 				calcularTotales();
@@ -1320,6 +1453,81 @@ var handleRenderTableData = function () {
 
 		}
 	});
+
+	function autocompletarDetalle(codigoArticulo, codListaPrecio, index) {
+		var arregloAlmacenes = [];
+
+		$(`#inputCodigoArticulo${index}`).attr('required', true);
+		$(`#inputCodigoAlmacen${index}`).attr('required', true);
+		$(`#inputCantidad${index}`).attr('required', true);
+
+		getStoragesByProduct(codigoArticulo)
+			.then(function (dataAlmacenes) {
+
+				dataAlmacenes.forEach(function (almacen) {
+					arregloAlmacenes.push(almacen.storageId);
+				});
+
+				$.typeahead({
+					input: `#inputCodigoAlmacen${index}`,
+					order: "desc",
+					source: {
+						data: arregloAlmacenes
+					},
+					minLength: 3
+				});
+
+			})
+			.catch(function (error) {
+				console.log(error);
+			});
+
+		getProductById(codigoArticulo, codListaPrecio)
+			.then(function (dataArticulo) {
+				$(`#inputDescripcionArticulo${index}`).val(dataArticulo.DescripcionArticulo);
+				$(`#inputCodigoBarras${index}`).val(dataArticulo.CodigoBarra);
+				$(`#inputCodigoAlmacen${index}`).val(dataArticulo.StorageDefaultId);
+				$(`#inputPrecio${index}`).val(dataArticulo.precio);
+
+				var codigoAlmacen = dataArticulo.StorageDefaultId;
+
+				getLineArt(codListaPrecio, codigoArticulo, codigoAlmacen)
+					.then(function (linea) {
+						$(`#inputIGV${index}`).val(linea.Impuesto);
+						$(`#inputIGV${index}`).attr("data-valor", linea.VarlorImpuesto);
+
+						$(`#inputCantidadAlmacen${index}`).val(linea.Stock);
+						$(`#inputStockAlmacen${index}`).val(linea.StockGeneral);
+						var inputValue1 = $(`#inputCantidad${index}`).val();
+
+						if (inputValue1 === '') {
+							$(`#inputCantidad${index}`).val(1);
+						}
+
+						var inputValue2 = $(`#inputPorcentajeDescuento${index}`).val();
+
+						if (inputValue2 === '') {
+							$(`#inputPorcentajeDescuento${index}`).val(0);
+						}
+
+						getPorcentajeDescuento(codigoArticulo, codigoAlmacen)
+							.then(function (descuento) {
+								$(`#inputPorcentajeDescuento${index}`).val(descuento);
+								calcularTotales();
+							})
+							.catch(function (error) {
+
+							})
+					})
+					.catch(function (error) {
+						console.log(error);
+					});
+
+			})
+			.catch(function (error) {
+				console.log(error);
+			});
+	}
 
 	function getProductById(productCode, productListId) {
 		return new Promise(function (resolve, reject) {
@@ -1504,7 +1712,7 @@ var handleRenderTableData = function () {
 				var Cantidad = $(this).find('[name^="inputCantidad"]').val();
 				var PorcentajeDescuento = $(this).find('[name^="inputPorcentajeDescuento"]').val();
 
-				if (PorcentajeDescuento == '') {
+				if (PorcentajeDescuento === '') {
 					PorcentajeDescuento = 0;
 				} else {
 					PorcentajeDescuento = $(this).find('[name^="inputPorcentajeDescuento"]').val();
@@ -1512,8 +1720,13 @@ var handleRenderTableData = function () {
 
 				var VatGroup = $(this).find('[name^="inputIGV"]').val();
 
-				nuevaOrdenPreliminar.addDocumentLine(CodigoArticulo, CodigoAlmacen, Precio, Cantidad, PorcentajeDescuento, VatGroup);
+				if (CodigoArticulo !== '' && CodigoAlmacen !== '' && Precio !== '' && Cantidad !== '' && PorcentajeDescuento !== '' && VatGroup !== '') {
+					if (CodigoArticulo.trim() !== '' && CodigoAlmacen.trim() !== '' && Precio.trim() !== '' && Cantidad.trim() !== '' && PorcentajeDescuento.trim() !== '' && VatGroup.trim() !== '') {
+						nuevaOrdenPreliminar.addDocumentLine(CodigoArticulo, CodigoAlmacen, Precio, Cantidad, PorcentajeDescuento, VatGroup);
+					}
+				}
 			});
+
 
 			console.log(nuevaOrdenPreliminar);
 			var DRAFT = JSON.stringify(nuevaOrdenPreliminar);
