@@ -278,7 +278,7 @@ var handleRenderTableData = function () {
 						toast.toast('show');
 						setTimeout(function () {
 							toast.toast('hide');
-						}, 2000);
+						}, 4000);
 					} else {
 						toast.toast('dispose');
 						toast.addClass('hide');
@@ -287,7 +287,7 @@ var handleRenderTableData = function () {
 							toast.toast('show');
 							setTimeout(function () {
 								toast.toast('hide');
-							}, 2000);
+							}, 4000);
 						}, 100);
 					}
 
@@ -305,21 +305,6 @@ var handleRenderTableData = function () {
 	});
 
 	/*END eliminar */
-
-
-	/*BEGIN llenar tabla */
-	/*
-	function setearOrdenes() {
-		obtenerOrdenes().then(function (ordenesPreliminares) {
-			$.each(ordenesPreliminares, function (index, value) {
-				table.row.add(value).draw();
-			});
-		}).catch(function (error) {
-			console.error(error);
-		});
-	};*/
-
-	/*END llenar tabla */
 
 
 	/*BEGIN obtener filtros */

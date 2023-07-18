@@ -162,7 +162,6 @@ var handleRenderTypeahead = function () {
 	function vaciarCabecera() {
 
 		$('#inputNombreCliente').val('');
-		//$('#inputCodigoCliente').val('');
 		$('#inputCodigoCliente').removeAttr('data-codPriceList');
 
 		var personaContacto = $('#inputPersonaContacto');
@@ -269,12 +268,12 @@ var handleRenderTypeahead = function () {
 
 	$('#porCodigoCliente').on('click', function () {
 
-		vaciarCabecera();
+		//vaciarCabecera();
 
 		var codigoCliente = $('#inputCodigoCliente').val();
 
 		if (codigoCliente.length > 0) {
-			autocompletarCabeceraC(codigoCliente);
+			autocompletarCabecera(codigoCliente);
 		}
 	});
 
@@ -1367,6 +1366,8 @@ var handleRenderTableData = function () {
 	});
 
 	function autocompletarDetalle(codigoArticulo, codListaPrecio, index) {
+
+		limpiarLineaArticulo(index);
 		var arregloAlmacenes = [];
 
 		$(`#inputCodigoArticulo${index}`).attr('required', true);
@@ -1398,7 +1399,10 @@ var handleRenderTableData = function () {
 			.then(function (dataArticulo) {
 				$(`#inputDescripcionArticulo${index}`).val(dataArticulo.DescripcionArticulo);
 				$(`#inputCodigoBarras${index}`).val(dataArticulo.CodigoBarra);
+
 				$(`#inputCodigoAlmacen${index}`).val(dataArticulo.StorageDefaultId);
+
+
 				$(`#inputPrecio${index}`).val(dataArticulo.precio);
 
 				var codigoAlmacen = dataArticulo.StorageDefaultId;
@@ -1410,17 +1414,19 @@ var handleRenderTableData = function () {
 
 						$(`#inputCantidadAlmacen${index}`).val(linea.Stock);
 						$(`#inputStockAlmacen${index}`).val(linea.StockGeneral);
-						var inputValue1 = $(`#inputCantidad${index}`).val();
+						//var inputValue1 = $(`#inputCantidad${index}`).val();
 
-						if (inputValue1 === '') {
-							$(`#inputCantidad${index}`).val(1);
-						}
+						//if (inputValue1 === '') {
+						//	$(`#inputCantidad${index}`).val(1);
+						//}
 
-						var inputValue2 = $(`#inputPorcentajeDescuento${index}`).val();
+						//var inputValue2 = $(`#inputPorcentajeDescuento${index}`).val();
 
-						if (inputValue2 === '') {
-							$(`#inputPorcentajeDescuento${index}`).val(0);
-						}
+						//if (inputValue2 === '') {
+						//	$(`#inputPorcentajeDescuento${index}`).val(0);
+						//}
+
+						$(`#inputCantidad${index}`).val(1);
 
 						getPorcentajeDescuento(codigoArticulo, codigoAlmacen)
 							.then(function (descuento) {
@@ -1439,6 +1445,18 @@ var handleRenderTableData = function () {
 			.catch(function (error) {
 				console.log(error);
 			});
+	}
+
+	function limpiarLineaArticulo(index) {
+		$(`#inputDescripcionArticulo${index}`).val('');
+		$(`#inputCodigoBarras${index}`).val('');
+		$(`#inputCodigoAlmacen${index}`).val('');
+		$(`#inputPrecio${index}`).val('');
+		$(`#inputIGV${index}`).val('');
+		$(`#inputIGV${index}`).attr("data-valor", '');
+		$(`#inputCantidadAlmacen${index}`).val('');
+		$(`#inputStockAlmacen${index}`).val('');
+		$(`#inputPorcentajeDescuento${index}`).val('');
 	}
 
 	function getProductById(productCode, productListId) {
@@ -1673,7 +1691,7 @@ var handleRenderTableData = function () {
 		setTimeout(function () {
 			toast.toast('hide');
 			window.location.href = "/Ingreso/OrderDraft";
-		}, 2000);
+		}, 4000);
 	}
 
 	function mostrarToastError(mensaje) {
@@ -1685,7 +1703,7 @@ var handleRenderTableData = function () {
 		toast.toast('show');
 		setTimeout(function () {
 			toast.toast('hide');
-		}, 2000);
+		}, 5000);
 	}
 
 };
