@@ -28,4 +28,6 @@ public class DocumentLinesUpdate
     public string? Quantity { get; set; }
     public string? DiscountPercent { get; set; }
     public string? VatGroup { get; set; }
+
+    public string? ShipDate { get; set; }
 }

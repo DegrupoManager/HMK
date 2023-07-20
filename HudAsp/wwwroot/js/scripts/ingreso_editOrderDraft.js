@@ -234,7 +234,6 @@ var handleRenderTypeahead = function () {
 
 	function vaciarCabecera() {
 
-		$('#inputNombreCliente').val('');
 		$('#inputCodigoCliente').removeAttr('data-codPriceList');
 
 		var personaContacto = $('#inputPersonaContacto');
@@ -249,6 +248,7 @@ var handleRenderTypeahead = function () {
 		$('#textAreaDireccionDestino').val('');
 
 		var destinatarioFactura = $('#inputDestinatarioFactura');
+		destinatarioFactura.empty();
 		destinatarioFactura.empty();
 		$('#textAreaDestinatarioFactura').val('');
 	}
@@ -836,13 +836,14 @@ var handleRenderTableData = function () {
 	`;
 
 	class DocumentLine {
-		constructor(ItemCode, WarehouseCode, UnitPrice, Quantity, DiscountPercent, VatGroup) {
+		constructor(ItemCode, WarehouseCode, UnitPrice, Quantity, DiscountPercent, VatGroup, ShipDate) {
 			this.ItemCode = ItemCode;
 			this.WarehouseCode = WarehouseCode;
 			this.UnitPrice = UnitPrice;
 			this.Quantity = Quantity;
 			this.DiscountPercent = DiscountPercent;
 			this.VatGroup = VatGroup;
+			this.ShipDate = ShipDate;
 		}
 	}
 
@@ -872,8 +873,8 @@ var handleRenderTableData = function () {
 			this.DocumentLines = [];
 		}
 
-		addDocumentLine(ItemCode, WarehouseCode, UnitPrice, Quantity, DiscountPercent, VatGroup) {
-			const documentLine = new DocumentLine(ItemCode, WarehouseCode, UnitPrice, Quantity, DiscountPercent, VatGroup);
+		addDocumentLine(ItemCode, WarehouseCode, UnitPrice, Quantity, DiscountPercent, VatGroup, ShipDate) {
+			const documentLine = new DocumentLine(ItemCode, WarehouseCode, UnitPrice, Quantity, DiscountPercent, VatGroup, ShipDate);
 			this.DocumentLines.push(documentLine);
 		}
 	}
@@ -1077,9 +1078,11 @@ var handleRenderTableData = function () {
 					minLength: 3
 				});
 
-				calcularTotales();
+				calcularTotales()
+
 			});
 
+			//botonAgregar.click();
 
 
 			/*BEGIN busqueda en input */
@@ -1269,7 +1272,7 @@ var handleRenderTableData = function () {
 						minLength: 3
 					});
 				}
-
+				calcularTotales();
 			});
 
 			$(document).on('blur', '.descripcionArticulo', function () {
@@ -1320,73 +1323,65 @@ var handleRenderTableData = function () {
 					.catch(function (error) {
 						console.log(error)
 					})
+				calcularTotales();
 			});
+
+
+			function ejecutarCodigoArticulo(index) {
+
+				limpiarLineaArticulo(index);
+
+				var codListaPrecio = $('#inputCodigoCliente').attr('data-codPriceList');
+
+				var codigoArticulo = $(`#inputCodigoArticulo${index}`).val();
+
+				autocompletarDetalle(codigoArticulo, codListaPrecio, index);
+
+				var inputCodigoArticulo = $(`#inputCodigoArticulo${index + 1}`);
+				if (!inputCodigoArticulo.length && codigoArticulo !== '') {
+					botonAgregar.click();
+					$.typeahead({
+						input: `#inputCodigoArticulo${index + 1}`,
+						order: "desc",
+						source: {
+							data: articulos_codigo
+						},
+						minLength: 3
+					});
+
+					$.typeahead({
+						input: `#inputDescripcionArticulo${index + 1}`,
+						order: "desc",
+						source: {
+							data: articulos_descripcion
+						},
+						minLength: 3
+					});
+				}
+				calcularTotales();
+			}
 
 
 			/* POR CODIGO ARTICULO */
 			$(document).on('click', '.porCodigoArticulo', function () {
 				var index = $(this).data('index');
-
-				var codListaPrecio = $('#inputCodigoCliente').attr('data-codPriceList');
-
-				var codigoArticulo = $(`#inputCodigoArticulo${index}`).val();
-
-				autocompletarDetalle(codigoArticulo, codListaPrecio, index);
-
-				var inputCodigoArticulo = $(`#inputCodigoArticulo${index + 1}`);
-				if (!inputCodigoArticulo.length && codigoArticulo != '') {
-					botonAgregar.click();
-					$.typeahead({
-						input: `#inputCodigoArticulo${index + 1}`,
-						order: "desc",
-						source: {
-							data: articulos_codigo
-						},
-						minLength: 3
-					});
-
-					$.typeahead({
-						input: `#inputDescripcionArticulo${index + 1}`,
-						order: "desc",
-						source: {
-							data: articulos_descripcion
-						},
-						minLength: 3
-					});
-				}
+				ejecutarCodigoArticulo(index);
+				setTimeout(function () {
+					calcularTotales();
+				}, 1000);
 
 			});
+
 
 			$(document).on('blur', '.codigoArticulo', function () {
 				var index = $(this).data('index');
-				var codListaPrecio = $('#inputCodigoCliente').attr('data-codPriceList');
-				var codigoArticulo = $(`#inputCodigoArticulo${index}`).val();
-
-				autocompletarDetalle(codigoArticulo, codListaPrecio, index);
-
-				var inputCodigoArticulo = $(`#inputCodigoArticulo${index + 1}`);
-				if (!inputCodigoArticulo.length && codigoArticulo != '') {
-					botonAgregar.click();
-					$.typeahead({
-						input: `#inputCodigoArticulo${index + 1}`,
-						order: "desc",
-						source: {
-							data: articulos_codigo
-						},
-						minLength: 3
-					});
-
-					$.typeahead({
-						input: `#inputDescripcionArticulo${index + 1}`,
-						order: "desc",
-						source: {
-							data: articulos_descripcion
-						},
-						minLength: 3
-					});
-				}
-
+				ejecutarCodigoArticulo(index);
+				setTimeout(function () {
+					calcularTotales();
+				}, 1000);
 			});
+
+
 
 			/*BEGIN Calcular resumen */
 
@@ -1410,7 +1405,7 @@ var handleRenderTableData = function () {
 						descuento = 0;
 					}
 
-					var igv = parseFloat($(this).find('input[name^="inputIGV"]').data("valor"));
+					var igv = parseFloat($(this).find('input[name^="inputIGV"]').attr("data-valor"));
 					if (isNaN(igv)) {
 						igv = 0;
 					}
@@ -1434,105 +1429,52 @@ var handleRenderTableData = function () {
 			}
 
 
-			$(document).on('input', '#detalleRow input[name^="inputCantidad"], #detalleRow input[name^="inputPrecio"], #detalleRow input[name^="inputPorcentajeDescuento"]', function () {
+			$(document).on('input blur change', '#detalleRow input[name^="inputCantidad"], #detalleRow input[name^="inputPrecio"], #detalleRow input[name^="inputPorcentajeDescuento"]', function () {
 				calcularTotales();
 			});
-
 
 			/*END Calcular resumen*/
-			$('#inputCodigoCliente').change(function () {
-				changeCount++;
 
-				if (changeCount >= 2) {
-					var CodPriceList = $(this).attr('data-codPriceList');
-					//alert('Cambiar de cliente genera cambios en el detalle')
-				}
+
+			function adaptarDetalle() {
+
+				$('#detalleRow tr').each(function () {
+					var CodigoArticulo = $(this).find('[name^="inputCodigoArticulo"]').val();
+					var index = $(this).find('[name^="inputCodigoArticulo"]').data('index');
+					var CodigoAlmacen = $(this).find('[name^="inputCodigoAlmacen"]').val();
+					var Precio = $(this).find('[name^="inputPrecio"]').val();
+					var Cantidad = $(this).find('[name^="inputCantidad"]').val();
+					var PorcentajeDescuento = $(this).find('[name^="inputPorcentajeDescuento"]').val();
+					var VatGroup = $(this).find('[name^="inputIGV"]').val();
+
+					if (CodigoArticulo !== '' && CodigoAlmacen !== '' && Precio !== '' && Cantidad !== '' && PorcentajeDescuento !== '' && VatGroup !== '') {
+						if (CodigoArticulo.trim() !== '' && CodigoAlmacen.trim() !== '' && Precio.trim() !== '' && Cantidad.trim() !== '' && PorcentajeDescuento.trim() !== '' && VatGroup.trim() !== '') {
+							ejecutarCodigoArticulo(index);
+							calcularTotales();
+						}
+					}
+				});
 
 				calcularTotales();
+			}
+
+
+			$('#inputCodigoCliente, #inputNombreCliente').on('blur', function () {
+				setTimeout(function () {
+					var codListaPrecio = $('#inputCodigoCliente').attr('data-codpricelist');
+
+					if (codListaPrecio && codListaPrecio.trim().length > 0) {
+						adaptarDetalle();
+					}
+				}, 1000);
 			});
+
+			setTimeout(function () {
+				calcularTotales();
+			}, 1000);
 
 		}
 	});
-
-	function autocompletarDetalle(codigoArticulo, codListaPrecio, index) {
-
-		limpiarLineaArticulo(index);
-
-		var arregloAlmacenes = [];
-
-		$(`#inputCodigoArticulo${index}`).attr('required', true);
-		$(`#inputCodigoAlmacen${index}`).attr('required', true);
-		$(`#inputCantidad${index}`).attr('required', true);
-
-		getStoragesByProduct(codigoArticulo)
-			.then(function (dataAlmacenes) {
-
-				dataAlmacenes.forEach(function (almacen) {
-					arregloAlmacenes.push(almacen.storageId);
-				});
-
-				$.typeahead({
-					input: `#inputCodigoAlmacen${index}`,
-					order: "desc",
-					source: {
-						data: arregloAlmacenes
-					},
-					minLength: 3
-				});
-
-			})
-			.catch(function (error) {
-				console.log(error);
-			});
-
-		getProductById(codigoArticulo, codListaPrecio)
-			.then(function (dataArticulo) {
-				$(`#inputDescripcionArticulo${index}`).val(dataArticulo.DescripcionArticulo);
-				$(`#inputCodigoBarras${index}`).val(dataArticulo.CodigoBarra);
-				$(`#inputCodigoAlmacen${index}`).val(dataArticulo.StorageDefaultId);
-				$(`#inputPrecio${index}`).val(dataArticulo.precio);
-
-				var codigoAlmacen = dataArticulo.StorageDefaultId;
-
-				getLineArt(codListaPrecio, codigoArticulo, codigoAlmacen)
-					.then(function (linea) {
-						$(`#inputIGV${index}`).val(linea.Impuesto);
-						$(`#inputIGV${index}`).attr("data-valor", linea.VarlorImpuesto);
-
-						$(`#inputCantidadAlmacen${index}`).val(linea.Stock);
-						$(`#inputStockAlmacen${index}`).val(linea.StockGeneral);
-						//var inputValue1 = $(`#inputCantidad${index}`).val();
-
-						//if (inputValue1 === '') {
-						//	$(`#inputCantidad${index}`).val(1);
-						//}
-
-						//var inputValue2 = $(`#inputPorcentajeDescuento${index}`).val();
-
-						//if (inputValue2 === '') {
-						//	$(`#inputPorcentajeDescuento${index}`).val(0);
-						//}
-
-						$(`#inputCantidad${index}`).val(1);
-
-						getPorcentajeDescuento(codigoArticulo, codigoAlmacen)
-							.then(function (descuento) {
-								$(`#inputPorcentajeDescuento${index}`).val(descuento);
-								calcularTotales();
-							})
-							.catch(function (error) {
-
-							})
-					})
-					.catch(function (error) {
-						console.log(error);
-					});
-
-			})
-			.catch(function (error) {
-				console.log(error);
-			});
-	}
 
 	function limpiarLineaArticulo(index) {
 		$(`#inputDescripcionArticulo${index}`).val('');
@@ -1655,6 +1597,75 @@ var handleRenderTableData = function () {
 		});
 	}
 
+	function autocompletarDetalle(codigoArticulo, codListaPrecio, index) {
+
+		var arregloAlmacenes = [];
+
+		$(`#inputCodigoArticulo${index}`).attr('required', true);
+		$(`#inputCodigoAlmacen${index}`).attr('required', true);
+		$(`#inputCantidad${index}`).attr('required', true);
+
+		getStoragesByProduct(codigoArticulo)
+			.then(function (dataAlmacenes) {
+
+				dataAlmacenes.forEach(function (almacen) {
+					arregloAlmacenes.push(almacen.storageId);
+				});
+
+				$.typeahead({
+					input: `#inputCodigoAlmacen${index}`,
+					order: "desc",
+					source: {
+						data: arregloAlmacenes
+					},
+					minLength: 3
+				});
+
+			})
+			.catch(function (error) {
+				console.log(error);
+			});
+
+		getProductById(codigoArticulo, codListaPrecio)
+			.then(function (dataArticulo) {
+				$(`#inputDescripcionArticulo${index}`).val(dataArticulo.DescripcionArticulo);
+				$(`#inputCodigoBarras${index}`).val(dataArticulo.CodigoBarra);
+
+				$(`#inputCodigoAlmacen${index}`).val(dataArticulo.StorageDefaultId);
+
+
+				$(`#inputPrecio${index}`).val(dataArticulo.precio);
+
+				var codigoAlmacen = dataArticulo.StorageDefaultId;
+
+				getLineArt(codListaPrecio, codigoArticulo, codigoAlmacen)
+					.then(function (linea) {
+						$(`#inputIGV${index}`).val(linea.Impuesto);
+						$(`#inputIGV${index}`).attr("data-valor", linea.VarlorImpuesto);
+
+						$(`#inputCantidadAlmacen${index}`).val(linea.Stock);
+						$(`#inputStockAlmacen${index}`).val(linea.StockGeneral);
+
+						$(`#inputCantidad${index}`).val(1);
+
+						getPorcentajeDescuento(codigoArticulo, codigoAlmacen)
+							.then(function (descuento) {
+								$(`#inputPorcentajeDescuento${index}`).val(descuento);
+								calcularTotales();
+							})
+							.catch(function (error) {
+
+							})
+					})
+					.catch(function (error) {
+						console.log(error);
+					});
+
+			})
+			.catch(function (error) {
+				console.log(error);
+			});
+	}
 
 	function formatearFecha(fecha, formato) {
 		var partesFecha = fecha.split('/');
@@ -1680,98 +1691,133 @@ var handleRenderTableData = function () {
 		return fechaFormateada;
 	}
 
+	/*BEGIN PATCH nueva orden preliminar */
+	function enviarOrdenPreliminar(nuevaOrdenPreliminar) {
+		$('#loadingSpinner').show();
+
+		var orderData = $('#orderData').data('order');
+
+		$.ajax({
+			url: "/Ingreso/UpdatePreOrder",
+			type: "PATCH",
+			dataType: "json",
+			data: nuevaOrdenPreliminar
+		})
+			.done(function (response) {
+				$('#loadingSpinner').hide();
+				$('#btnAceptar').prop('disabled', false);
+
+				console.log(JSON.parse(response.value));
+
+				if (JSON.parse(response.value) == 'OK') {
+					mostrarToastExitoso(`La orden de venta preliminar ${orderData[0].NroOrden} fue actualizada correctamente.`);
+				} else {
+					mostrarModal("Error", "<p>Error: " + response.value + "</p>");
+					$('#btnAceptar2').show();
+				}
+			})
+			.fail(function (xhr, status, error) {
+				$('#loadingSpinner').hide();
+				$('#btnAceptar').prop('disabled', false);
+
+				mostrarModal("Error", "<p>Se produjo un error en la solicitud: " + error + "</p>");
+				$('#btnAceptar2').show();
+			});
+	}
+
+	$('#myModal').on('click', '#btnAceptar', function () {
+		$('#btnAceptar').prop('disabled', true);
+		delete nuevaOrdenPreliminar;
+
+		var orderData = $('#orderData').data('order');
+
+		var docEntry = orderData[0].NroOrden;
+		var codigo = $('#inputCodigoCliente').val();
+		var personaContacto = $('#inputPersonaContacto').val();
+		var numeroReferencia = $('#inputNumeroReferencia').val();
+		var direccionDestino = $('#inputDireccionDestino').val();
+		var destinatarioFactura = $('#inputDestinatarioFactura').val();
+		var moneda = $('#inputMoneda').val();
+		var serie = $('#inputSerieDoc').val();
+
+		var fechaFormateada = $('#datepicker-default').val();
+		var fechaContabilizacion = formatearFecha(fechaFormateada, 'YYYY-MM-DD');
+
+		var fechaFormateada2 = $('#datepicker-range').val();
+		var fechaEntrega = formatearFecha(fechaFormateada2, 'YYYY-MM-DD');
+
+		var fechaFormateada3 = $('#datepicker-inline').val();
+		var fechaDocumento = formatearFecha(fechaFormateada3, 'YYYY-MM-DD');
+
+		var condicionPago = $('#inputCondicionPago').val();
+		var comentario = $('#textAreaComentario').val();
+
+		var U_HMK_TRANS = $('#inputTransferenciaGratuita').val();
+		var U_DGP_DropConsignment = $('#inputConsignacion').val();
+		var U_DGP_NumAtCardSup = $('#inputNumeroOrdenCompra').val();
+
+		var nuevaOrdenPreliminar = new OrdenPreliminar(docEntry, codigo, personaContacto, numeroReferencia, direccionDestino
+			, destinatarioFactura, moneda, fechaContabilizacion, fechaEntrega
+			, fechaDocumento, condicionPago, comentario, serie, U_HMK_TRANS
+			, U_DGP_DropConsignment, U_DGP_NumAtCardSup);
+
+		$('#detalleRow tr').each(function () {
+			var CodigoArticulo = $(this).find('[name^="inputCodigoArticulo"]').val();
+			var CodigoAlmacen = $(this).find('[name^="inputCodigoAlmacen"]').val();
+			var Precio = $(this).find('[name^="inputPrecio"]').val();
+			var Cantidad = $(this).find('[name^="inputCantidad"]').val();
+			var PorcentajeDescuento = $(this).find('[name^="inputPorcentajeDescuento"]').val();
+
+			if (PorcentajeDescuento === '') {
+				PorcentajeDescuento = 0;
+			} else {
+				PorcentajeDescuento = $(this).find('[name^="inputPorcentajeDescuento"]').val();
+			}
+
+			var VatGroup = $(this).find('[name^="inputIGV"]').val();
+
+			var fechaFormateada2 = $('#datepicker-range').val();
+
+			var ShipDate = formatearFecha(fechaFormateada2, 'YYYY-MM-DD');
+
+			if (CodigoArticulo !== '' && CodigoAlmacen !== '' && Precio !== '' && Cantidad !== '' && PorcentajeDescuento !== '' && VatGroup !== '') {
+				if (CodigoArticulo.trim() !== '' && CodigoAlmacen.trim() !== '' && Precio.trim() !== '' && Cantidad.trim() !== '' && PorcentajeDescuento.trim() !== '' && VatGroup.trim() !== '') {
+					nuevaOrdenPreliminar.addDocumentLine(CodigoArticulo, CodigoAlmacen, Precio, Cantidad, PorcentajeDescuento, VatGroup, ShipDate);
+				}
+			}
+		});
+
+		var DRAFT = JSON.stringify(nuevaOrdenPreliminar);
+		console.log(DRAFT);
+
+		enviarOrdenPreliminar(nuevaOrdenPreliminar);
+
+	});
+
 	$("#formNewOrderDraft").on("submit", function (e) {
 		e.preventDefault();
 
 		$('#myModal').modal('show');
-
-		$('#btnAceptar').on('click', function () {
-
-			$('#btnAceptar').prop('disabled', true);
-			delete nuevaOrdenPreliminar;
-
-			var orderData = $('#orderData').data('order');
-
-			var docEntry = orderData[0].NroOrden;
-			var codigo = $('#inputCodigoCliente').val();
-			var personaContacto = $('#inputPersonaContacto').val();
-			var numeroReferencia = $('#inputNumeroReferencia').val();
-			var direccionDestino = $('#inputDireccionDestino').val();
-			var destinatarioFactura = $('#inputDestinatarioFactura').val();
-			var moneda = $('#inputMoneda').val();
-			var serie = $('#inputSerieDoc').val();
-
-			var fechaFormateada = $('#datepicker-default').val();
-			var fechaContabilizacion = formatearFecha(fechaFormateada, 'YYYY-MM-DD');
-
-			var fechaFormateada2 = $('#datepicker-range').val();
-			var fechaEntrega = formatearFecha(fechaFormateada2, 'YYYY-MM-DD');
-
-			var fechaFormateada3 = $('#datepicker-inline').val();
-			var fechaDocumento = formatearFecha(fechaFormateada3, 'YYYY-MM-DD');
-
-			var condicionPago = $('#inputCondicionPago').val();
-			var comentario = $('#textAreaComentario').val();
-
-			var U_HMK_TRANS = $('#inputTransferenciaGratuita').val();
-			var U_DGP_DropConsignment = $('#inputConsignacion').val();
-			var U_DGP_NumAtCardSup = $('#inputNumeroOrdenCompra').val();
-
-			var nuevaOrdenPreliminar = new OrdenPreliminar(docEntry, codigo, personaContacto, numeroReferencia, direccionDestino
-				, destinatarioFactura, moneda, fechaContabilizacion, fechaEntrega
-				, fechaDocumento, condicionPago, comentario, serie, U_HMK_TRANS
-				, U_DGP_DropConsignment, U_DGP_NumAtCardSup);
-
-			$('#detalleRow tr').each(function () {
-				var CodigoArticulo = $(this).find('[name^="inputCodigoArticulo"]').val();
-				var CodigoAlmacen = $(this).find('[name^="inputCodigoAlmacen"]').val();
-				var Precio = $(this).find('[name^="inputPrecio"]').val();
-				var Cantidad = $(this).find('[name^="inputCantidad"]').val();
-				var PorcentajeDescuento = $(this).find('[name^="inputPorcentajeDescuento"]').val();
-
-				if (PorcentajeDescuento === '') {
-					PorcentajeDescuento = 0;
-				} else {
-					PorcentajeDescuento = $(this).find('[name^="inputPorcentajeDescuento"]').val();
-				}
-
-				var VatGroup = $(this).find('[name^="inputIGV"]').val();
-
-				if (CodigoArticulo !== '' && CodigoAlmacen !== '' && Precio !== '' && Cantidad !== '' && PorcentajeDescuento !== '' && VatGroup !== '') {
-					if (CodigoArticulo.trim() !== '' && CodigoAlmacen.trim() !== '' && Precio.trim() !== '' && Cantidad.trim() !== '' && PorcentajeDescuento.trim() !== '' && VatGroup.trim() !== '') {
-						nuevaOrdenPreliminar.addDocumentLine(CodigoArticulo, CodigoAlmacen, Precio, Cantidad, PorcentajeDescuento, VatGroup);
-					}
-				}
-			});
-
-
-			console.log(nuevaOrdenPreliminar);
-			var DRAFT = JSON.stringify(nuevaOrdenPreliminar);
-
-			console.log(DRAFT);
-
-			$('#loadingSpinner').show();
-
-			$.ajax({
-				url: "/Ingreso/UpdatePreOrder",
-				type: "PATCH",
-				dataType: "json",
-				data: nuevaOrdenPreliminar,
-				success: function (response) {
-					mostrarToastExitoso(`La orden de venta preliminar ${orderData[0].NroOrden} fue actualizada correctamente.`);
-					$('#loadingSpinner').hide();
-					$('#btnAceptar').prop('disabled', false);
-
-				},
-				error: function (xhr, status, error) {
-					mostrarToastError("Se produjo un error en la solicitud.");
-					$('#loadingSpinner').hide();
-					$('#btnAceptar').prop('disabled', false);
-				}
-			});
-		});
-
 	});
+
+	/*END PATCH nueva orden preliminar */
+
+
+	$('#btnAceptarError').on('click', function () {
+		cerrarModal();
+	});
+
+	function mostrarModal(titulo, contenido) {
+		$('#myModal').modal('hide');
+		$('#modalTitleError').text(titulo);
+		$('#modalContentError').html(contenido);
+		$('#modalError').modal('show');
+	}
+
+	// Función para cerrar el modal
+	function cerrarModal() {
+		$('#modalError').modal('hide');
+	}
 
 	function mostrarToastExitoso(mensaje) {
 		$('#myModal').modal('hide');

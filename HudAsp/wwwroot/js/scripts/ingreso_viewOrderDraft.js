@@ -103,7 +103,7 @@ var handleRenderTableData = function () {
 			var cantidad = parseFloat($(this).find('input[name^="inputCantidad"]').val());
 			var precioUnitario = parseFloat($(this).find('input[name^="inputPrecio"]').val());
 			var descuento = parseFloat($(this).find('input[name^="inputPorcentajeDescuento"]').val());
-			var igv = parseFloat($(this).find('input[name^="inputIGV"]').data("valor"));
+			var igv = parseFloat($(this).find('input[name^="inputIGV"]').attr("data-valor"));
 
 			var precioDescuento = precioUnitario * (1 - descuento / 100);
 			var subtotal = precioDescuento * cantidad;
