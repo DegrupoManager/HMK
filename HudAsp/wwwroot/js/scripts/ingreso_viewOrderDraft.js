@@ -273,7 +273,22 @@ var handleRenderTableData = function () {
 
 	}
 
+	/*BEGIN duplicar */
+	$(document).on('click', '.duplicarOrden', function () {
 
+		var id = $(this).data('id');
+		window.location.href = '/Ingreso/NewOrderDraft?id=' + id;
+	});
+	/*END duplicar */
+
+
+	/*BEGIN editar */
+	$(document).on('click', '.editarOrden', function () {
+		var id = $(this).data('id');
+
+		window.location.href = '/Ingreso/EditOrderDraft?id=' + id;
+	});
+	/*END editar */
 
 };
 

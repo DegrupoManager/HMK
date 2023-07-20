@@ -74,6 +74,22 @@
         <h1 class="page-header mb-0">Orden @ViewBag.OrderId</h1>
     </div>
 </div>
+<div class="row">
+    <div class="col-4 ms-auto ps-auto d-flex justify-content-end">
+        <button type="button" class="btn btn-icon text-theme editarOrden" style="" data-id="@ViewBag.OrderId">
+            <i class="fa-solid fa-pen-to-square"></i>
+            <span>Editar</span>
+        </button>
+        <button type="button" class="btn btn-icon text-theme duplicarOrden" style="" data-id="@ViewBag.OrderId">
+            <i class="fa-regular fa-copy"></i>
+            <span>Duplicar</span>
+        </button>
+        <button type="button" class="btn btn-icon text-theme" style="" data-id="@ViewBag.OrderId">
+            <i class="fa-solid fa-print"></i>
+            <span>Imprimir</span>
+        </button>
+    </div>
+</div>
 
 &nbsp;
 

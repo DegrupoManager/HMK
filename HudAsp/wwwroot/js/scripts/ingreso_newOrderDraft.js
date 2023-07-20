@@ -560,7 +560,7 @@ var handleRenderTypeahead = function () {
 
 var handleRenderTableData = function () {
 
-	function llenarDetalle(orderData) {
+	function llenarDetalle(orderData, articulos_codigo, articulos_descripcion) {
 		orderData.forEach(function (item) {
 			var counter = table.rows().count();
 
@@ -591,7 +591,7 @@ var handleRenderTableData = function () {
 				  <div class="typeahead__field">
 					<div class="typeahead__query input-group">
 					  <span data-index="${counter}" class="input-group-text porDescripcionArticulo"><i class="fa-solid fa-magnifying-glass"></i></span>
-					  <input type="text" value="${item.Descripcion}" class="form-control descripcionArticulo" name="inputDescripcionArticulo${counter}" id="inputDescripcionArticulo${counter}" data-column="${counter}" autocomplete="off" required>
+					  <input data-index="${counter}" type="text" value="${item.Descripcion}" class="form-control descripcionArticulo" name="inputDescripcionArticulo${counter}" id="inputDescripcionArticulo${counter}" data-column="${counter}" autocomplete="off" required>
 					</div>
 				  </div>
 				</div>
@@ -600,16 +600,16 @@ var handleRenderTableData = function () {
 			var input03 = `
 				<div class="typeahead__container">
 				  <div class="typeahead__field">
-					<div class="typeahead__query input-group px-2">
+					<div class="typeahead__query input-group">
 					  <span data-index="${counter}" class="input-group-text porCodigoAlmacen"><i class="fa-solid fa-magnifying-glass"></i></span>
-					  <input data-index="${counter}" type="text" value="${item.Almacen}"  class="form-control codigoAlmacen" name="inputCodigoAlmacen${counter}" id="inputCodigoAlmacen${counter}" data-column="${counter}" autocomplete="off" required>
+					  <input data-index="${counter}" type="text" value="${item.Almacen}" class="form-control codigoAlmacen" name="inputCodigoAlmacen${counter}" id="inputCodigoAlmacen${counter}" data-column="${counter}" autocomplete="off" required>
 					</div>
 				  </div>
 				</div>
 			  `;
 
 			var input04 = `
-				<div class="input-group px-4">
+				<div class="input-group">
 				  <input value="${item.CantidadAlmacen}" class="form-control bg-inverse bg-opacity-10" id="inputCantidadAlmacen${counter}" style="text-align: center;" autocomplete="off" disabled>
 				</div>
 			  `;
@@ -634,7 +634,7 @@ var handleRenderTableData = function () {
 
 			var input08 = `
 				<div class="input-group">
-				  <input value="0" class="form-control bg-inverse bg-opacity-10" name="inputPrecio${counter}" id="inputPrecio${counter}" style="text-align: center;" autocomplete="off" disabled>
+				  <input value="${item.PrecioUnitario}" class="form-control bg-inverse bg-opacity-10" name="inputPrecio${counter}" id="inputPrecio${counter}" style="text-align: center;" autocomplete="off" disabled>
 				</div>
 			  `;
 
@@ -688,6 +688,29 @@ var handleRenderTableData = function () {
 				},
 				minLength: 3
 			});
+
+			var arregloAlmacenes = [];
+
+			getStoragesByProduct(item.CodArticulo)
+				.then(function (dataAlmacenes) {
+
+					dataAlmacenes.forEach(function (almacen) {
+						arregloAlmacenes.push(almacen.storageId);
+					});
+
+					$.typeahead({
+						input: `#inputCodigoAlmacen${counter}`,
+						order: "desc",
+						source: {
+							data: arregloAlmacenes
+						},
+						minLength: 3
+					});
+
+				})
+				.catch(function (error) {
+					console.log(error);
+				});
 
 		});
 
@@ -811,7 +834,7 @@ var handleRenderTableData = function () {
 					});
 
 					if (orderData != '') {
-						llenarDetalle(orderData);
+						llenarDetalle(orderData, articulos_codigo, articulos_descripcion);
 					}
 					
 					botonAgregar.click();

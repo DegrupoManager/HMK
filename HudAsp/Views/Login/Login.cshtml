@@ -15,29 +15,17 @@
 			$('#usuario').val('');
 			$('#contraseña').val('');
 
-			/*
-			var persona = {
-				Nombre: "Juan",
-				Edad: 25
-			};
+			function hideErrorMessage() {
+				$(".alert").slideUp("slow", function () {
+					$(this).remove();
+				});
+			}
 
-			$.ajax({
-				url: "@Url.Action("postEjemplo")",
-				type: "POST",
-				dataType: "json",
-				data: persona,
-				success: function (response) {
-					console.log(response);
-				},
-				error: function (xhr, status, error) {
-					console.log("Error en la solicitud:", error);
-				}
-			});*/
-
-
+			if ($(".alert").length > 0) {
+				setTimeout(hideErrorMessage, 5000);
+			}
 
 		});
-
 
 
 	</script>
@@ -50,12 +38,26 @@
 	<div class="login-content">
 
 		<form method="POST" name="login_form">
-			@Html.ValidationSummary()
+			@*@Html.ValidationSummary()*@
 			<div class="d-flex justify-content-center">
 				<img src="~/img/logo/logo-Hallmark.png" width="80%" height="auto" />
 			</div>
 			&nbsp
 			<h1 class="text-center ">Iniciar Sesión</h1>
+
+			@if (!ViewData.ModelState.IsValid)
+			{
+				<div class="alert alert-danger mt-3 pt-2 d-flex align-items-center">
+					<ul class="text-center">
+						@foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+						{
+							<li class="pt-2">@error.ErrorMessage</li>
+						}
+					</ul>
+				</div>
+			}
+
+
 			&nbsp
 			<div class="mb-3">
 				<label for="usuario" class="form-label">Usuario <span class="text-danger">*</span></label>

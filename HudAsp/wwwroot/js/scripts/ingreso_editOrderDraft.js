@@ -659,7 +659,7 @@ var handleRenderTypeahead = function () {
 
 var handleRenderTableData = function () {
 
-	function llenarDetalle(orderData) {
+	function llenarDetalle(orderData, articulos_codigo, articulos_descripcion) {
 		orderData.forEach(function (item) {
 			var counter = table.rows().count(); 
 
@@ -679,7 +679,7 @@ var handleRenderTableData = function () {
 				  <div class="typeahead__field">
 					<div class="typeahead__query input-group px-2">
 					  <span data-index="${counter}" class="input-group-text porCodigoArticulo"><i class="fa-solid fa-magnifying-glass"></i></span>
-					  <input data-index="${counter}" type="text" value="${item.CodArticulo}"" class="form-control codigoArticulo" name="inputCodigoArticulo${counter}" id="inputCodigoArticulo${counter}" data-column="${counter}" autocomplete="off" required>
+					  <input data-index="${counter}" type="text" value="${item.CodArticulo}" class="form-control codigoArticulo" name="inputCodigoArticulo${counter}" id="inputCodigoArticulo${counter}" data-column="${counter}" autocomplete="off" required>
 					</div>
 				  </div>
 				</div>
@@ -787,6 +787,29 @@ var handleRenderTableData = function () {
 				},
 				minLength: 3
 			});
+
+			var arregloAlmacenes = [];
+
+			getStoragesByProduct(item.CodArticulo)
+				.then(function (dataAlmacenes) {
+
+					dataAlmacenes.forEach(function (almacen) {
+						arregloAlmacenes.push(almacen.storageId);
+					});
+
+					$.typeahead({
+						input: `#inputCodigoAlmacen${counter}`,
+						order: "desc",
+						source: {
+							data: arregloAlmacenes
+						},
+						minLength: 3
+					});
+
+				})
+				.catch(function (error) {
+					console.log(error);
+				});
 
 		});
 
@@ -909,7 +932,7 @@ var handleRenderTableData = function () {
 					});
 
 					//botonAgregar.click();
-					llenarDetalle(orderData);
+					llenarDetalle(orderData, articulos_codigo, articulos_descripcion);
 					calcularTotales();
 				})
 				.catch(function (error) {
