@@ -1,7 +1,7 @@
 ﻿
+
 var handleToastToggle = function () {
 
-	
 	$('#openModalBtn').click(function () {
 		$('#myModal').modal('show');
 	});
@@ -628,7 +628,7 @@ var handleRenderTableData = function () {
 
 			var input07 = `
 				<div class="input-group px-2">
-				  <input value="${item.Cantidad}" class="form-control" name="inputCantidad${counter}" id="inputCantidad${counter}" style="text-align: center;" autocomplete="off" required>
+				  <input onkeypress="return (event.charCode == 46 || event.charCode >= 48 && event.charCode <= 57)" value="${item.Cantidad}" class="form-control" name="inputCantidad${counter}" id="inputCantidad${counter}" style="text-align: center;" autocomplete="off" required>
 				</div>
 			  `;
 
@@ -641,7 +641,7 @@ var handleRenderTableData = function () {
 			var input09 = `
 				<div class="input-group">
 				  <span class="input-group-text">%</span>
-				  <input value="${item.Descuento}" class="form-control" name="inputPorcentajeDescuento${counter}" id="inputPorcentajeDescuento${counter}" style="text-align: center;" autocomplete="off">
+				  <input type="number" min="0" max="100" onkeypress="return (event.charCode == 46 || event.charCode >= 48 && event.charCode <= 57)" value="${item.Descuento}" class="form-control" name="inputPorcentajeDescuento${counter}" id="inputPorcentajeDescuento${counter}" style="text-align: center;" autocomplete="off">
 				</div>
 			  `;
 
@@ -912,7 +912,7 @@ var handleRenderTableData = function () {
 
 				var input07 = `
 					<div class="input-group px-2">
-                        <input class="form-control" name="inputCantidad${counter}" id="inputCantidad${counter}" style="text-align: center;" autocomplete="off">
+                        <input onkeypress="return (event.charCode == 46 || event.charCode >= 48 && event.charCode <= 57)" class="form-control" name="inputCantidad${counter}" id="inputCantidad${counter}" style="text-align: center;" autocomplete="off">
                     </div>
 				`;
 
@@ -925,7 +925,7 @@ var handleRenderTableData = function () {
 				var input09 = `
 					<div class="input-group">
 						<span class="input-group-text">%</span>
-                        <input class="form-control" name="inputPorcentajeDescuento${counter}" id="inputPorcentajeDescuento${counter}" style="text-align: center;" autocomplete="off">
+                        <input type="number" min="0" max="100" maxlength="3" onkeypress="return (event.charCode == 46 || event.charCode >= 48 && event.charCode <= 57)" class="form-control" name="inputPorcentajeDescuento${counter}" id="inputPorcentajeDescuento${counter}" style="text-align: center;" autocomplete="off">
                     </div>
 				`;
 
@@ -1395,6 +1395,9 @@ var handleRenderTableData = function () {
 				}, 1000);
 			});
 
+			setTimeout(function () {
+				calcularTotales();
+			}, 1000);
 
 		}
 	});

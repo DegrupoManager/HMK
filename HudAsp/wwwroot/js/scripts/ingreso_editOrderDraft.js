@@ -727,7 +727,7 @@ var handleRenderTableData = function () {
 
 			var input07 = `
 				<div class="input-group px-2">
-				  <input value="${item.Cantidad}" class="form-control" name="inputCantidad${counter}" id="inputCantidad${counter}" style="text-align: center;" autocomplete="off" required>
+				  <input onkeypress="return (event.charCode == 46 || event.charCode >= 48 && event.charCode <= 57)" value="${item.Cantidad}" class="form-control" name="inputCantidad${counter}" id="inputCantidad${counter}" style="text-align: center;" autocomplete="off" required>
 				</div>
 			  `;
 
@@ -740,7 +740,7 @@ var handleRenderTableData = function () {
 			var input09 = `
 				<div class="input-group">
 				  <span class="input-group-text">%</span>
-				  <input value="${item.Descuento}" class="form-control" name="inputPorcentajeDescuento${counter}" id="inputPorcentajeDescuento${counter}" style="text-align: center;" autocomplete="off">
+				  <input type="number" min="0" max="100" maxlength="3" onkeypress="return (event.charCode == 46 || event.charCode >= 48 && event.charCode <= 57)" type="number" min="0" max="100" maxlength="3" onkeypress="return (event.charCode == 46 || event.charCode >= 48 && event.charCode <= 57)" value="${item.Descuento}" class="form-control" name="inputPorcentajeDescuento${counter}" id="inputPorcentajeDescuento${counter}" style="text-align: center;" autocomplete="off">
 				</div>
 			  `;
 
@@ -859,7 +859,8 @@ var handleRenderTableData = function () {
 	`;
 
 	class DocumentLine {
-		constructor(ItemCode, WarehouseCode, UnitPrice, Quantity, DiscountPercent, VatGroup, ShipDate) {
+		constructor(LineNum, ItemCode, WarehouseCode, UnitPrice, Quantity, DiscountPercent, VatGroup, ShipDate) {
+			this.LineNum = LineNum;
 			this.ItemCode = ItemCode;
 			this.WarehouseCode = WarehouseCode;
 			this.UnitPrice = UnitPrice;
@@ -896,8 +897,8 @@ var handleRenderTableData = function () {
 			this.DocumentLines = [];
 		}
 
-		addDocumentLine(ItemCode, WarehouseCode, UnitPrice, Quantity, DiscountPercent, VatGroup, ShipDate) {
-			const documentLine = new DocumentLine(ItemCode, WarehouseCode, UnitPrice, Quantity, DiscountPercent, VatGroup, ShipDate);
+		addDocumentLine(LineNum, ItemCode, WarehouseCode, UnitPrice, Quantity, DiscountPercent, VatGroup, ShipDate) {
+			const documentLine = new DocumentLine(LineNum, ItemCode, WarehouseCode, UnitPrice, Quantity, DiscountPercent, VatGroup, ShipDate);
 			this.DocumentLines.push(documentLine);
 		}
 	}
@@ -1007,7 +1008,7 @@ var handleRenderTableData = function () {
 
 				var input07 = `
 					<div class="input-group px-2">
-                        <input class="form-control" name="inputCantidad${counter}" id="inputCantidad${counter}" style="text-align: center;" autocomplete="off">
+                        <input onkeypress="return (event.charCode == 46 || event.charCode >= 48 && event.charCode <= 57)" class="form-control" name="inputCantidad${counter}" id="inputCantidad${counter}" style="text-align: center;" autocomplete="off">
                     </div>
 				`;
 
@@ -1020,7 +1021,7 @@ var handleRenderTableData = function () {
 				var input09 = `
 					<div class="input-group">
 						<span class="input-group-text">%</span>
-                        <input class="form-control" name="inputPorcentajeDescuento${counter}" id="inputPorcentajeDescuento${counter}" style="text-align: center;" autocomplete="off">
+                        <input type="number" min="0" max="100" maxlength="3" onkeypress="return (event.charCode == 46 || event.charCode >= 48 && event.charCode <= 57)" class="form-control" name="inputPorcentajeDescuento${counter}" id="inputPorcentajeDescuento${counter}" style="text-align: center;" autocomplete="off">
                     </div>
 				`;
 
@@ -1784,7 +1785,8 @@ var handleRenderTableData = function () {
 			, fechaDocumento, condicionPago, comentario, serie, U_HMK_TRANS
 			, U_DGP_DropConsignment, U_DGP_NumAtCardSup);
 
-		$('#detalleRow tr').each(function () {
+		$('#detalleRow tr').each(function (index) {
+			var LineNum = index;
 			var CodigoArticulo = $(this).find('[name^="inputCodigoArticulo"]').val();
 			var CodigoAlmacen = $(this).find('[name^="inputCodigoAlmacen"]').val();
 			var Precio = $(this).find('[name^="inputPrecio"]').val();
@@ -1805,7 +1807,7 @@ var handleRenderTableData = function () {
 
 			if (CodigoArticulo !== '' && CodigoAlmacen !== '' && Precio !== '' && Cantidad !== '' && PorcentajeDescuento !== '' && VatGroup !== '') {
 				if (CodigoArticulo.trim() !== '' && CodigoAlmacen.trim() !== '' && Precio.trim() !== '' && Cantidad.trim() !== '' && PorcentajeDescuento.trim() !== '' && VatGroup.trim() !== '') {
-					nuevaOrdenPreliminar.addDocumentLine(CodigoArticulo, CodigoAlmacen, Precio, Cantidad, PorcentajeDescuento, VatGroup, ShipDate);
+					nuevaOrdenPreliminar.addDocumentLine(LineNum, CodigoArticulo, CodigoAlmacen, Precio, Cantidad, PorcentajeDescuento, VatGroup, ShipDate);
 				}
 			}
 		});
