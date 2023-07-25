@@ -24,17 +24,15 @@ var handleRenderTableData = function () {
 	var DropdownHTML = `
 		<button id="filterEstado" class="btn btn-outline-default dropdown-toggle rounded-0" type="button" data-bs-toggle="dropdown">
 			<span class="d-none d-md-inline">Estado</span>
-
 			&nbsp;
 		</button>
-		<div class="dropdown-menu estado-menu" id="estadosF"></div>
+		<div class="dropdown-menu  dropdown-menu-xxl-end estado-menu" id="estadosF"></div>
 
 		<button id="filterStatus" class="btn btn-outline-default dropdown-toggle" type="button" data-bs-toggle="dropdown">
 			<span class="d-none d-md-inline">Status</span>
-
 			&nbsp;
 		</button>
-		<div class="dropdown-menu status-menu" id="statusF"></div>
+		<div class="dropdown-menu dropdown-menu-xxl-end status-menu" id="statusF"></div>
 	`;
 
 	var lupaHTML = `
@@ -155,7 +153,7 @@ var handleRenderTableData = function () {
 		},
 		initComplete: function () {
 
-			$('#datatableOrderDraft_filter input[type="search"]').removeClass('form-control-sm');
+			//$('#datatableOrderDraft_filter input[type="search"]').removeClass('form-control-sm');
 			$('#datatableOrderDraft_filter input[type="search"]').addClass('ps-35px');
 			$('#datatableOrderDraft_filter input[type="search"]').addClass('mx-0');
 			$('#datatableOrderDraft_filter input[type="search"]').css('padding', '0 0');
@@ -168,6 +166,7 @@ var handleRenderTableData = function () {
 			label.id = 'filtroBuscador';
 			$('#filtroBuscador').append(lupaHTML);
 			$('#filtroBuscador').append(DropdownHTML);
+			$('#filtroBuscador').css('zoom', '125%');
 
 			$('.estado-menu').on('click', '.dropdown-item', function (event) {
 				event.preventDefault();

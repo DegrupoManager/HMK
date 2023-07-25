@@ -2,6 +2,13 @@
     ViewData["Title"] = "Nueva OV preliminar";
 }
 
+@{
+    ViewData["AppClass"] = "app-sidebar-collapsed";
+    //ViewData["AppClass"] = "app-content-full-width";
+    //ViewData["AppWithoutSidebar"] = true;
+}
+
+
 @section Styles {
     <!--Datatables START-->
     <link href="~/lib/datatables.net-bs5/css/dataTables.bootstrap5.min.css" rel="stylesheet">
@@ -43,6 +50,17 @@
             display: none;
         }
 
+        #datatableNewOrderDraft tbody tr td{
+            padding: 0px;
+            font-size: 12px;
+        }
+
+        .custom-table-form{
+            text-align: center;
+            padding: 0.56rem;
+            font-size: 12px;
+            width: auto;
+        }
 
     </style>
 
@@ -266,8 +284,9 @@
         </div>
     </div>
 </div>
+<!--Fila 2--> @*col-12 col-sm-12 col-md-12 *@
 <div class="row">
-    <div class="col-12 col-sm-12 col-md-12 col-lg-10 mb-3">
+    <div class="col-12 col-sm-12 col-md-12 col-lg-10 col-lg-101-custom mb-3" @*style="width: 87%; flex: 0 0 auto;"*@>
         <div class="card" style="z-index: 1;">
             <div class="card-header d-flex align-items-center bg-inverse bg-opacity-10 fw-light">
                 DETALLE
@@ -280,20 +299,20 @@
                         <thead>
                             <tr>
                                 <th class="border-top-0 pt-0 px-2"></th>
-                                <th class="border-top-0 pt-0 px-3">Código de Artículo</th>
+                                <th class="border-top-0 pt-0 px-3 text-center">Artículo</th>
                                 @*<th class="border-top-0 pt-0 px-2 text-wrap">
                                     <span class="d-inline-block">Código</span>
                                     <span class="d-inline-block">del Artículo</span>
                                 </th>*@
-                                <th class="border-top-0 pt-0" style="padding-left: 6rem; padding-right: 6rem;">Descripción de Artículo</th>
-                                <th class="border-top-0 pt-0 px-3">Código de almacén</th>
-                                <th class="border-top-0 pt-0 px-2">Cant. Almacén</th>
-                                <th class="border-top-0 pt-0 px-2">Stock General</th>
-                                <th class="border-top-0 pt-0 px-4">Código de barras</th>
-                                <th class="border-top-0 pt-0 px-3">Cantidad</th>
-                                <th class="border-top-0 pt-0 px-4">Precio</th>
-                                <th class="border-top-0 pt-0 px-4">Descuento</th>
-                                <th class="border-top-0 pt-0 px-5">IGV</th>
+                                <th class="border-top-0 pt-0 text-center" style="padding-left: 6rem; padding-right: 6rem;">Descripción de Artículo</th>
+                                <th class="border-top-0 pt-0 px-3 text-center">Cantidad</th>
+                                <th class="border-top-0 pt-0 px-4 text-center">Descuento</th>
+                                <th class="border-top-0 pt-0 px-3 text-center">Almacén</th>
+                                <th class="border-top-0 pt-0 px-2 text-center">Cant. ALM</th>
+                                <th class="border-top-0 pt-0 px-2 text-center">Stock</th>
+                                <th class="border-top-0 pt-0 px-4 text-center">Precio</th>
+                                <th class="border-top-0 pt-0 px-5 text-center">IGV</th>
+                                <th class="border-top-0 pt-0 px-4 text-center">Código de barras</th>
                             </tr>
                         </thead>
                         <tbody id="detalleRow">
@@ -310,7 +329,7 @@
             </div>
         </div>
     </div>
-    <div class="col-12 col-sm-12 col-md-12 col-lg-2 mb-1">
+    <div class="col-12 col-sm-12 col-md-12 col-lg-2 col-lg-202-custom mb-1" @*style="width: 13%; flex: 0 0 auto;"*@>
         <div class="row">
             <div class="col-12 col-sm-6 col-md-6 col-lg-12">
                 <div class="card mb-4">
@@ -372,7 +391,7 @@
             </div>
             <div class="col-12 col-sm-6 col-md-6 col-lg-12 align-items-center text-center">
                 <button type="submit" id="btnGrabar" class="btn btn-danger px-4">Grabar</button>
-                <a href="/Ingreso/OrderDraft" class="btn btn-outline-theme px-3">
+                <a href="/Ingreso/OrderDraft" class="btn btn-outline-theme px-3 mt-3">
                     <span class="text-dark">Cancelar</span>
                 </a>
             </div>

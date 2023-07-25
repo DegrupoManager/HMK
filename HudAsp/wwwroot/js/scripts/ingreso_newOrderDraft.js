@@ -578,9 +578,10 @@ var handleRenderTableData = function () {
 			var input01 = `
 				<div class="typeahead__container">
 				  <div class="typeahead__field">
-					<div class="typeahead__query input-group px-2">
+					<div class="typeahead__query input-group">
 					  <span data-index="${counter}" class="input-group-text porCodigoArticulo"><i class="fa-solid fa-magnifying-glass"></i></span>
-					  <input data-index="${counter}" type="text" value="${item.CodArticulo}" class="form-control codigoArticulo" name="inputCodigoArticulo${counter}" id="inputCodigoArticulo${counter}" data-column="${counter}" autocomplete="off" required>
+					  <input data-index="${counter}" type="text" value="${item.CodArticulo}" class="form-control codigoArticulo" name="inputCodigoArticulo${counter}" id="inputCodigoArticulo${counter}" data-column="${counter}" autocomplete="off"
+					  style="width: 100px;" required>
 					</div>
 				  </div>
 				</div>
@@ -591,7 +592,8 @@ var handleRenderTableData = function () {
 				  <div class="typeahead__field">
 					<div class="typeahead__query input-group">
 					  <span data-index="${counter}" class="input-group-text porDescripcionArticulo"><i class="fa-solid fa-magnifying-glass"></i></span>
-					  <input data-index="${counter}" type="text" value="${item.Descripcion}" class="form-control descripcionArticulo" name="inputDescripcionArticulo${counter}" id="inputDescripcionArticulo${counter}" data-column="${counter}" autocomplete="off" required>
+					  <input data-index="${counter}" type="text" value="${item.Descripcion}" class="form-control descripcionArticulo" name="inputDescripcionArticulo${counter}" id="inputDescripcionArticulo${counter}" data-column="${counter}" autocomplete="off"
+					  style="font-size: 12px; width: 750px;" required>
 					</div>
 				  </div>
 				</div>
@@ -602,7 +604,8 @@ var handleRenderTableData = function () {
 				  <div class="typeahead__field">
 					<div class="typeahead__query input-group">
 					  <span data-index="${counter}" class="input-group-text porCodigoAlmacen"><i class="fa-solid fa-magnifying-glass"></i></span>
-					  <input data-index="${counter}" type="text" value="${item.Almacen}" class="form-control codigoAlmacen" name="inputCodigoAlmacen${counter}" id="inputCodigoAlmacen${counter}" data-column="${counter}" autocomplete="off" required>
+					  <input data-index="${counter}" type="text" value="${item.Almacen}" class="form-control codigoAlmacen" name="inputCodigoAlmacen${counter}" id="inputCodigoAlmacen${counter}" data-column="${counter}" autocomplete="off"
+					  style="width: 110px;" required>
 					</div>
 				  </div>
 				</div>
@@ -610,44 +613,44 @@ var handleRenderTableData = function () {
 
 			var input04 = `
 				<div class="input-group">
-				  <input value="${item.CantidadAlmacen}" class="form-control bg-inverse bg-opacity-10" id="inputCantidadAlmacen${counter}" style="text-align: center;" autocomplete="off" disabled>
+				  <input value="${item.CantidadAlmacen}" class="form-control bg-inverse bg-opacity-10 custom-table-form" id="inputCantidadAlmacen${counter}" autocomplete="off" disabled>
 				</div>
 			  `;
 
 			var input05 = `
-				<div class="input-group px-2">
-				  <input value="${item.StockGeneral}" class="form-control bg-inverse bg-opacity-10" id="inputStockAlmacen${counter}" style="text-align: center;" autocomplete="off" disabled>
+				<div class="input-group">
+				  <input value="${item.StockGeneral}" class="form-control bg-inverse bg-opacity-10 custom-table-form" id="inputStockAlmacen${counter}" autocomplete="off" disabled>
 				</div>
 			  `;
 
 			var input06 = `
-				<div class="input-group px-2">
-				  <input value="${item.CodigodeBarra}" class="form-control bg-inverse bg-opacity-10" id="inputCodigoBarras${counter}" style="text-align: center;" autocomplete="off" disabled>
+				<div class="input-group">
+				  <input value="${item.CodigodeBarra}" class="form-control bg-inverse bg-opacity-10 custom-table-form" id="inputCodigoBarras${counter}" autocomplete="off" disabled>
 				</div>
 			  `;
 
 			var input07 = `
-				<div class="input-group px-2">
-				  <input onkeypress="return (event.charCode == 46 || event.charCode >= 48 && event.charCode <= 57)" value="${item.Cantidad}" class="form-control" name="inputCantidad${counter}" id="inputCantidad${counter}" style="text-align: center;" autocomplete="off" required>
+				<div class="input-group">
+				  <input onkeypress="return (event.charCode == 46 || event.charCode >= 48 && event.charCode <= 57)" value="${item.Cantidad}" class="form-control custom-table-form" name="inputCantidad${counter}" id="inputCantidad${counter}" autocomplete="off" required>
 				</div>
 			  `;
 
 			var input08 = `
 				<div class="input-group">
-				  <input value="${item.PrecioUnitario}" class="form-control bg-inverse bg-opacity-10" name="inputPrecio${counter}" id="inputPrecio${counter}" style="text-align: center;" autocomplete="off" disabled>
+				  <input value="${item.PrecioUnitario}" class="form-control bg-inverse bg-opacity-10 custom-table-form" name="inputPrecio${counter}" id="inputPrecio${counter}" autocomplete="off" disabled>
 				</div>
 			  `;
 
 			var input09 = `
 				<div class="input-group">
 				  <span class="input-group-text">%</span>
-				  <input type="number" min="0" max="100" onkeypress="return (event.charCode == 46 || event.charCode >= 48 && event.charCode <= 57)" value="${item.Descuento}" class="form-control" name="inputPorcentajeDescuento${counter}" id="inputPorcentajeDescuento${counter}" style="text-align: center;" autocomplete="off">
+				  <input type="number" min="0" max="100" onkeypress="return (event.charCode == 46 || event.charCode >= 48 && event.charCode <= 57)" value="${item.Descuento}" class="form-control custom-table-form" name="inputPorcentajeDescuento${counter}" id="inputPorcentajeDescuento${counter}" autocomplete="off">
 				</div>
 			  `;
 
 			var input10 = `
 				<div class="input-group">
-				  <input data-valor="${item.ValorImpuesto}" value="${item.IndicadorImpuesto}" class="form-control bg-inverse bg-opacity-10" name="inputIGV${counter}" id="inputIGV${counter}" style="text-align: center;" autocomplete="off" disabled>
+				  <input data-valor="${item.ValorImpuesto}" value="${item.IndicadorImpuesto}" class="form-control bg-inverse bg-opacity-10 custom-table-form" name="inputIGV${counter}" id="inputIGV${counter}"  autocomplete="off" disabled>
 				</div>
 			  `;
 
@@ -655,14 +658,14 @@ var handleRenderTableData = function () {
 				opciones,
 				input01,
 				input02,
+				input07,
+				input09,
 				input03,
 				input04,
 				input05,
-				input06,
-				input07,
 				input08,
-				input09,
-				input10
+				input10,
+				input06
 			];
 
 			while (fila.length < table.columns().count()) {
@@ -861,9 +864,10 @@ var handleRenderTableData = function () {
 				var input01 = `
 					<div class="typeahead__container">
 						<div class="typeahead__field">
-							<div class="typeahead__query input-group px-2">
+							<div class="typeahead__query input-group">
 								<span data-index="${counter}" class="input-group-text porCodigoArticulo"><i class="fa-solid fa-magnifying-glass"></i></span>
-								<input data-index="${counter}" type="text" class="form-control codigoArticulo" name="inputCodigoArticulo${counter}" id="inputCodigoArticulo${counter}" data-column="${counter}" autocomplete="off">
+								<input data-index="${counter}" type="text" class="form-control codigoArticulo" name="inputCodigoArticulo${counter}" id="inputCodigoArticulo${counter}" data-column="${counter}" autocomplete="off"
+								style="width: 100px;">
 							</div>
 						</div>
 					</div>
@@ -874,7 +878,8 @@ var handleRenderTableData = function () {
 						<div class="typeahead__field">
 							<div class="typeahead__query input-group">
 								<span data-index="${counter}" class="input-group-text porDescripcionArticulo"><i class="fa-solid fa-magnifying-glass"></i></span>
-								<input data-index="${counter}" type="text" class="form-control descripcionArticulo" name="inputDescripcionArticulo${counter}" id="inputDescripcionArticulo${counter}" data-column="${counter}" autocomplete="off" style="font-size: 12px">
+								<input data-index="${counter}" type="text" class="form-control descripcionArticulo" name="inputDescripcionArticulo${counter}" id="inputDescripcionArticulo${counter}" data-column="${counter}" autocomplete="off"
+								style="font-size: 12px; width: 750px;">
 							</div>
 						</div>
 					</div>
@@ -885,7 +890,8 @@ var handleRenderTableData = function () {
 						<div class="typeahead__field">
 							<div class="typeahead__query input-group">
 								<span data-index="${counter}" class="input-group-text porCodigoAlmacen"><i class="fa-solid fa-magnifying-glass"></i></span>
-								<input data-index="${counter}" type="text" class="form-control codigoAlmacen" name="inputCodigoAlmacen${counter}" id="inputCodigoAlmacen${counter}" data-column="${counter}" autocomplete="off">
+								<input data-index="${counter}" type="text" class="form-control codigoAlmacen" name="inputCodigoAlmacen${counter}" id="inputCodigoAlmacen${counter}" data-column="${counter}" autocomplete="off"
+								style="width: 110px;">
 							</div>
 						</div>
 					</div>
@@ -894,48 +900,48 @@ var handleRenderTableData = function () {
 
 				var input04 = `
 					<div class="input-group">
-                        <input class="form-control bg-inverse bg-opacity-10" id="inputCantidadAlmacen${counter}" style="text-align: center;" autocomplete="off" disabled>
+                        <input class="form-control bg-inverse bg-opacity-10 custom-table-form" id="inputCantidadAlmacen${counter}" autocomplete="off" disabled>
                     </div>
 				`;
 
 				var input05 = `
-					<div class="input-group px-2">
-                        <input class="form-control bg-inverse bg-opacity-10" id="inputStockAlmacen${counter}" style="text-align: center;" autocomplete="off" disabled>
+					<div class="input-group">
+                        <input class="form-control bg-inverse bg-opacity-10 custom-table-form" id="inputStockAlmacen${counter}" autocomplete="off" disabled>
                     </div>
 				`;
 
 				var input06 = `
-					<div class="input-group px-2">
-                        <input class="form-control bg-inverse bg-opacity-10" id="inputCodigoBarras${counter}" style="text-align: center;" autocomplete="off" disabled>
+					<div class="input-group">
+                        <input class="form-control bg-inverse bg-opacity-10 custom-table-form" id="inputCodigoBarras${counter}" autocomplete="off" disabled>
                     </div>
 				`;
 
 				var input07 = `
-					<div class="input-group px-2">
-                        <input onkeypress="return (event.charCode == 46 || event.charCode >= 48 && event.charCode <= 57)" class="form-control" name="inputCantidad${counter}" id="inputCantidad${counter}" style="text-align: center;" autocomplete="off">
+					<div class="input-group">
+                        <input onkeypress="return (event.charCode == 46 || event.charCode >= 48 && event.charCode <= 57)" class="form-control custom-table-form" name="inputCantidad${counter}" id="inputCantidad${counter}" autocomplete="off">
                     </div>
 				`;
 
 				var input08 = `
 					<div class="input-group">
-                        <input class="form-control bg-inverse bg-opacity-10" name="inputPrecio${counter}" id="inputPrecio${counter}" style="text-align: center;" autocomplete="off" disabled>
+                        <input class="form-control bg-inverse bg-opacity-10 custom-table-form" name="inputPrecio${counter}" id="inputPrecio${counter}" autocomplete="off" disabled>
                     </div>
 				`;
 
 				var input09 = `
 					<div class="input-group">
 						<span class="input-group-text">%</span>
-                        <input type="number" min="0" max="100" maxlength="3" onkeypress="return (event.charCode == 46 || event.charCode >= 48 && event.charCode <= 57)" class="form-control" name="inputPorcentajeDescuento${counter}" id="inputPorcentajeDescuento${counter}" style="text-align: center;" autocomplete="off">
+                        <input type="number" min="0" max="100" maxlength="3" onkeypress="return (event.charCode == 46 || event.charCode >= 48 && event.charCode <= 57)" class="form-control custom-table-form" name="inputPorcentajeDescuento${counter}" id="inputPorcentajeDescuento${counter}" autocomplete="off">
                     </div>
 				`;
 
 				var input10 = `
 					<div class="input-group">
-                        <input class="form-control bg-inverse bg-opacity-10" name="inputIGV${counter}" id="inputIGV${counter}" style="text-align: center;" autocomplete="off" disabled>
+                        <input class="form-control bg-inverse bg-opacity-10 custom-table-form" name="inputIGV${counter}" id="inputIGV${counter}" autocomplete="off" disabled>
                     </div>
 				`;
 
-				const fila = [opciones, input01, input02, input03, input04, input05, input06, input07, input08, input09, input10];
+				const fila = [opciones, input01, input02, input07, input09, input03, input04, input05, input08, input10, input06];
 
 				var newRow = table.row.add(fila).draw(false).node();
 				$(newRow).find('.eliminarFila').attr('data-row-index', counter);
@@ -1004,7 +1010,10 @@ var handleRenderTableData = function () {
 					minLength: 3
 				});
 
-				calcularTotales() 
+
+
+
+				calcularTotales();
 
 			});
 
@@ -1061,7 +1070,7 @@ var handleRenderTableData = function () {
 						$(`#inputPorcentajeDescuento${index}`).attr('required', true);
 
 						if (inputValue2 === '') {
-							$(`#inputPorcentajeDescuento${index}`).val(0);
+							$(`#inputPorcentajeDescuento${index}`).val(0.0);
 						}
 
 						getPorcentajeDescuento(codigoArticulo, codigoAlmacen)
@@ -1108,7 +1117,7 @@ var handleRenderTableData = function () {
 						$(`#inputPorcentajeDescuento${index}`).attr('required', true);
 
 						if (inputValue2 === '') {
-							$(`#inputPorcentajeDescuento${index}`).val(0);
+							$(`#inputPorcentajeDescuento${index}`).val(0.0);
 						}
 
 						getPorcentajeDescuento(codigoArticulo, codigoAlmacen)
@@ -1263,29 +1272,36 @@ var handleRenderTableData = function () {
 
 				autocompletarDetalle(codigoArticulo, codListaPrecio, index);
 
-				var inputCodigoArticulo = $(`#inputCodigoArticulo${index + 1}`);
-				if (!inputCodigoArticulo.length && codigoArticulo !== '') {
-					botonAgregar.click();
-					$.typeahead({
-						input: `#inputCodigoArticulo${index + 1}`,
-						order: "desc",
-						source: {
-							data: articulos_codigo
-						},
-						minLength: 3
-					});
+				var filas = table.rows().count();
 
-					$.typeahead({
-						input: `#inputDescripcionArticulo${index + 1}`,
-						order: "desc",
-						source: {
-							data: articulos_descripcion
-						},
-						minLength: 3
-					});
+				for (var i = index; i <= filas; i++) {
+					var inputCodigoArticulo = $(`#inputCodigoArticulo${index + 1}`);
+					if (!inputCodigoArticulo.length && codigoArticulo !== '') {
+						botonAgregar.click();
+						$.typeahead({
+							input: `#inputCodigoArticulo${index + 1}`,
+							order: "desc",
+							source: {
+								data: articulos_codigo
+							},
+							minLength: 3
+						});
+
+						$.typeahead({
+							input: `#inputDescripcionArticulo${index + 1}`,
+							order: "desc",
+							source: {
+								data: articulos_descripcion
+							},
+							minLength: 3
+						});
+					}
 				}
 				calcularTotales();
 			}
+
+
+
 
 
 			/* POR CODIGO ARTICULO */
@@ -1578,6 +1594,14 @@ var handleRenderTableData = function () {
 						getPorcentajeDescuento(codigoArticulo, codigoAlmacen)
 							.then(function (descuento) {
 								$(`#inputPorcentajeDescuento${index}`).val(descuento);
+
+								var inputValue2 = $(`#inputPorcentajeDescuento${index}`).val();
+								$(`#inputPorcentajeDescuento${index}`).attr('required', true);
+
+								if (inputValue2 === '') {
+									$(`#inputPorcentajeDescuento${index}`).val(0.0);
+								}
+
 								calcularTotales();
 							})
 							.catch(function (error) {

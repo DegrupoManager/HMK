@@ -1,9 +1,9 @@
 ﻿@{
   ViewData["Title"] = "Órdenes de venta";
 }
-@*@{
+@{
   ViewData["AppClass"] = "app-sidebar-collapsed";
-}*@
+}
 
 @section Styles {
 	<link href="~/lib/datatables.net-bs5/css/dataTables.bootstrap5.min.css" rel="stylesheet">
@@ -17,13 +17,32 @@
 		}
 
 		.dataTables_scrollBody {
-			height: 850px;
+			height: 550px;
 		}
 
 		.dataTables_scrollHeadInner{
 			padding-right: 0px;
 		}
 
+		.dropdown-menu.show {
+			position: absolute;
+			top: 0px;
+			right: -92px;
+			bottom: auto;
+			left: auto;
+			transform: translate3d(-178.4px, -36.8px, 0px);
+			transform-origin: top right;
+		}
+
+		.dropdown-menu.show {
+			position: absolute;
+			top: 100%;
+			right: calc(100% + 5px);
+		}
+
+
+
+		
 	</style>
 }
 
@@ -71,6 +90,7 @@
 		</div>
 	</div>
 </div>
+
 <!--END Toast-->
 
 <div class="d-flex align-items-center mb-3">

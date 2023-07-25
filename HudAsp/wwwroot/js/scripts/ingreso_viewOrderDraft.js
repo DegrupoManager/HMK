@@ -174,96 +174,87 @@ var handleRenderTableData = function () {
 			var counter = table.rows().count(); 
 
 			var input01 = `
-				<div class="">
-				  <div class="">
-					<div class="input-group px-2">
-					  <span data-index="${counter}" class="input-group-text porCodigoArticulo"><i class="fa-solid fa-magnifying-glass"></i></span>
-					  <input value="${item.CodArticulo}" type="text" class="form-control bg-inverse bg-opacity-10" name="inputCodigoArticulo${counter}" id="inputCodigoArticulo${counter}" data-column="${counter}" autocomplete="off" disabled>
-					</div>
-				  </div>
+				<div class="input-group">
+					<span data-index="${counter}" class="input-group-text porCodigoArticulo"><i class="fa-solid fa-magnifying-glass"></i></span>
+					<input value="${item.CodArticulo}" type="text" class="form-control bg-inverse bg-opacity-10 custom-table-form" name="inputCodigoArticulo${counter}" id="inputCodigoArticulo${counter}" data-column="${counter}" autocomplete="off"
+					style="width: 100px;" disabled>
 				</div>
 			  `;
 
 			var input02 = `
-				<div class="">
-				  <div class="">
-					<div class="input-group">
-					  <span data-index="${counter}" class="input-group-text porDescripcionArticulo"><i class="fa-solid fa-magnifying-glass"></i></span>
-					  <input value="${item.Descripcion}" type="text" class="form-control bg-inverse bg-opacity-10" name="inputDescripcionArticulo${counter}" id="inputDescripcionArticulo${counter}" data-column="${counter}" disabled>
-					</div>
-				  </div>
+				<div class="input-group">
+					<span data-index="${counter}" class="input-group-text porDescripcionArticulo"><i class="fa-solid fa-magnifying-glass"></i></span>
+					<input value="${item.Descripcion}" type="text" class="form-control bg-inverse bg-opacity-10 custom-table-form" name="inputDescripcionArticulo${counter}" id="inputDescripcionArticulo${counter}" data-column="${counter}"
+					style="font-size: 12px; width: 750px;" disabled>
 				</div>
 			  `;
 
 			var input03 = `
-				<div class="">
-				  <div class="">
-					<div class="input-group px-2">
-					  <span data-index="${counter}" class="input-group-text porCodigoAlmacen"><i class="fa-solid fa-magnifying-glass"></i></span>
-					  <input value="${item.Almacen}" type="text" class="form-control bg-inverse bg-opacity-10" name="inputCodigoAlmacen${counter}" id="inputCodigoAlmacen${counter}" data-column="${counter}" autocomplete="off" disabled>
-					</div>
-				  </div>
+				<div class="input-group">
+					<span data-index="${counter}" class="input-group-text porCodigoAlmacen"><i class="fa-solid fa-magnifying-glass"></i></span>
+					<input value="${item.Almacen}" type="text" class="form-control bg-inverse bg-opacity-10 custom-table-form" name="inputCodigoAlmacen${counter}" id="inputCodigoAlmacen${counter}" data-column="${counter}" autocomplete="off"
+					style="width: 110px;" disabled>
 				</div>
 			  `;
 
 			var input04 = `
-				<div class="input-group px-4">
-				  <input value="${item.CantidadAlmacen}" class="form-control bg-inverse bg-opacity-10" id="inputCantidadAlmacen${counter}" style="text-align: center;" disabled>
+				<div class="input-group">
+				  <input value="${item.CantidadAlmacen}" class="form-control bg-inverse bg-opacity-10 custom-table-form" id="inputCantidadAlmacen${counter}" disabled>
 				</div>
 			  `;
 
 			var input05 = `
-				<div class="input-group px-2">
-				  <input value="${item.StockGeneral}" class="form-control bg-inverse bg-opacity-10" id="inputStockAlmacen${counter}" style="text-align: center;" disabled>
+				<div class="input-group">
+				  <input value="${item.StockGeneral}" class="form-control bg-inverse bg-opacity-10 custom-table-form" id="inputStockAlmacen${counter}" disabled>
 				</div>
 			  `;
 
 			var input06 = `
-				<div class="input-group px-2">
-				  <input value="${item.CodigodeBarra}" class="form-control bg-inverse bg-opacity-10" id="inputCodigoBarras${counter}" style="text-align: center;" disabled>
+				<div class="input-group">
+				  <input value="${item.CodigodeBarra}" class="form-control bg-inverse bg-opacity-10 custom-table-form" id="inputCodigoBarras${counter}" disabled>
 				</div>
 			  `;
 
 			var input07 = `
-				<div class="input-group px-2">
-				  <input value="${item.Cantidad}" class="form-control bg-inverse bg-opacity-10" name="inputCantidad${counter}" id="inputCantidad${counter}" style="text-align: center;" disabled>
+				<div class="input-group">
+				  <input value="${item.Cantidad}" class="form-control bg-inverse bg-opacity-10 custom-table-form" name="inputCantidad${counter}" id="inputCantidad${counter}" disabled>
 				</div>
 			  `;
 
 			var input08 = `
 				<div class="input-group">
-				  <input value="${item.PrecioUnitario}" class="form-control bg-inverse bg-opacity-10" name="inputPrecio${counter}" id="inputPrecio${counter}" style="text-align: center;" disabled>
+				  <input value="${item.PrecioUnitario}" class="form-control bg-inverse bg-opacity-10 custom-table-form" name="inputPrecio${counter}" id="inputPrecio${counter}" disabled>
 				</div>
 			  `;
 
 			var input09 = `
 				<div class="input-group">
 				  <span class="input-group-text">%</span>
-				  <input value="${item.Descuento}" class="form-control bg-inverse bg-opacity-10" name="inputPorcentajeDescuento${counter}" id="inputPorcentajeDescuento${counter}" style="text-align: center;" disabled>
+				  <input value="${item.Descuento}" class="form-control bg-inverse bg-opacity-10 custom-table-form" name="inputPorcentajeDescuento${counter}" id="inputPorcentajeDescuento${counter}" disabled>
 				</div>
 			  `;
 
 			var input10 = `
 				<div class="input-group">
-				  <input data-valor="${item.ValorImpuesto}" value="${item.IndicadorImpuesto}" class="form-control bg-inverse bg-opacity-10" name="inputIGV${counter}" id="inputIGV${counter}" style="text-align: center;" disabled>
+				  <input data-valor="${item.ValorImpuesto}" value="${item.IndicadorImpuesto}" class="form-control bg-inverse bg-opacity-10 custom-table-form" name="inputIGV${counter}" id="inputIGV${counter}" disabled>
 				</div>
 			  `;
 
 			var fila = [
 				input01,
 				input02,
+				input07,
+				input09,
 				input03,
 				input04,
 				input05,
-				input06,
-				input07,
 				input08,
-				input09,
-				input10
+				input10,
+				input06
 			];
 
 			while (fila.length < table.columns().count()) {
-				fila.push("");
+				fila.push();
 			}
 
 			table.row.add(fila).draw(false);
