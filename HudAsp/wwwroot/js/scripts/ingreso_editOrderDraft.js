@@ -669,8 +669,9 @@ var handleRenderTableData = function () {
 		var rows = document.querySelectorAll('#detalleRow tr');
 		rows.forEach(row => {
 			var rowData = Array.from(row.querySelectorAll('input'))
-				.map(input => input.getAttribute('value'))
-				.map(cell => cell.replace(/\r\r/g, ' ').replace(/\r/g, ' '))
+				/*.map(input => input.getAttribute('value'))*/
+				.map(input => input.value)
+				.map(cell => (cell || '').replace(/\r\r/g, ' ').replace(/\r/g, ' '))
 				.map(cell => removeAccents(cell))
 				.join(';').replace(/"/g, '');
 
