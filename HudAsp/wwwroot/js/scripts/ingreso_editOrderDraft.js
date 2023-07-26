@@ -691,6 +691,7 @@ var handleRenderTableData = function () {
 	function removeAccents(text) {
 		return text.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
 	}
+
 	function llenarDetalle(orderData, articulos_codigo, articulos_descripcion) {
 		orderData.forEach(function (item) {
 			var counter = table.rows().count(); 

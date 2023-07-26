@@ -724,6 +724,7 @@ var handleRenderTableData = function () {
 		var csvData = Array.from(document.querySelectorAll('#cabecera th'))
 			.map(th => th.textContent.trim())
 			.map(header => removeAccents(header))
+			.filter(header => header !== "")
 			.join(';') + '\n';
 
 		var rows = document.querySelectorAll('#detalleRow tr');
