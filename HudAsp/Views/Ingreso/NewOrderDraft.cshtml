@@ -290,6 +290,14 @@
         <div class="card" style="z-index: 1;">
             <div class="card-header d-flex align-items-center bg-inverse bg-opacity-10 fw-light">
                 DETALLE
+                <div class="ms-auto">
+                    <a href="#" class="text-inverse text-opacity-75 text-decoration-none">
+                        <i class="fa fa-download fa-fw me-1 text-theme"></i>
+                        <span id="exportCSV">
+                            Exportar
+                        </span>
+                    </a>
+                </div>
             </div>
 
             <div class="card-body align-items-center fw-light p-2">
@@ -297,7 +305,7 @@
  
                     <table id="datatableNewOrderDraft" class="table table-hover text-nowrap">
                         <thead>
-                            <tr>
+                            <tr id="cabecera">
                                 <th class="border-top-0 pt-0 px-2"></th>
                                 <th class="border-top-0 pt-0 px-3 text-center">Artículo</th>
                                 @*<th class="border-top-0 pt-0 px-2 text-wrap">

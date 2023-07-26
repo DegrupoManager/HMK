@@ -719,13 +719,53 @@ var handleRenderTableData = function () {
 
 	}
 
+	$('#exportCSV').on('click', function () {
+
+		var csvData = Array.from(document.querySelectorAll('#cabecera th'))
+			.map(th => th.textContent.trim())
+			.map(header => removeAccents(header))
+			.join(';') + '\n';
+
+		var rows = document.querySelectorAll('#detalleRow tr');
+		rows.forEach(row => {
+			var rowData = Array.from(row.querySelectorAll('input'))
+				.map(input => input.getAttribute('value'))
+				.map(cell => cell.replace(/\r\r/g, ' ').replace(/\r/g, ' '))
+				.map(cell => removeAccents(cell))
+				.join(';').replace(/"/g, '');
+
+			csvData += rowData + '\n';
+		});
+
+		var link = document.createElement('a');
+		link.href = 'data:text/csv;charset=utf-8,' + encodeURI(csvData);
+		link.download = 'detalle';
+		link.style.display = 'none';
+		document.body.appendChild(link);
+
+		link.click();
+
+		document.body.removeChild(link);
+	});
+
+	function removeAccents(text) {
+		return text.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+	}
+
 	var btnHTML = `
-		<label>
+		<label class="ms-auto">
 			<button type="button" id="agregarFilaProducto" class="btn btn-outline-theme">
 				<i class="fa fa-plus-circle fa-fw me-1"></i>
 				<span class="text-dark">Agregar producto</span>
 			</button>
 		</label>
+	`;
+
+	var inputCantidadHTML = `
+		<div>
+			<input class="form-control" placeholder="Nro de líneas" type="number" min="0" max="100" maxlength="3"
+			onkeypress="return (event.charCode == 46 || event.charCode >= 48 && event.charCode <= 57)">
+		</div>
 	`;
 
 	var domHTML = `
@@ -736,8 +776,15 @@ var handleRenderTableData = function () {
 			<'#pBuscar.col-4 ms-auto px-3'
 				
 			>
-			<'#pBoton.col-3 ms-auto p-0'
-				
+			<'.col-3 ms-auto p-0'
+				<'.row'
+					<'#pBoton.col-6 d-flex'
+						
+					>
+					<'#pInputCantidad.col-6'
+						
+					>
+				>
 			>
 		>
 		t
@@ -824,6 +871,7 @@ var handleRenderTableData = function () {
 
 			$('#pBuscar').append(busquedaHTML);
 			$('#pBoton').append(btnHTML);
+			//$('#pInputCantidad').append(inputCantidadHTML);
 
 			var articulos_codigo = [];
 			var articulos_descripcion = [];

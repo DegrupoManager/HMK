@@ -1,6 +1,39 @@
 ﻿
 var handleRenderTableData = function () {
 
+	$('#exportCSV').on('click', function () {
+
+		var csvData = Array.from(document.querySelectorAll('#cabecera th'))
+			.map(th => th.textContent.trim())
+			.map(header => removeAccents(header))
+			.join(';') + '\n';
+
+		var rows = document.querySelectorAll('#detalleRow tr');
+		rows.forEach(row => {
+			var rowData = Array.from(row.querySelectorAll('input'))
+				.map(input => input.getAttribute('value'))
+				.map(cell => cell.replace(/\r\r/g, ' ').replace(/\r/g, ' '))
+				.map(cell => removeAccents(cell))
+				.join(';').replace(/"/g, '');
+
+			csvData += rowData + '\n';
+		});
+
+		var link = document.createElement('a');
+		link.href = 'data:text/csv;charset=utf-8,' + encodeURI(csvData);
+		link.download = 'detalle';
+		link.style.display = 'none';
+		document.body.appendChild(link);
+
+		link.click();
+
+		document.body.removeChild(link);
+	});
+
+	function removeAccents(text) {
+		return text.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+	}
+
 	var btnHTML = `
 		<label>
 			<button type="button" id="agregarFilaProducto" class="btn btn-outline-theme">

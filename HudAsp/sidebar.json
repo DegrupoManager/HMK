@@ -21,7 +21,7 @@
       "action": "Reporte",
       "icon": "bi bi-record-circle-fill",
       "text": "Reporte"
-    },
+    }
     //{
     //  "controller": "Administrador",
     //  "action": "User",
