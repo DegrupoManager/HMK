@@ -17,17 +17,29 @@
     public string? U_HMK_TRANS { get; set; }
     public string? U_DGP_DropConsignment { get; set; }
     public string? U_DGP_NumAtCardSup { get; set; }
-    public List<DocumentLinesUpdate>? DocumentLines { get; set; }
+    public List<DocumentLinesUpdate> DocumentLines { get; set; }
 }
 
 public class DocumentLinesUpdate
 {
-    public string? LineNum { get; set; }
-    public string? ItemCode { get; set; }
-    public string? WarehouseCode { get; set; }
-    public string? UnitPrice { get; set; }
-    public string? Quantity { get; set; }
-    public string? DiscountPercent { get; set; }
-    public string? VatGroup { get; set; }
-    public string? ShipDate { get; set; }
+    public string LineNum { get; set; }
+    public string ItemCode { get; set; }
+    public string WarehouseCode { get; set; }
+    public string UnitPrice { get; set; }
+    public string Quantity { get; set; }
+    public string DiscountPercent { get; set; }
+    public string VatGroup { get; set; }
+    public string ShipDate { get; set; }
 }
+
+public class DocumentLinesToSend
+{
+    public string ItemCode { get; set; }
+    public string WarehouseCode { get; set; }
+    public string UnitPrice { get; set; }
+    public string Quantity { get; set; }
+    public string DiscountPercent { get; set; }
+    public string VatGroup { get; set; }
+    public string ShipDate { get; set; }
+}
+

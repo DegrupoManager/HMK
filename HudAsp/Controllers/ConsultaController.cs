@@ -87,6 +87,31 @@ namespace HudAsp.Controllers
             return content;
         }
 
+
+        [HttpGet]
+        [Route("api/PreOrders/getVendedores")]
+        public async Task<string> GetVendedoresAsync()
+        {
+            var url = $"{_apiBaseUrl}/PreOrders/getSellerList";
+            var request = new HttpRequestMessage(HttpMethod.Get, url);
+            var response = await _client.SendAsync(request);
+            response.EnsureSuccessStatusCode();
+            var content = await response.Content.ReadAsStringAsync();
+            return content;
+        }
+
+        [HttpGet]
+        [Route("api/PreOrders/getAlmacenes")]
+        public async Task<string> GetAlmacenesAsync()
+        {
+            var url = $"{_apiBaseUrl}/PreOrders/getStorageList";
+            var request = new HttpRequestMessage(HttpMethod.Get, url);
+            var response = await _client.SendAsync(request);
+            response.EnsureSuccessStatusCode();
+            var content = await response.Content.ReadAsStringAsync();
+            return content;
+        }
+
         /*
         //GET obtener lista clientes
         [HttpGet]

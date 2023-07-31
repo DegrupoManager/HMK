@@ -194,9 +194,43 @@ namespace HudAsp.Controllers
 		}
 
         // PATCH actualizar orden preliminar
+        /*[HttpPatch]
+        public async Task<JsonResult> UpdatePreOrder(UpdateOrderDraftModel DRAFT)
+        {
+            var documentLinesToSend = DRAFT.DocumentLines
+                .Where(line => !string.IsNullOrEmpty(line.LineNum)) 
+                .Select(line => new DocumentLinesUpdate
+                {
+                    LineNum = line.LineNum,
+                    ItemCode = line.ItemCode,
+                    WarehouseCode = line.WarehouseCode,
+                    UnitPrice = line.UnitPrice,
+                    Quantity = line.Quantity,
+                    DiscountPercent = line.DiscountPercent,
+                    VatGroup = line.VatGroup,
+                    ShipDate = line.ShipDate
+                })
+                .ToList();
+
+            DRAFT.DocumentLines = documentLinesToSend; 
+
+            var preOrderData = JsonConvert.SerializeObject(DRAFT);
+
+            var request = new HttpRequestMessage(new HttpMethod("PATCH"), $"{_apiBaseUrl}/PreOrders");
+            request.Content = new StringContent(JsonConvert.SerializeObject(DRAFT), Encoding.UTF8, "application/json");
+            var response = await _client.SendAsync(request);
+            response.EnsureSuccessStatusCode();
+            var content = await response.Content.ReadAsStringAsync();
+
+            return new JsonResult(Ok(content));
+        }*/
+
+
+        
         [HttpPatch]
         public async Task<JsonResult> UpdatePreOrder(UpdateOrderDraftModel DRAFT)
         {
+
             var preOrderData = JsonConvert.SerializeObject(DRAFT);
 
             var request = new HttpRequestMessage(new HttpMethod("PATCH"), $"{_apiBaseUrl}/PreOrders");

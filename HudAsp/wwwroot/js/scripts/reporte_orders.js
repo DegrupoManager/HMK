@@ -249,6 +249,47 @@ var handleRenderTableData = function () {
 		}
 	}
 
+
+	function getAlmacenesList() {
+		return new Promise(function (resolve, reject) {
+			var url = "/api/PreOrders/getAlmacenes";
+
+			$.ajax({
+				url: url,
+				type: "GET",
+				success: function (response) {
+					var clientes = JSON.parse(response);
+					resolve(clientes);
+				},
+				error: function (xhr, status, error) {
+					reject(error);
+				}
+			});
+		});
+	}
+
+	getAlmacenesList()
+		.then(function (almacenes) {
+
+			var cods = [];
+
+			almacenes.forEach(function (almacen) {
+				cods.push(almacen.CodAlm);
+			});
+
+			$.typeahead({
+				input: '#inputAlmacen',
+				order: "desc",
+				source: {
+					data: cods
+				},
+				minLength: 3
+			});
+
+
+		});
+
+
 };
 
 /* Controller

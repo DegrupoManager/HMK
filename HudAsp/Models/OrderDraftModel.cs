@@ -43,5 +43,15 @@ public class OrderDraftModel
     public string DocNumero { get; set; }
     public string ValorImpuesto { get; set; }
     public string OrdenDeCompra { get; set; }
+    public string Numline { get; set; }
+    public string MonedaDescripcion { get; set;}
+    public string RUC {get; set;}
+    public string UM { get; set; }
+    public string CodSUNAT { get; set; }
+    public string PrecioVentUnit { get; set; }
+    public string ValorVentUnit { get; set; }
+    public string TotalLinea { get; set; }
+    public string TotalImpuesto { get; set; }
+    public string SubTotal { get; set; }
 }
 

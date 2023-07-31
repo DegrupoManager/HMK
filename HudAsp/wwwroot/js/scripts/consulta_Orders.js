@@ -563,6 +563,84 @@ var handleRenderTypeahead = function () {
 			console.log(error);
 		});
 
+	function getVendedoresList() {
+		return new Promise(function (resolve, reject) {
+			var url = "/api/PreOrders/getVendedores";
+
+			$.ajax({
+				url: url,
+				type: "GET",
+				success: function (response) {
+					var clientes = JSON.parse(response);
+					resolve(clientes);
+				},
+				error: function (xhr, status, error) {
+					reject(error);
+				}
+			});
+		});
+	}
+
+	getVendedoresList()
+		.then(function (vendedores) {
+
+			var nombres = [];
+
+			vendedores.forEach(function (vendedor) {
+				nombres.push(vendedor.nombreVendedor);
+			});
+
+			$.typeahead({
+				input: '#inputVendedor',
+				order: "desc",
+				source: {
+					data: nombres
+				},
+				minLength: 3
+			});
+
+
+		});
+
+	function getAlmacenesList() {
+		return new Promise(function (resolve, reject) {
+			var url = "/api/PreOrders/getAlmacenes";
+
+			$.ajax({
+				url: url,
+				type: "GET",
+				success: function (response) {
+					var clientes = JSON.parse(response);
+					resolve(clientes);
+				},
+				error: function (xhr, status, error) {
+					reject(error);
+				}
+			});
+		});
+	}
+
+	getAlmacenesList()
+		.then(function (almacenes) {
+
+			var cods = [];
+
+			almacenes.forEach(function (almacen) {
+				cods.push(almacen.CodAlm);
+			});
+
+			$.typeahead({
+				input: '#inputCodigoAlmacen',
+				order: "desc",
+				source: {
+					data: cods
+				},
+				minLength: 3
+			});
+
+
+		});
+
 };
 
 

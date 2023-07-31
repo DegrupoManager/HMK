@@ -713,7 +713,7 @@ var handleRenderTableData = function () {
 				  <div class="typeahead__field">
 					<div class="typeahead__query input-group">
 					  <span data-index="${counter}" class="input-group-text porCodigoArticulo"><i class="fa-solid fa-magnifying-glass"></i></span>
-					  <input data-index="${counter}" type="text" value="${item.CodArticulo}" class="form-control codigoArticulo" name="inputCodigoArticulo${counter}" id="inputCodigoArticulo${counter}" data-column="${counter}" autocomplete="off"
+					  <input data-index="${counter}" type="text" value="${item.CodArticulo}" data-lineNum="${item.Numline}" class="form-control codigoArticulo" name="inputCodigoArticulo${counter}" id="inputCodigoArticulo${counter}" data-column="${counter}" autocomplete="off"
 					  style="width: 100px;" required>
 					</div>
 				  </div>
@@ -1835,8 +1835,10 @@ var handleRenderTableData = function () {
 			, fechaDocumento, condicionPago, comentario, serie, U_HMK_TRANS
 			, U_DGP_DropConsignment, U_DGP_NumAtCardSup);
 
-		$('#detalleRow tr').each(function (index) {
-			var LineNum = index;
+		$('#detalleRow tr').each(function () {
+			var LineNum = $(this).find('[name^="inputCodigoArticulo"]').attr('data-lineNum');
+			LineNum = LineNum ?? '';
+
 			var CodigoArticulo = $(this).find('[name^="inputCodigoArticulo"]').val();
 			var CodigoAlmacen = $(this).find('[name^="inputCodigoAlmacen"]').val();
 			var Precio = $(this).find('[name^="inputPrecio"]').val();
@@ -1864,6 +1866,7 @@ var handleRenderTableData = function () {
 
 		var DRAFT = JSON.stringify(nuevaOrdenPreliminar);
 		console.log(DRAFT);
+		console.log(nuevaOrdenPreliminar);
 
 		enviarOrdenPreliminar(nuevaOrdenPreliminar);
 
