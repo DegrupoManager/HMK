@@ -63,8 +63,8 @@ var handleRenderTableData = function () {
 				"Comentario": orderData[0].Comentario || '',
 				"RUC": orderData[0].RUC || '',
 				"OrdenDeCompra": orderData[0].OrdenDeCompra || '',
-				"Monto": orderData[0].Monto || '',
-				"TotalImpuesto": orderData[0].TotalImpuesto || '',
+				"Monto": parseToFloatWithTwoDecimals(orderData[0].Monto) || '',
+				"TotalImpuesto": parseToFloatWithTwoDecimals(orderData[0].TotalImpuesto) || '',
 				"SubTotal": removeMinusSign(orderData[0].SubTotal) || ''
 			});
 
@@ -75,9 +75,9 @@ var handleRenderTableData = function () {
 					"Descripcion": orderData[i].Descripcion || '',
 					"UM": orderData[i].UM || '',
 					"Cantidad": orderData[i].Cantidad ||'',
-					"PrecioUnitario": orderData[i].PrecioVentUnit || '',
-					"ValorUnitario": orderData[i].ValorVentUnit || '',
-					"TotalLinea": orderData[i].TotalLinea || ''
+					"PrecioUnitario": parseToFloatWithTwoDecimals(orderData[i].PrecioVentUnit) || '',
+					"ValorUnitario": parseToFloatWithTwoDecimals(orderData[i].ValorVentUnit) || '',
+					"TotalLinea": parseToFloatWithTwoDecimals(orderData[i].TotalLinea) || ''
 				});
 			}
 
@@ -189,20 +189,20 @@ var handleRenderTableData = function () {
 						//headerRows: 1,
 						body: [
 							[
-								{ text: 'Código', bold: true, fontSize: 8 },
-								{ text: 'Código\nSUNAT', bold: true, fontSize: 8 },
-								{ text: 'Descripción', bold: true, fontSize: 8 },
-								{ text: 'U.M.', bold: true, fontSize: 8 },
-								{ text: 'Cantidad', bold: true, fontSize: 8 },
-								{ text: 'Precio Venta\nUnitario', bold: true, fontSize: 8 },
-								{ text: 'Valor Venta\nUnitario', bold: true, fontSize: 8 },
-								{ text: 'Valor\nTotal', bold: true, fontSize: 8 }
+								{ text: 'Código', bold: true, fontSize: 8, alignment: 'center' },
+								{ text: 'Código\nSUNAT', bold: true, fontSize: 8, alignment: 'center' },
+								{ text: 'Descripción', bold: true, fontSize: 8, alignment: 'center' },
+								{ text: 'U.M.', bold: true, fontSize: 8, alignment: 'center' },
+								{ text: 'Cantidad', bold: true, fontSize: 8, alignment: 'center' },
+								{ text: 'Precio Venta\nUnitario', bold: true, fontSize: 8, alignment: 'center' },
+								{ text: 'Valor Venta\nUnitario', bold: true, fontSize: 8, alignment: 'center' },
+								{ text: 'Valor\nTotal', bold: true, fontSize: 8, alignment: 'center' }
 							],
 							...detalle.map(item => [
-								{ text: item.CodArticulo, fontSize: 8 },
-								{ text: item.CodSunat, fontSize: 8 },
+								{ text: item.CodArticulo, fontSize: 8, alignment: 'center' },
+								{ text: item.CodSunat, fontSize: 8, alignment: 'center' },
 								{ text: item.Descripcion, fontSize: 8 },
-								{ text: item.UM, fontSize: 8 },
+								{ text: item.UM, fontSize: 8, alignment: 'center' },
 								{ text: item.Cantidad, fontSize: 8, alignment: 'right' },
 								{ text: item.PrecioUnitario, fontSize: 8, alignment: 'right' },
 								{ text: item.ValorUnitario, fontSize: 8, alignment: 'right' },
@@ -211,21 +211,21 @@ var handleRenderTableData = function () {
 							[
 								{ text: '', colSpan: 3, border: [false, true, true, false], },
 								'', '',
-								{ text: 'Total Valor de Venta - Operaciones Gravadas', fontSize: 8, colSpan: 4 },
+								{ text: 'Total', fontSize: 8, colSpan: 4, alignment: 'right' },
 								'', '', '',
 								{ text: `S/. ${datosCabecera[0].SubTotal}`, fontSize: 8, noWrap: true, alignment: 'right' }
 							],
 							[
-								{ text: '', colSpan: 3, border: [false, false, true, false], },
+								{ text: '', colSpan: 3, border: [false, false, true, false] },
 								'', '',
-								{ text: 'IGV (18.00%)', fontSize: 8, colSpan: 4 },
+								{ text: 'Impuestos', fontSize: 8, colSpan: 4, alignment: 'right' },
 								'', '', '',
 								{ text: `S/. ${datosCabecera[0].TotalImpuesto}`, fontSize: 8, noWrap: true, alignment: 'right' }
 							],
 							[
-								{ text: '', colSpan: 3, border: [false, false, true, false], },
+								{ text: '', colSpan: 3, border: [false, false, true, false], alignment: 'right' },
 								'', '',
-								{ text: 'Importe Total', fontSize: 8, colSpan: 4 },
+								{ text: 'Total documento', fontSize: 8, colSpan: 4, alignment: 'right' },
 								'', '', '',
 								{ text: `S/. ${datosCabecera[0].Monto}`, fontSize: 8, noWrap: true, alignment: 'right' }
 							]
@@ -331,12 +331,37 @@ var handleRenderTableData = function () {
 		</div>
 	`;
 	function removeMinusSign(inputNumber) {
-		return parseFloat(inputNumber.replace(/^-/, ''));
+		var parsedNumber = parseFloat(inputNumber.replace(/^-/, ''));
+		if (isNaN(parsedNumber)) {
+			return "NaN";
+		}
+		return parsedNumber.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 	}
 
+
 	function removeNewlines(inputString) {
-		return inputString.replace(/\n/g, '');
+		if (typeof inputString !== 'string') {
+			return "";
+		}
+
+		return inputString.replace(/[\r\n]+/g, ' ');
 	}
+
+	function parseToFloatWithTwoDecimals(number) {
+		var parsedNumber = parseFloat(number);
+		if (isNaN(parsedNumber)) {
+			return "NaN"; 
+		}
+		return parsedNumber.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+	}
+
+	// Ejemplo de uso:
+	var number1 = 1000;
+	var number2 = 100000;
+
+	console.log(parseToFloatWithTwoDecimals(number1)); // Devuelve "1,000.00"
+	console.log(parseToFloatWithTwoDecimals(number2)); // Devuelve "100,000.00"
+
 
 	function obtenerFechaSinHora(fechaHora) {
 		var fechaSinHora = fechaHora.match(/^\d{1,2}\/\d{1,2}\/\d{4}/);
@@ -346,7 +371,6 @@ var handleRenderTableData = function () {
 			var mes = fecha.getMonth() + 1;
 			var anio = fecha.getFullYear();
 
-			// Añadir ceros iniciales si es necesario
 			dia = dia < 10 ? '0' + dia : dia;
 			mes = mes < 10 ? '0' + mes : mes;
 

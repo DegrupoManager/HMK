@@ -631,7 +631,7 @@ var handleRenderTableData = function () {
 
 			var input07 = `
 				<div class="input-group">
-				  <input onkeypress="return (event.charCode == 46 || event.charCode >= 48 && event.charCode <= 57)" value="${item.Cantidad}" class="form-control custom-table-form" name="inputCantidad${counter}" id="inputCantidad${counter}" autocomplete="off" required>
+				  <input type="number" min="0" onkeypress="return (event.charCode >= 48 && event.charCode <= 57)" value="${item.Cantidad}" class="form-control custom-table-form" name="inputCantidad${counter}" id="inputCantidad${counter}" autocomplete="off" required>
 				</div>
 			  `;
 
@@ -968,7 +968,7 @@ var handleRenderTableData = function () {
 
 				var input07 = `
 					<div class="input-group">
-                        <input onkeypress="return (event.charCode == 46 || event.charCode >= 48 && event.charCode <= 57)" class="form-control custom-table-form" name="inputCantidad${counter}" id="inputCantidad${counter}" autocomplete="off">
+                        <input type="number" min="0" onkeypress="return (event.charCode >= 48 && event.charCode <= 57)" class="form-control custom-table-form" name="inputCantidad${counter}" id="inputCantidad${counter}" autocomplete="off">
                     </div>
 				`;
 
