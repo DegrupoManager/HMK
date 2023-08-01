@@ -1061,7 +1061,7 @@ var handleRenderTableData = function () {
 				});
 
 
-
+				$(`#inputCodigoArticulo${counter}`).removeAttr("data-lineNum");
 
 				calcularTotales();
 

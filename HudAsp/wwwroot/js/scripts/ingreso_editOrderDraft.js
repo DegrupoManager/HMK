@@ -1123,6 +1123,7 @@ var handleRenderTableData = function () {
 
 				table.row.add(nuevaFila).draw(false);
 
+
 				$.typeahead({
 					input: `#inputCodigoArticulo${counter}`,
 					order: "desc",
@@ -1140,6 +1141,8 @@ var handleRenderTableData = function () {
 					},
 					minLength: 3
 				});
+
+				$(`#inputCodigoArticulo${counter}`).removeAttr("data-lineNum");
 
 				calcularTotales()
 
