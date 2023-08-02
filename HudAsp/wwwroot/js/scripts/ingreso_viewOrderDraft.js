@@ -43,6 +43,9 @@ var handleRenderTableData = function () {
 		var datosCabecera = [];
 		var detalle = [];
 
+		//id="usuarioAplicacion" data-user
+		var usuarioWeb = $('#usuarioAplicacion').attr('data-user');
+
 		var imagen = new Image();
 		var dataURL;
 
@@ -65,7 +68,10 @@ var handleRenderTableData = function () {
 				"OrdenDeCompra": orderData[0].OrdenDeCompra || '',
 				"Monto": parseToFloatWithTwoDecimals(orderData[0].Monto) || '',
 				"TotalImpuesto": parseToFloatWithTwoDecimals(orderData[0].TotalImpuesto) || '',
-				"SubTotal": removeMinusSign(orderData[0].SubTotal) || ''
+				"SubTotal": removeMinusSign(orderData[0].SubTotal) || '',
+				"TerminoPago": orderData[0].TerminoPago || '',
+				"Comentario": orderData[0].Comentario || '',
+				"Correlativo": orderData[0].DocNumero || ''
 			});
 
 			for (var i = 0; i < orderData.length; i++) {
@@ -77,9 +83,12 @@ var handleRenderTableData = function () {
 					"Cantidad": orderData[i].Cantidad ||'',
 					"PrecioUnitario": parseToFloatWithTwoDecimals(orderData[i].PrecioVentUnit) || '',
 					"ValorUnitario": parseToFloatWithTwoDecimals(orderData[i].ValorVentUnit) || '',
-					"TotalLinea": parseToFloatWithTwoDecimals(orderData[i].TotalLinea) || ''
+					"TotalLinea": parseToFloatWithTwoDecimals(orderData[i].TotalLinea) || '',
+					"Descuento": parseToFloatWithTwoDecimals(orderData[i].Descuento) || '',
+					"Almacen": orderData[i].Almacen || ''
 				});
 			}
+
 
 			var cabecera1 = [
 				{
@@ -98,13 +107,16 @@ var handleRenderTableData = function () {
 					table: {
 						body: [
 							[
-								{ text: 'RUC: 20427643612', alignment: 'center', border: [true, true, true, false], }
+								{ text: 'RUC: 20427643612', alignment: 'center', border: [true, true, true, false], colSpan: 2},
+								''
 							],
 							[
-								{text: 'ORDEN DE VENTA PRELIMINAR', alignment: 'center', border: [true, false, true, false], bold: true}
+								{ text: 'ORDEN DE VENTA PRELIMINAR', alignment: 'center', border: [true, false, true, false], bold: true, colSpan: 2 },
+								''
 							],
 							[
-								{ text: `${orderData[0].NroOrden}`, alignment: 'center', border: [true, false, true, true] }
+								{ text: `${datosCabecera[0].Correlativo}`, alignment: 'right', border: [true, false, false, true], fontSize: 12 },
+								{ text: `${datosCabecera[0].NroOrden}`, alignment: 'right', border: [false, false, true, true], fontSize: 6 },
 							]
 						]
 					},
@@ -154,8 +166,16 @@ var handleRenderTableData = function () {
 								{ text: 'Moneda', bold: true, fontSize: 8, border: [false, false, false, false] }, { text: `: ${datosCabecera[0].Moneda}`,  fontSize: 8, border: [false, false, true, false] }
 							],
 							[
-								{ text: '', border: [true, false, false, true] }, { text: '', border: [false, false, false, true] },
-								{ text: 'Vendedor', bold: true, fontSize: 8, border: [false, false, false, true] }, { text: `: ${datosCabecera[0].Vendedor}`, fontSize: 8, border: [false, false, true, true] }
+								{ text: 'Condición de pago', bold: true, fontSize: 8, border: [true, false, false, false] }, { text: `: ${datosCabecera[0].TerminoPago}`, fontSize: 8, border: [false, false, false, false] },
+								{ text: 'Vendedor', bold: true, fontSize: 8, border: [false, false, false, false] }, { text: `: ${datosCabecera[0].Vendedor}`, fontSize: 8, border: [false, false, true, false] }
+							],
+							[
+								{ text: 'Usuario', bold: true, fontSize: 8, border: [true, false, false, false] }, { text: `: ${usuarioWeb}`, fontSize: 8, border: [false, false, false, false] },
+								{ text: '', bold: true, fontSize: 8, border: [false, false, false, false] }, { text: ``,  fontSize: 8, border: [false, false, true, false] }
+							],
+							[
+								{ text: 'Comentarios', bold: true, fontSize: 8, border: [true, false, false, true] }, { text: `: ${datosCabecera[0].Comentario}`, fontSize: 8, border: [false, false, false, true] },
+								{ text: '', bold: true, fontSize: 8, border: [false, false, false, true] }, { text: ``, fontSize: 8, border: [false, false, true, true] }
 							]
 						],
 					},
@@ -182,50 +202,55 @@ var handleRenderTableData = function () {
 
 			var tablaDetalle = [
 				{
-					border: [true, false, true, false],
+					border: [true, false, true, true],
 					colSpan: 2,
 					table: {
-						widths: ['auto', 'auto', '*', 'auto', 'auto', 'auto', 'auto', 'auto'],
+						widths: ['auto', '*', 'auto', 'auto', 'auto', 'auto', 'auto'],
 						//headerRows: 1,
 						body: [
 							[
 								{ text: 'Código', bold: true, fontSize: 8, alignment: 'center' },
-								{ text: 'Código\nSUNAT', bold: true, fontSize: 8, alignment: 'center' },
+								//{ text: 'Código\nSUNAT', bold: true, fontSize: 8, alignment: 'center' },
 								{ text: 'Descripción', bold: true, fontSize: 8, alignment: 'center' },
-								{ text: 'U.M.', bold: true, fontSize: 8, alignment: 'center' },
+								//{ text: 'U.M.', bold: true, fontSize: 8, alignment: 'center' },
 								{ text: 'Cantidad', bold: true, fontSize: 8, alignment: 'center' },
 								{ text: 'Precio Venta\nUnitario', bold: true, fontSize: 8, alignment: 'center' },
-								{ text: 'Valor Venta\nUnitario', bold: true, fontSize: 8, alignment: 'center' },
-								{ text: 'Valor\nTotal', bold: true, fontSize: 8, alignment: 'center' }
+								//{ text: 'Valor Venta\nUnitario', bold: true, fontSize: 8, alignment: 'center' },
+								{ text: 'Descuento', bold: true, fontSize: 8, alignment: 'center' },
+								{ text: 'Almacén', bold: true, fontSize: 8, alignment: 'center' },
+								{ text: 'Precio Venta\nTotal', bold: true, fontSize: 8, alignment: 'center' }
 							],
 							...detalle.map(item => [
 								{ text: item.CodArticulo, fontSize: 8, alignment: 'center' },
-								{ text: item.CodSunat, fontSize: 8, alignment: 'center' },
+								//{ text: item.CodSunat, fontSize: 8, alignment: 'center' },
 								{ text: item.Descripcion, fontSize: 8 },
-								{ text: item.UM, fontSize: 8, alignment: 'center' },
+								//{ text: item.UM, fontSize: 8, alignment: 'center' },
 								{ text: item.Cantidad, fontSize: 8, alignment: 'right' },
 								{ text: item.PrecioUnitario, fontSize: 8, alignment: 'right' },
-								{ text: item.ValorUnitario, fontSize: 8, alignment: 'right' },
+								//{ text: item.ValorUnitario, fontSize: 8, alignment: 'right' },
+								{ text: item.Descuento, fontSize: 8, alignment: 'right' },
+								{ text: item.Almacen, fontSize: 8, alignment: 'right' },
 								{ text: item.TotalLinea, fontSize: 8, alignment: 'right' }
 							]),
 							[
-								{ text: '', colSpan: 3, border: [false, true, true, false], },
-								'', '',
-								{ text: 'Total', fontSize: 8, colSpan: 4, alignment: 'right' },
+
+								{ text: '', colSpan: 2, border: [false, true, true, false], },
+								'',
+								{ text: 'Total sin IGV', fontSize: 8, colSpan: 4, alignment: 'right' },
 								'', '', '',
 								{ text: `S/. ${datosCabecera[0].SubTotal}`, fontSize: 8, noWrap: true, alignment: 'right' }
 							],
 							[
-								{ text: '', colSpan: 3, border: [false, false, true, false] },
-								'', '',
-								{ text: 'Impuestos', fontSize: 8, colSpan: 4, alignment: 'right' },
+								{ text: '', colSpan: 2, border: [false, false, true, false] },
+								'',
+								{ text: 'IGV', fontSize: 8, colSpan: 4, alignment: 'right' },
 								'', '', '',
 								{ text: `S/. ${datosCabecera[0].TotalImpuesto}`, fontSize: 8, noWrap: true, alignment: 'right' }
 							],
 							[
-								{ text: '', colSpan: 3, border: [false, false, true, false], alignment: 'right' },
-								'', '',
-								{ text: 'Total documento', fontSize: 8, colSpan: 4, alignment: 'right' },
+								{ text: '', colSpan: 2, border: [false, false, true, false], alignment: 'right' },
+								'',
+								{ text: 'Total con IGV', fontSize: 8, colSpan: 4, alignment: 'right' },
 								'', '', '',
 								{ text: `S/. ${datosCabecera[0].Monto}`, fontSize: 8, noWrap: true, alignment: 'right' }
 							]
@@ -260,9 +285,9 @@ var handleRenderTableData = function () {
 								cabecera1,
 								cabecera2,
 								cabecera3,
-								cabecera4,
+								//cabecera4,
 								tablaDetalle,
-								observaciones
+								//observaciones
 							],
 							layout: {
 								defaultBorder: false,
@@ -354,13 +379,6 @@ var handleRenderTableData = function () {
 		}
 		return parsedNumber.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 	}
-
-	// Ejemplo de uso:
-	var number1 = 1000;
-	var number2 = 100000;
-
-	console.log(parseToFloatWithTwoDecimals(number1)); // Devuelve "1,000.00"
-	console.log(parseToFloatWithTwoDecimals(number2)); // Devuelve "100,000.00"
 
 
 	function obtenerFechaSinHora(fechaHora) {

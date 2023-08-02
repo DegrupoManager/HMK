@@ -36,7 +36,7 @@ var handleRenderTableData = function () {
 				render: function (data, type, row, meta) {
 					var id = row["id"];
 					var opcionesHTML = `
-						<button type="button" class="btn btn-icon text-theme editarOrden" style="--bs-btn-padding-x: 0.25rem;" data-id="${id}">
+						<button type="button" class="btn btn-icon text-theme editarUser" style="--bs-btn-padding-x: 0.25rem;" data-id="${id}">
 							<i class="fa-solid fa-pen-to-square"></i>
 						</button>
 					`;
@@ -53,7 +53,7 @@ var handleRenderTableData = function () {
 
 			var column0 = $('td:eq(0)', row);
 			var id = column0.text();
-			var url = '#';
+			var url = `/Administrador/ViewUser?userId=${id}`;
 
 			column0.html('<a href="' + url + '">' + id + '</a>');
 			column0.addClass('ps-5');
@@ -62,6 +62,11 @@ var handleRenderTableData = function () {
 	});
 	/*END datatable */
 
+	$(document).on('click', '.editarUser', function () {
+		var id = $(this).data('id');
+
+		window.location.href = `/Administrador/EditUser?userId=${id}`;
+	});
 
 };
 

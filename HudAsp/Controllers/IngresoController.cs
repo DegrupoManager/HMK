@@ -231,10 +231,22 @@ namespace HudAsp.Controllers
         public async Task<JsonResult> UpdatePreOrder(UpdateOrderDraftModel DRAFT)
         {
 
-            var preOrderData = JsonConvert.SerializeObject(DRAFT);
+			foreach (var line in DRAFT.DocumentLines)
+			{
+				if (string.IsNullOrEmpty(line.LineNum))
+				{
+					line.LineNum = null;
+				}
+			}
 
-            var request = new HttpRequestMessage(new HttpMethod("PATCH"), $"{_apiBaseUrl}/PreOrders");
-            request.Content = new StringContent(JsonConvert.SerializeObject(DRAFT), Encoding.UTF8, "application/json");
+			var preOrderData = JsonConvert.SerializeObject(DRAFT, new JsonSerializerSettings
+			{
+				NullValueHandling = NullValueHandling.Ignore
+			});
+
+
+			var request = new HttpRequestMessage(new HttpMethod("PATCH"), $"{_apiBaseUrl}/PreOrders");
+            request.Content = new StringContent(preOrderData, Encoding.UTF8, "application/json");
             var response = await _client.SendAsync(request);
             response.EnsureSuccessStatusCode();
             var content = await response.Content.ReadAsStringAsync();
