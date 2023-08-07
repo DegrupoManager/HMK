@@ -1,7 +1,4 @@
-﻿@{
-	ViewData["Title"] = "User";
-}
-
+﻿
 @section Styles {
 	<link href="~/lib/datatables.net-bs5/css/dataTables.bootstrap5.min.css" rel="stylesheet">
 	<link href="~/lib/datatables.net-buttons-bs5/css/buttons.bootstrap5.min.css" rel="stylesheet">
@@ -21,6 +18,10 @@
 
 		body {
 			zoom: 75%;
+		}
+
+		#loadingSpinner {
+			display: none;
 		}
 
 	</style>
@@ -50,247 +51,293 @@
 @{
 	var usuario = ViewBag.userId;
 }
-
+@{
+	ViewData["Title"] = "Usuario " + @usuario;
+}
+<!--BEGIN Toast-->
+<div class="position-fixed top-1 end-0 p-3" style="z-index: 11">
+	<div id="liveToast" class="toast align-items-center text-white bg-primary border-0" role="alert" aria-live="assertive" aria-atomic="true">
+		<div class="d-flex">
+			<div class="toast-body">
+				El usuario @usuario se actualizó correctamente.
+			</div>
+			<button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+		</div>
+	</div>
+</div>
+<!--END Toast-->
 
 <div class="d-flex align-items-center mb-4">
 	<div>
 		<ul class="breadcrumb">
-			<li class="breadcrumb-item active">Administrador</li>
+			<li class="breadcrumb-item"><a href="/Administrador/User">Administrador</a></li>
 			<li class="breadcrumb-item active">Editar Usuario</li>
 		</ul>
 		<h1 class="page-header mb-0">Editar Usuario - @usuario</h1>
 	</div>
 </div>
+<form id="formUser">
+	<div class="container-fluid mb-4">
 
-<div class="container-fluid mb-4">
-
-	<div class="row mb-3">
-		<!--inputUsuario-->
-		<div class="col-12 col-sm-6 col-md-4 col-lg-1">
-			<label for="inputPassword6" class="col-form-label">Usuario:</label>
-		</div>
-		<div class="col-12 col-sm-6 col-md-5 col-lg-2">
-			<input type="text" id="inputPassword6" class="form-control">
-		</div>
-	</div>
-
-	<div class="row mb-3">
-		<!--inputNombre-->
-		<div class="col-12 col-sm-6 col-md-4 col-lg-1">
-			<label for="inputPassword6" class="col-form-label">Nombre:</label>
-		</div>
-		<div class="col-12 col-sm-6 col-md-5 col-lg-3">
-			<input type="text" id="inputPassword6" class="form-control">
-		</div>
-	</div>
-
-	<div class="row mb-3">
-		<!--inputRol-->
-		<div class="col-12 col-sm-6 col-md-4 col-lg-1">
-			<label for="inputPassword6" class="col-form-label">Rol:</label>
-		</div>
-		<div class="col-12 col-sm-6 col-md-5 col-lg-2">
-			<select id="rolesUser" class="form-select" aria-label="Default select example">
-				@*<option selected></option>
-				<option value="1">Administrador</option>
-				<option value="2">Revisor</option>
-				<option value="3">Editor</option>*@
-			</select>
-		</div>
-	</div>
-
-	<div class="row mb-3">
-		<div class="col-12 col-sm-6 col-md-12 col-lg-6 mb-3">
-			<div class="row">
-                <!--inputEstado-->
-                <div class="col-12 col-sm-6 col-md-4 col-lg-2">
-                    <label for="inputPassword6" class="col-form-label">Activo:</label>
-                </div>
-                <div class="col-12 col-sm-6 col-md-5 col-lg-3">
-					<select id="estadosUser" class="form-select">
-                        @*<option selected></option>
-						<option value="1">Activo</option>
-						<option value="2">Inactivo</option>*@
-					</select>
-                </div>
+		<div class="row mb-3">
+			<!--inputUsuario-->
+			<div class="col-12 col-sm-6 col-md-4 col-lg-1">
+				<label for="inputUsuario" class="col-form-label">Usuario:</label>
+			</div>
+			<div class="col-12 col-sm-6 col-md-5 col-lg-2">
+				<input type="text" id="inputUsuario" class="form-control bg-inverse bg-opacity-10" disabled>
 			</div>
 		</div>
-		<div class="col-12 col-sm-6 col-md-12 col-lg-6">
-			<div class="row">
-                <!--inputContraseña-->
-                <div class="col-12 col-sm-6 col-md-4 col-lg-2">
-                    <label for="inputPassword6" class="col-form-label">Contraseña:</label>
-                </div>
-                <div class="col-12 col-sm-6 col-md-5 col-lg-5">
-                    <input type="password" id="inputPassword6" class="form-control">
-                </div>
+
+		<div class="row mb-3">
+			<!--inputNombre-->
+			<div class="col-12 col-sm-6 col-md-4 col-lg-1">
+				<label for="inputNombre" class="col-form-label">Nombre:</label>
+			</div>
+			<div class="col-12 col-sm-6 col-md-5 col-lg-3">
+				<input type="text" id="inputNombre" class="form-control bg-inverse bg-opacity-10" disabled>
+			</div>
+		</div>
+
+		<div class="row mb-3">
+			<!--inputRol-->
+			<div class="col-12 col-sm-6 col-md-4 col-lg-1">
+				<label for="rolesUser" class="col-form-label">Rol:</label>
+			</div>
+			<div class="col-12 col-sm-6 col-md-5 col-lg-2">
+				<select id="rolesUser" class="form-select" aria-label="Default select example">
+
+				</select>
+			</div>
+		</div>
+
+		<div class="row mb-3">
+			<div class="col-12 col-sm-6 col-md-12 col-lg-6 mb-3">
+				<div class="row">
+					<!--inputEstado-->
+					<div class="col-12 col-sm-6 col-md-4 col-lg-2">
+						<label for="estadosUser" class="col-form-label">Activo:</label>
+					</div>
+					<div class="col-12 col-sm-6 col-md-5 col-lg-3">
+						<select id="estadosUser" class="form-select">
+
+						</select>
+					</div>
+				</div>
+			</div>
+			<div class="col-12 col-sm-6 col-md-12 col-lg-6">
+				<div class="row">
+					<!--inputContraseña-->
+					<div class="col-12 col-sm-6 col-md-4 col-lg-2">
+						<label for="inputPassword" class="col-form-label">Contraseña:</label>
+					</div>
+					<div class="col-12 col-sm-6 col-md-5 col-lg-5">
+						<input type="password" id="inputPassword" class="form-control" autocomplete="current-password">
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="container-fluid mb-4">
+
+		<!--Header-->
+		<div class="row mb-3 row-line">
+			<div class="col-12 col-sm-6 col-md-3 col-lg-3 my-2">Opciones</div>
+			<div class="col-12 col-sm-6 col-md-3 col-lg-3 my-2 d-flex justify-content-center">Administrador</div>
+			<div class="col-12 col-sm-6 col-md-3 col-lg-3 my-2 d-flex justify-content-center">Revisor</div>
+			<div class="col-12 col-sm-6 col-md-3 col-lg-3 my-2 d-flex justify-content-center">Editor</div>
+		</div>
+
+		<!--Body-->
+		<div class="row mb-3 align-content-center">
+			<div class="col-12 col-sm-6 col-md-3 col-lg-3 ">Crear orden</div>
+			<div class="col-12 col-sm-6 col-md-3 col-lg-3 d-flex justify-content-center">
+				<div class="form-check form-check-inline">
+					<input class="form-check-input" type="checkbox" id="001-Administrador" value="001">
+				</div>
+			</div>
+			<div class="col-12 col-sm-6 col-md-3 col-lg-3 d-flex justify-content-center">
+				<div class="form-check form-check-inline">
+					<input class="form-check-input" type="checkbox" id="001-Revisor" value="001">
+				</div>
+			</div>
+			<div class="col-12 col-sm-6 col-md-3 col-lg-3 d-flex justify-content-center">
+				<div class="form-check form-check-inline">
+					<input class="form-check-input" type="checkbox" id="001-Editor" value="001">
+				</div>
+			</div>
+		</div>
+		<div class="row mb-3">
+			<div class="col-12 col-sm-6 col-md-3 col-lg-3">Visualizar orden</div>
+			<div class="col-12 col-sm-6 col-md-3 col-lg-3 d-flex justify-content-center">
+				<div class="form-check form-check-inline">
+					<input class="form-check-input" type="checkbox" id="003-Administrador" value="003">
+				</div>
+			</div>
+			<div class="col-12 col-sm-6 col-md-3 col-lg-3 d-flex justify-content-center">
+				<div class="form-check form-check-inline">
+					<input class="form-check-input" type="checkbox" id="003-Revisor" value="003">
+				</div>
+			</div>
+			<div class="col-12 col-sm-6 col-md-3 col-lg-3 d-flex justify-content-center">
+				<div class="form-check form-check-inline">
+					<input class="form-check-input" type="checkbox" id="003-Editor" value="003">
+				</div>
+			</div>
+		</div>
+		<div class="row mb-3">
+			<div class="col-12 col-sm-6 col-md-3 col-lg-3">Editar orden</div>
+			<div class="col-12 col-sm-6 col-md-3 col-lg-3 d-flex justify-content-center">
+				<div class="form-check form-check-inline">
+					<input class="form-check-input" type="checkbox" id="008-Administrador" value="008">
+				</div>
+			</div>
+			<div class="col-12 col-sm-6 col-md-3 col-lg-3 d-flex justify-content-center">
+				<div class="form-check form-check-inline">
+					<input class="form-check-input" type="checkbox" id="008-Revisor" value="008">
+				</div>
+			</div>
+			<div class="col-12 col-sm-6 col-md-3 col-lg-3 d-flex justify-content-center">
+				<div class="form-check form-check-inline">
+					<input class="form-check-input" type="checkbox" id="008-Editor" value="008">
+				</div>
+			</div>
+		</div>
+		<div class="row mb-3">
+			<div class="col-12 col-sm-6 col-md-3 col-lg-3">Duplicar orden</div>
+			<div class="col-12 col-sm-6 col-md-3 col-lg-3 d-flex justify-content-center">
+				<div class="form-check form-check-inline">
+					<input class="form-check-input" type="checkbox" id="004-Administrador" value="004">
+				</div>
+			</div>
+			<div class="col-12 col-sm-6 col-md-3 col-lg-3 d-flex justify-content-center">
+				<div class="form-check form-check-inline">
+					<input class="form-check-input" type="checkbox" id="004-Revisor" value="004">
+				</div>
+			</div>
+			<div class="col-12 col-sm-6 col-md-3 col-lg-3 d-flex justify-content-center">
+				<div class="form-check form-check-inline">
+					<input class="form-check-input" type="checkbox" id="004-Editor" value="004">
+				</div>
+			</div>
+		</div>
+		<div class="row mb-3">
+			<div class="col-12 col-sm-6 col-md-3 col-lg-3">Eliminar orden</div>
+			<div class="col-12 col-sm-6 col-md-3 col-lg-3 d-flex justify-content-center">
+				<div class="form-check form-check-inline">
+					<input class="form-check-input" type="checkbox" id="002-Administrador" value="002">
+				</div>
+			</div>
+			<div class="col-12 col-sm-6 col-md-3 col-lg-3 d-flex justify-content-center">
+				<div class="form-check form-check-inline">
+					<input class="form-check-input" type="checkbox" id="002-Revisor" value="002">
+				</div>
+			</div>
+			<div class="col-12 col-sm-6 col-md-3 col-lg-3 d-flex justify-content-center">
+				<div class="form-check form-check-inline">
+					<input class="form-check-input" type="checkbox" id="002-Editor" value="002">
+				</div>
+			</div>
+		</div>
+		<div class="row mb-3">
+			<div class="col-12 col-sm-6 col-md-3 col-lg-3">Consulta de orden</div>
+			<div class="col-12 col-sm-6 col-md-3 col-lg-3 d-flex justify-content-center">
+				<div class="form-check form-check-inline">
+					<input class="form-check-input" type="checkbox" id="005-Administrador" value="005">
+				</div>
+			</div>
+			<div class="col-12 col-sm-6 col-md-3 col-lg-3 d-flex justify-content-center">
+				<div class="form-check form-check-inline">
+					<input class="form-check-input" type="checkbox" id="005-Revisor" value="005">
+				</div>
+			</div>
+			<div class="col-12 col-sm-6 col-md-3 col-lg-3 d-flex justify-content-center">
+				<div class="form-check form-check-inline">
+					<input class="form-check-input" type="checkbox" id="005-Editor" value="005">
+				</div>
+			</div>
+		</div>
+		<div class="row mb-3">
+			<div class="col-12 col-sm-6 col-md-3 col-lg-3">Reporte - Guía de consignación</div>
+			<div class="col-12 col-sm-6 col-md-3 col-lg-3 d-flex justify-content-center">
+				<div class="form-check form-check-inline">
+					<input class="form-check-input" type="checkbox" id="006-Administrador" value="006">
+				</div>
+			</div>
+			<div class="col-12 col-sm-6 col-md-3 col-lg-3 d-flex justify-content-center">
+				<div class="form-check form-check-inline">
+					<input class="form-check-input" type="checkbox" id="006-Revisor" value="006">
+				</div>
+			</div>
+			<div class="col-12 col-sm-6 col-md-3 col-lg-3 d-flex justify-content-center">
+				<div class="form-check form-check-inline">
+					<input class="form-check-input" type="checkbox" id="006-Editor" value="006">
+				</div>
+			</div>
+		</div>
+		<div class="row mb-3">
+			<div class="col-12 col-sm-6 col-md-3 col-lg-3">Exportar datos (PDF/XLS)</div>
+			<div class="col-12 col-sm-6 col-md-3 col-lg-3 d-flex justify-content-center">
+				<div class="form-check form-check-inline">
+					<input class="form-check-input" type="checkbox" id="007-Administrador" value="007">
+				</div>
+			</div>
+			<div class="col-12 col-sm-6 col-md-3 col-lg-3 d-flex justify-content-center">
+				<div class="form-check form-check-inline">
+					<input class="form-check-input" type="checkbox" id="007-Revisor" value="007">
+				</div>
+			</div>
+			<div class="col-12 col-sm-6 col-md-3 col-lg-3 d-flex justify-content-center">
+				<div class="form-check form-check-inline">
+					<input class="form-check-input" type="checkbox" id="007-Editor" value="007">
+				</div>
+			</div>
+		</div>
+
+	</div>
+
+	<div class="row">
+		<div class="col-3 gx-4 ms-auto">
+			<button type="submit" id="btnGrabar" class="btn btn-danger px-4">Grabar</button>
+			<a href="/Administrador/User" class="btn btn-outline-theme px-3">
+				<span class="text-dark">Cancelar</span>
+			</a>
+
+		</div>
+	</div>
+</form>
+<div id="myModal" class="modal" tabindex="-1" role="dialog">
+	<div class="modal-dialog modal-dialog-centered">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title">Confirmación</h5>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+			<div class="modal-body">
+				<p>Se actualizará el usuario @usuario ¿Desea Seguir?</p>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="btnCerrar">Cerrar</button>
+				<input id="btnAceptar" type="button" class="btn btn-danger" value="Aceptar">
+				<div id="loadingSpinner" class="spinner-border text-danger" role="status" style="display: block;">
+					<span class="visually-hidden">Cargando...</span>
+				</div>
 			</div>
 		</div>
 	</div>
 </div>
-
-<div class="container-fluid mb-4">
-
-	<!--Header-->
-	<div class="row mb-3 row-line">
-		<div class="col-12 col-sm-6 col-md-3 col-lg-3 my-2">Opciones</div>
-		<div class="col-12 col-sm-6 col-md-3 col-lg-3 my-2 d-flex justify-content-center">Administrador</div>
-		<div class="col-12 col-sm-6 col-md-3 col-lg-3 my-2 d-flex justify-content-center">Revisor</div>
-		<div class="col-12 col-sm-6 col-md-3 col-lg-3 my-2 d-flex justify-content-center">Editor</div>
-	</div>
-
-	<!--Body-->
-	<div class="row mb-3 align-content-center">
-		<div class="col-12 col-sm-6 col-md-3 col-lg-3 ">Crear orden</div>
-		<div class="col-12 col-sm-6 col-md-3 col-lg-3 d-flex justify-content-center">
-			<div class="form-check form-check-inline">
-				<input class="form-check-input" type="checkbox" id="inlineCheckbox1" value="option1">
+<div id="modalError" class="modal" tabindex="-1" role="dialog">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="modalTitle2"></h5>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+			<div class="modal-body" id="modalContentError">
+			</div>
+			<div class="modal-footer">
+				<input id="btnAceptarError" type="button" class="btn btn-danger" value="Aceptar">
 			</div>
 		</div>
-		<div class="col-12 col-sm-6 col-md-3 col-lg-3 d-flex justify-content-center">
-			<div class="form-check form-check-inline">
-				<input class="form-check-input" type="checkbox" id="inlineCheckbox1" value="option1">
-			</div>
-		</div>
-		<div class="col-12 col-sm-6 col-md-3 col-lg-3 d-flex justify-content-center">
-			<div class="form-check form-check-inline">
-				<input class="form-check-input" type="checkbox" id="inlineCheckbox1" value="option1">
-			</div>
-		</div>
-	</div>
-	<div class="row mb-3">
-		<div class="col-12 col-sm-6 col-md-3 col-lg-3">Visualizar orden</div>
-		<div class="col-12 col-sm-6 col-md-3 col-lg-3 d-flex justify-content-center">
-			<div class="form-check form-check-inline">
-				<input class="form-check-input" type="checkbox" id="inlineCheckbox1" value="option1">
-			</div>
-		</div>
-		<div class="col-12 col-sm-6 col-md-3 col-lg-3 d-flex justify-content-center">
-			<div class="form-check form-check-inline">
-				<input class="form-check-input" type="checkbox" id="inlineCheckbox1" value="option1">
-			</div>
-		</div>
-		<div class="col-12 col-sm-6 col-md-3 col-lg-3 d-flex justify-content-center">
-			<div class="form-check form-check-inline">
-				<input class="form-check-input" type="checkbox" id="inlineCheckbox1" value="option1">
-			</div>
-		</div>
-	</div>
-	<div class="row mb-3">
-		<div class="col-12 col-sm-6 col-md-3 col-lg-3">Editar orden</div>
-		<div class="col-12 col-sm-6 col-md-3 col-lg-3 d-flex justify-content-center">
-			<div class="form-check form-check-inline">
-				<input class="form-check-input" type="checkbox" id="inlineCheckbox1" value="option1">
-			</div>
-		</div>
-		<div class="col-12 col-sm-6 col-md-3 col-lg-3 d-flex justify-content-center">
-			<div class="form-check form-check-inline">
-				<input class="form-check-input" type="checkbox" id="inlineCheckbox1" value="option1">
-			</div>
-		</div>
-		<div class="col-12 col-sm-6 col-md-3 col-lg-3 d-flex justify-content-center">
-			<div class="form-check form-check-inline">
-				<input class="form-check-input" type="checkbox" id="inlineCheckbox1" value="option1">
-			</div>
-		</div>
-	</div>
-	<div class="row mb-3">
-		<div class="col-12 col-sm-6 col-md-3 col-lg-3">Elimimnar orden</div>
-		<div class="col-12 col-sm-6 col-md-3 col-lg-3 d-flex justify-content-center">
-			<div class="form-check form-check-inline">
-				<input class="form-check-input" type="checkbox" id="inlineCheckbox1" value="option1">
-			</div>
-		</div>
-		<div class="col-12 col-sm-6 col-md-3 col-lg-3 d-flex justify-content-center">
-			<div class="form-check form-check-inline">
-				<input class="form-check-input" type="checkbox" id="inlineCheckbox1" value="option1">
-			</div>
-		</div>
-		<div class="col-12 col-sm-6 col-md-3 col-lg-3 d-flex justify-content-center">
-			<div class="form-check form-check-inline">
-				<input class="form-check-input" type="checkbox" id="inlineCheckbox1" value="option1">
-			</div>
-		</div>
-	</div>
-	<div class="row mb-3">
-		<div class="col-12 col-sm-6 col-md-3 col-lg-3">Consulta de orden</div>
-		<div class="col-12 col-sm-6 col-md-3 col-lg-3 d-flex justify-content-center">
-			<div class="form-check form-check-inline">
-				<input class="form-check-input" type="checkbox" id="inlineCheckbox1" value="option1">
-			</div>
-		</div>
-		<div class="col-12 col-sm-6 col-md-3 col-lg-3 d-flex justify-content-center">
-			<div class="form-check form-check-inline">
-				<input class="form-check-input" type="checkbox" id="inlineCheckbox1" value="option1">
-			</div>
-		</div>
-		<div class="col-12 col-sm-6 col-md-3 col-lg-3 d-flex justify-content-center">
-			<div class="form-check form-check-inline">
-				<input class="form-check-input" type="checkbox" id="inlineCheckbox1" value="option1">
-			</div>
-		</div>
-	</div>
-	<div class="row mb-3">
-		<div class="col-12 col-sm-6 col-md-3 col-lg-3">Reporte - Guía de consignación</div>
-		<div class="col-12 col-sm-6 col-md-3 col-lg-3 d-flex justify-content-center">
-			<div class="form-check form-check-inline">
-				<input class="form-check-input" type="checkbox" id="inlineCheckbox1" value="option1">
-			</div>
-		</div>
-		<div class="col-12 col-sm-6 col-md-3 col-lg-3 d-flex justify-content-center">
-			<div class="form-check form-check-inline">
-				<input class="form-check-input" type="checkbox" id="inlineCheckbox1" value="option1">
-			</div>
-		</div>
-		<div class="col-12 col-sm-6 col-md-3 col-lg-3 d-flex justify-content-center">
-			<div class="form-check form-check-inline">
-				<input class="form-check-input" type="checkbox" id="inlineCheckbox1" value="option1">
-			</div>
-		</div>
-	</div>
-	<div class="row mb-3">
-		<div class="col-12 col-sm-6 col-md-3 col-lg-3">Registro de usuarios</div>
-		<div class="col-12 col-sm-6 col-md-3 col-lg-3 d-flex justify-content-center">
-			<div class="form-check form-check-inline">
-				<input class="form-check-input" type="checkbox" id="inlineCheckbox1" value="option1">
-			</div>
-		</div>
-		<div class="col-12 col-sm-6 col-md-3 col-lg-3 d-flex justify-content-center">
-			<div class="form-check form-check-inline">
-				<input class="form-check-input" type="checkbox" id="inlineCheckbox1" value="option1">
-			</div>
-		</div>
-		<div class="col-12 col-sm-6 col-md-3 col-lg-3 d-flex justify-content-center">
-			<div class="form-check form-check-inline">
-				<input class="form-check-input" type="checkbox" id="inlineCheckbox1" value="option1">
-			</div>
-		</div>
-	</div>
-	<div class="row mb-3">
-		<div class="col-12 col-sm-6 col-md-3 col-lg-3">Exportar datos (PDF/XLS)</div>
-		<div class="col-12 col-sm-6 col-md-3 col-lg-3 d-flex justify-content-center">
-			<div class="form-check form-check-inline">
-				<input class="form-check-input" type="checkbox" id="inlineCheckbox1" value="option1">
-			</div>
-		</div>
-		<div class="col-12 col-sm-6 col-md-3 col-lg-3 d-flex justify-content-center">
-			<div class="form-check form-check-inline">
-				<input class="form-check-input" type="checkbox" id="inlineCheckbox1" value="option1">
-			</div>
-		</div>
-		<div class="col-12 col-sm-6 col-md-3 col-lg-3 d-flex justify-content-center">
-			<div class="form-check form-check-inline">
-				<input class="form-check-input" type="checkbox" id="inlineCheckbox1" value="option1">
-			</div>
-		</div>
-	</div>
-
-</div>
-<div class="row">
-	<div class="col-3 gx-4 ms-auto">
-		<button type="button" id="openModalBtn" class="btn btn-danger px-4">Grabar</button>
-		<a href="/Administrador/User" class="btn btn-outline-theme px-3">
-			<span class="text-dark">Cancelar</span>
-		</a>
 	</div>
 </div>

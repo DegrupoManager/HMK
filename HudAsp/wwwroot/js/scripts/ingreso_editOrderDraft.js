@@ -1912,18 +1912,6 @@ var handleRenderTableData = function () {
 		}, 4000);
 	}
 
-	function mostrarToastError(mensaje) {
-		$('#myModal').modal('hide');
-
-		var toast = $('#liveToast');
-		toast.find('.toast-body').text(mensaje);
-		toast.removeClass("alert-success").addClass("alert-danger");
-		toast.toast('show');
-		setTimeout(function () {
-			toast.toast('hide');
-		}, 5000);
-	}
-
 	
 };
 

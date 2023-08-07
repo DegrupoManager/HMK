@@ -12,6 +12,101 @@
 };
 var handleRenderTableData = function () {
 
+	function getAccionesRol(id) {
+		return new Promise(function (resolve, reject) {
+			var url = "/api/rolls/action?id=" + id;
+
+			$.ajax({
+				url: url,
+				type: "GET",
+				success: function (response) {
+					resolve(response);
+				},
+				error: function (xhr, status, error) {
+					reject(error);
+				}
+			});
+		});
+	}
+
+	function getRolesUser() {
+		return new Promise(function (resolve, reject) {
+			var url = "/api/rolls/list";
+
+			$.ajax({
+				url: url,
+				type: "GET",
+				success: function (response) {
+					var roles = JSON.parse(response);
+					resolve(roles);
+				},
+				error: function (xhr, status, error) {
+					reject(error);
+				}
+			});
+		});
+	};
+
+	function getCookie(name) {
+		var cookies = document.cookie.split(';');
+
+		for (var i = 0; i < cookies.length; i++) {
+			var cookie = cookies[i].trim();
+
+			if (cookie.indexOf(name + '=') === 0) {
+				return cookie.substring(name.length + 1);
+			}
+		}
+
+		return null;
+	}
+
+
+	async function fetchRolesAndActions() {
+		try {
+			var roles = await getRolesUser();
+			var accionesRoles = [];
+
+			var rolCookie = getCookie('Rol');
+			var id;
+
+			for (const rol of roles) {
+				if (rolCookie === rol.descripcion) {
+					id = rol.codigo;
+				}
+
+				var acciones = await getAccionesRol(id);
+				accionesRoles = JSON.parse(acciones);
+
+			}
+
+			var acciones = accionesRoles;
+
+			const codigos = ['006', '007'];
+
+			const codigosE = codigos.map(codigoDeseado =>
+				acciones.some(opcion => opcion.codigo === codigoDeseado)
+			);
+
+			if (!codigosE[codigos.indexOf('007')]) {
+				$("#exportar").remove();
+			}
+
+			if (!codigosE[codigos.indexOf('006')]) {
+				$("#btnConsultar").remove();
+			}
+
+		} catch (error) {
+
+			console.error(error);
+		}
+	}
+	//fetchRolesAndActions();
+
+	$(document).ready(function () {
+		fetchRolesAndActions();
+	});
+
 	var table = $('#datatableReporte').DataTable({
 		language: {
 			url: '//cdn.datatables.net/plug-ins/1.13.4/i18n/es-ES.json'

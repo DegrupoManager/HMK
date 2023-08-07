@@ -7,4 +7,6 @@
 	public string Contrasenia { get; set; }
 	public string AccesoAppWeb { get; set; }
 	public string EmpleadoAppWeb { get; set; }
+	public string IdEmpleado { get; set; }
+
 }

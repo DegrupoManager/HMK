@@ -10,8 +10,10 @@ namespace HudAsp.Controllers
 
 		private readonly HttpClient _client;
 		private readonly string _apiBaseUrl;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-		public AdministradorController(IHttpClientFactory httpClientFactory, IOptions<ApiSettings> apiSettings)
+
+        public AdministradorController(IHttpClientFactory httpClientFactory, IOptions<ApiSettings> apiSettings)
 		{
 			_client = httpClientFactory.CreateClient();
 			_apiBaseUrl = apiSettings.Value.BaseUrl;
@@ -19,7 +21,7 @@ namespace HudAsp.Controllers
 
 		public IActionResult User()
 		{
-			if (Request.Cookies.TryGetValue("Rol", out var rol) && (rol == "Revisor" || rol == "Editor" || rol == "Administrador"))
+			if (Request.Cookies.TryGetValue("Rol", out var rol) && (rol == "Administrador"))
 			{
 
 				return View();
@@ -31,37 +33,50 @@ namespace HudAsp.Controllers
 			}
 		}
 
-		public IActionResult EditUser(string userId)
+		public async Task<IActionResult> EditUser(string userId)
 		{
-			if (Request.Cookies.TryGetValue("Rol", out var rol) && (rol == "Revisor" || rol == "Editor" || rol == "Administrador"))
+			if (Request.Cookies.TryGetValue("Rol", out var rol) && (rol == "Administrador"))
 			{
+				try
+				{
+					ViewBag.userId = userId;
 
-				ViewBag.userId = userId;
-
-				return View();
+					return View();
+				}
+				catch (UnauthorizedAccessException ex)
+				{
+					ViewBag.ErrorMessage = ex.Message;
+					return View("Error");
+				}
 			}
 			else
 			{
-
 				return RedirectToAction("OrderDraft", "Ingreso");
 			}
 		}
 
-		public IActionResult ViewUser(string userId)
+		public async Task<IActionResult> ViewUser(string userId)
 		{
-			if (Request.Cookies.TryGetValue("Rol", out var rol) && (rol == "Revisor" || rol == "Editor" || rol == "Administrador"))
+			if (Request.Cookies.TryGetValue("Rol", out var rol) && (rol == "Administrador"))
 			{
+				try
+				{
+					ViewBag.userId = userId;
 
-				ViewBag.userId = userId;
-
-				return View();
+					return View();
+				}
+				catch (UnauthorizedAccessException ex)
+				{
+					ViewBag.ErrorMessage = ex.Message;
+					return View("Error");
+				}
 			}
 			else
 			{
-
 				return RedirectToAction("OrderDraft", "Ingreso");
 			}
 		}
+
 
 		[HttpGet]
 		[Route("api/user/list")]
@@ -153,11 +168,28 @@ namespace HudAsp.Controllers
 			return content;
 		}
 
+		[HttpGet]
+		[Route("api/rolls/action")]
+		public async Task<string> GetRolesActionAsync(string id)
+		{
+			var url = $"{_apiBaseUrl}/Rolls/actionsByRoll?id={id}";
+
+
+			var request = new HttpRequestMessage(HttpMethod.Get, url);
+			var response = await _client.SendAsync(request);
+			response.EnsureSuccessStatusCode();
+			var content = await response.Content.ReadAsStringAsync();
+			return content;
+
+		}
+
+
+
 		[HttpPatch]
 		public async Task<JsonResult> UpdateUser(EditUserModel USER)
 		{
 
-			var request = new HttpRequestMessage(new HttpMethod("PATCH"), $"{_apiBaseUrl}/PreOrders");
+			var request = new HttpRequestMessage(new HttpMethod("PATCH"), $"{_apiBaseUrl}/Users");
 			request.Content = new StringContent(JsonConvert.SerializeObject(USER), Encoding.UTF8, "application/json");
 			var response = await _client.SendAsync(request);
 			response.EnsureSuccessStatusCode();
@@ -166,7 +198,20 @@ namespace HudAsp.Controllers
 			return new JsonResult(Ok(content));
 		}
 
-		/*
+		[HttpPatch]
+		public async Task<JsonResult> UpdateRolActions(UpdateActionsRol ROLES)
+		{
+
+			var request = new HttpRequestMessage(new HttpMethod("PATCH"), $"{_apiBaseUrl}/Rolls/ActionsByRoll");
+			request.Content = new StringContent(JsonConvert.SerializeObject(ROLES), Encoding.UTF8, "application/json");
+			var response = await _client.SendAsync(request);
+			response.EnsureSuccessStatusCode();
+			var content = await response.Content.ReadAsStringAsync();
+
+			return new JsonResult(Ok(content));
+		}
+
+        /*
 		 
 		[HttpPatch]
         public async Task<JsonResult> UpdatePreOrder(UpdateOrderDraftModel DRAFT)
@@ -192,5 +237,5 @@ namespace HudAsp.Controllers
 		 
 		*/
 
-	}
+    }
 }

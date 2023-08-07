@@ -1,6 +1,41 @@
 ﻿
 var handleRenderTableData = function () {
 
+	function getAccionesRol(id) {
+		return new Promise(function (resolve, reject) {
+			var url = "/api/rolls/action?id=" + id;
+
+			$.ajax({
+				url: url,
+				type: "GET",
+				success: function (response) {
+					resolve(response);
+				},
+				error: function (xhr, status, error) {
+					reject(error);
+				}
+			});
+		});
+	}
+
+	function getRolesUser() {
+		return new Promise(function (resolve, reject) {
+			var url = "/api/rolls/list";
+
+			$.ajax({
+				url: url,
+				type: "GET",
+				success: function (response) {
+					var roles = JSON.parse(response);
+					resolve(roles);
+				},
+				error: function (xhr, status, error) {
+					reject(error);
+				}
+			});
+		});
+	};
+
 	/*BEGIN obtenerOrdenes */
 	async function obtenerOrdenes() {
 		var settings = {
@@ -64,6 +99,151 @@ var handleRenderTableData = function () {
 		>
 	`;
 	/*END html's */
+	function getCookie(name) {
+		var cookies = document.cookie.split(';');
+
+		for (var i = 0; i < cookies.length; i++) {
+			var cookie = cookies[i].trim();
+
+			if (cookie.indexOf(name + '=') === 0) {
+				return cookie.substring(name.length + 1);
+			}
+		}
+
+		return null;
+	}
+
+	
+	async function fetchRolesAndActions() {
+		try {
+			var roles = await getRolesUser();
+			var accionesRoles = [];
+
+			var rolCookie = getCookie('Rol');
+			var id;
+
+			for (const rol of roles) {
+				if (rolCookie === rol.descripcion) {
+					id = rol.codigo;
+				}
+
+				var acciones = await getAccionesRol(id);
+				accionesRoles = JSON.parse(acciones);
+
+
+			}
+
+			var acciones = accionesRoles;
+
+			const codigos = ['001', '007'];
+
+			const codigosE = codigos.map(codigoDeseado =>
+				acciones.some(opcion => opcion.codigo === codigoDeseado)
+			);
+
+			if (!codigosE[codigos.indexOf('007')]) {
+				$("#exportPDFLink").remove();
+			}
+
+			if (!codigosE[codigos.indexOf('001')]) {
+				$("#nuevaOrden").remove();
+			}
+
+			table.columns(0).nodes().each(function (cell, index) {
+				var row = table.row(index);
+				var id = row.data().num_orden;
+				var url = '/Ingreso/ViewOrderDraft?id=' + id;
+
+				var opcionesX = accionesRoles;
+
+				const codigosDeseados = ['003'];
+
+				const codigosExisten = codigosDeseados.map(codigoDeseado =>
+					opcionesX.some(opcion => opcion.codigo === codigoDeseado)
+				);
+
+				var linkHTML = '<a href="' + url + '">' + id + '</a>';
+
+				if (codigosExisten[codigosDeseados.indexOf('003')]) {
+					$(cell).html(linkHTML);
+				}
+				
+			});
+
+			table.columns(9).every(function () {
+				var column = this;
+				column.nodes().each(function (cell, index) {
+					var row = table.row(index);
+					var id = row.data().num_orden;
+
+					var opciones = accionesRoles;
+
+					const codigosDeseados = ['004', '008', '002'];
+
+					const codigosExisten = codigosDeseados.map(codigoDeseado =>
+						opciones.some(opcion => opcion.codigo === codigoDeseado)
+					);
+
+					var opcionesHTML = '';
+
+					if (codigosExisten[codigosDeseados.indexOf('004')]) {
+						opcionesHTML += `
+						<button type="button" class="btn btn-icon text-theme duplicarOrden" style="--bs-btn-padding-x: 0.25rem;" data-id="${id}">
+						  <i class="fa-regular fa-copy"></i>
+						</button>`;
+					}
+
+					if (codigosExisten[codigosDeseados.indexOf('008')]) {
+						opcionesHTML += `
+						<button type="button" class="btn btn-icon text-theme editarOrden" style="--bs-btn-padding-x: 0.25rem;" data-id="${id}">
+						  <i class="fa-solid fa-pen-to-square"></i>
+						</button>`;
+					}
+
+					if (codigosExisten[codigosDeseados.indexOf('002')]) {
+						opcionesHTML += `
+						<button type="button" class="btn btn-icon text-theme eliminarorden" style="--bs-btn-padding-x: 0.25rem;" data-id="${id}">
+							<i class="fa-regular fa-trash-can"></i>
+						</button>`;
+					}
+
+
+					cell.innerHTML = opcionesHTML;
+				});
+			});
+		} catch (error) {
+
+			console.error(error);
+		}
+	}
+	//fetchRolesAndActions();
+
+	//$(document).ready(function () {
+	//	fetchRolesAndActions();
+	//});
+
+
+	var accionesRoles = []
+
+	getRolesUser()
+		.then(function (roles) {
+			var rolCookie = getCookie('Rol');
+			var id;
+
+			roles.forEach(function (rol) {
+
+				if (rolCookie === rol.descripcion) {
+					id = rol.codigo;
+				}
+
+				getAccionesRol(id)
+					.then(function (acciones) {
+						accionesRoles = JSON.parse(acciones);
+
+					});
+
+			})
+		});
 
 
 	/*BEGIN datatable */
@@ -97,25 +277,6 @@ var handleRenderTableData = function () {
 			{ data: "usuario" },
 			{ data: "vendedor" },
 			{ data: null, defaultContent: "" }
-		], columnDefs: [
-			{
-				targets: 9,
-				render: function (data, type, row, meta) {
-					var id = row["num_orden"];
-					var opcionesHTML = `
-						<button type="button" class="btn btn-icon text-theme duplicarOrden" style="--bs-btn-padding-x: 0.25rem;" data-id="${id}">
-							<i class="fa-regular fa-copy"></i>
-						</button>
-						<button type="button" class="btn btn-icon text-theme editarOrden" style="--bs-btn-padding-x: 0.25rem;" data-id="${id}">
-							<i class="fa-solid fa-pen-to-square"></i>
-						</button>
-						<button type="button" class="btn btn-icon text-theme eliminarOrden" style="--bs-btn-padding-x: 0.25rem;" data-id="${id}">
-							<i class="fa-regular fa-trash-can"></i>
-						</button>`;
-
-					return opcionesHTML;
-				}
-			}
 		],
 		createdRow: function (row, data, index) {
 			$('td:eq(4)', row).addClass('text-end');
@@ -125,11 +286,11 @@ var handleRenderTableData = function () {
 
 			$('td', row).addClass('text-sm');
 
-			var column0 = $('td:eq(0)', row);
-			var id = column0.text();
-			var url = '/Ingreso/ViewOrderDraft?id=' + id; 
+			//var column0 = $('td:eq(0)', row);
+			//var id = column0.text();
+			//var url = '/Ingreso/ViewOrderDraft?id=' + id; 
 
-			column0.html('<a href="' + url + '">' + id + '</a>');
+			//column0.html('<a href="' + url + '">' + id + '</a>');
 
 			var column4 = $('td:eq(4)', row);
 
@@ -152,6 +313,10 @@ var handleRenderTableData = function () {
 
 		},
 		initComplete: function () {
+
+			$(document).ready(function () {
+				fetchRolesAndActions();
+			});
 
 			//$('#datatableOrderDraft_filter input[type="search"]').removeClass('form-control-sm');
 			$('#datatableOrderDraft_filter input[type="search"]').addClass('ps-35px');

@@ -11,11 +11,14 @@ namespace HudAsp.Controllers
 
         private readonly HttpClient _client;
         private readonly string _apiBaseUrl;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public IngresoController(IHttpClientFactory httpClientFactory, IOptions<ApiSettings> apiSettings)
+
+        public IngresoController(IHttpClientFactory httpClientFactory, IOptions<ApiSettings> apiSettings, IHttpContextAccessor httpContextAccessor)
         {
             _client = httpClientFactory.CreateClient();
             _apiBaseUrl = apiSettings.Value.BaseUrl;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         public IActionResult OrderDraft()
@@ -37,18 +40,42 @@ namespace HudAsp.Controllers
         {
             if (Request.Cookies.TryGetValue("Rol", out var rol) && (rol == "Revisor" || rol == "Editor" || rol == "Administrador"))
             {
-                if (id.HasValue)
+                var actionCode = "001";
+
+                var isAllowed = await GetRoleCodeComparisonAsync(actionCode);
+
+                if (isAllowed)
                 {
-                    var apiUrl = $"{_apiBaseUrl}/PreOrders?Id={id}";
-                    var response = await _client.GetAsync(apiUrl);
-                    response.EnsureSuccessStatusCode();
-                    var content = await response.Content.ReadAsStringAsync();
+                    if (id.HasValue)
+                    {
+                        var apiUrl = $"{_apiBaseUrl}/PreOrders?Id={id}";
+                        var response = await _client.GetAsync(apiUrl);
+                        response.EnsureSuccessStatusCode();
+                        var content = await response.Content.ReadAsStringAsync();
 
-                    var model = JsonConvert.DeserializeObject<List<DetalleOrderDraftModel>>(content);
-                    ViewBag.OrderData = JsonConvert.SerializeObject(model);
+                        var model = JsonConvert.DeserializeObject<List<DetalleOrderDraftModel>>(content);
+                        var data = JsonConvert.SerializeObject(model);
+                        var usuario = Request.Cookies["Usuario"];
+
+                        if (model[0].Usuario == usuario || rol == "Administrador")
+                        {
+                            ViewBag.OrderData = data;
+                            ViewBag.OrderId = id;
+
+                            return View();
+                        }
+                        else
+                        {
+                            return RedirectToAction("OrderDraft", "Ingreso");
+                        }
+                    }
+
+                    return View();
                 }
-
-                return View();
+                else
+                {
+                    return RedirectToAction("OrderDraft", "Ingreso");
+                }
             }
             else
             {
@@ -57,35 +84,111 @@ namespace HudAsp.Controllers
         }
 
 
+
         [HttpGet]
         public async Task<IActionResult> ViewOrderDraft(int id)
         {
-            var apiUrl = $"{_apiBaseUrl}/PreOrders?Id={id}";
-            var response = await _client.GetAsync(apiUrl);
-            response.EnsureSuccessStatusCode();
-            var content = await response.Content.ReadAsStringAsync();
+            if (Request.Cookies.TryGetValue("Rol", out var rol) && (rol == "Revisor" || rol == "Editor" || rol == "Administrador"))
+            {
+                var actionCode = "003";
 
-            var model = JsonConvert.DeserializeObject<List<OrderDraftModel>>(content);
-            ViewBag.OrderData = JsonConvert.SerializeObject(model);
-            ViewBag.OrderId = id;
+                var isAllowed = await GetRoleCodeComparisonAsync(actionCode);
 
-            return View();
+                if (isAllowed)
+                {
+                    var apiUrl = $"{_apiBaseUrl}/PreOrders?Id={id}";
+                    var response = await _client.GetAsync(apiUrl);
+                    response.EnsureSuccessStatusCode();
+                    var content = await response.Content.ReadAsStringAsync();
+
+                    var model = JsonConvert.DeserializeObject<List<OrderDraftModel>>(content);
+                    var data = JsonConvert.SerializeObject(model);
+                    var usuario = Request.Cookies["Usuario"];
+
+                    if (model[0].Usuario == usuario || rol == "Administrador")
+                    {
+                        ViewBag.OrderData = data;
+                        ViewBag.OrderId = id;
+
+                        return View();
+                    }
+                    else
+                    {
+                        return RedirectToAction("OrderDraft", "Ingreso");
+                    }
+
+
+                }
+                else
+                {
+                    return RedirectToAction("OrderDraft", "Ingreso");
+                }
+            }
+            else
+            {
+                return RedirectToAction("Login", "Login");
+            }
         }
 
         [HttpGet]
         public async Task<IActionResult> EditOrderDraft(int id)
         {
-            var apiUrl = $"{_apiBaseUrl}/PreOrders?Id={id}";
-            var response = await _client.GetAsync(apiUrl);
-            response.EnsureSuccessStatusCode();
-            var content = await response.Content.ReadAsStringAsync();
+            if (Request.Cookies.TryGetValue("Rol", out var rol) && (rol == "Revisor" || rol == "Editor" || rol == "Administrador"))
+            {
+                var actionCode = "008";
 
-            var model = JsonConvert.DeserializeObject<List<OrderDraftModel>>(content);
-            ViewBag.OrderData = JsonConvert.SerializeObject(model);
-            ViewBag.OrderId = id;
+                var isAllowed = await GetRoleCodeComparisonAsync(actionCode);
 
-            return View();
+                if (isAllowed)
+                {
+                    var apiUrl = $"{_apiBaseUrl}/PreOrders?Id={id}";
+                    var response = await _client.GetAsync(apiUrl);
+                    response.EnsureSuccessStatusCode();
+                    var content = await response.Content.ReadAsStringAsync();
+
+                    var model = JsonConvert.DeserializeObject<List<OrderDraftModel>>(content);
+                    var data = JsonConvert.SerializeObject(model);
+                    var usuario = Request.Cookies["Usuario"];
+
+                    if (model[0].Usuario == usuario || rol == "Administrador")
+                    {
+                        ViewBag.OrderData = data;
+                        ViewBag.OrderId = id;
+
+                        return View();
+                    }
+                    else
+                    {
+                        return RedirectToAction("OrderDraft", "Ingreso");
+                    }
+
+                }
+                else
+                {
+                    return RedirectToAction("OrderDraft", "Ingreso");
+                }
+            }
+            else
+            {
+                return RedirectToAction("Login", "Login");
+            }
         }
+
+
+        //[HttpGet]
+        //public async Task<IActionResult> EditOrderDraft(int id)
+        //{
+        //    var apiUrl = $"{_apiBaseUrl}/PreOrders?Id={id}";
+        //    var response = await _client.GetAsync(apiUrl);
+        //    response.EnsureSuccessStatusCode();
+        //    var content = await response.Content.ReadAsStringAsync();
+
+        //    var model = JsonConvert.DeserializeObject<List<OrderDraftModel>>(content);
+        //    ViewBag.OrderData = JsonConvert.SerializeObject(model);
+        //    ViewBag.OrderId = id;
+
+        //    return View();
+        //}
 
         [HttpGet]
         [Route("api/draft/list")]
@@ -165,19 +268,6 @@ namespace HudAsp.Controllers
 			return content;
 		}
 
-        /*
-		//GET obtener lista clientes
-		[HttpGet]
-		[Route("api/customer/getCustomerList2")]
-		public async Task<string> GetCustomerListAsync()
-		{
-			var request = new HttpRequestMessage(HttpMethod.Get, $"{_apiBaseUrl}/customer/getCustomerList");
-			var response = await _client.SendAsync(request);
-			response.EnsureSuccessStatusCode();
-			var content = await response.Content.ReadAsStringAsync();
-			return content;
-		}*/
-
 		//POST crear orden preliminar
 		[HttpPost]
 		public async Task<JsonResult> CreatePreOrder(PreOrderModel DRAFT)
@@ -192,39 +282,6 @@ namespace HudAsp.Controllers
 
 			return new JsonResult(Ok(content));
 		}
-
-        // PATCH actualizar orden preliminar
-        /*[HttpPatch]
-        public async Task<JsonResult> UpdatePreOrder(UpdateOrderDraftModel DRAFT)
-        {
-            var documentLinesToSend = DRAFT.DocumentLines
-                .Where(line => !string.IsNullOrEmpty(line.LineNum)) 
-                .Select(line => new DocumentLinesUpdate
-                {
-                    LineNum = line.LineNum,
-                    ItemCode = line.ItemCode,
-                    WarehouseCode = line.WarehouseCode,
-                    UnitPrice = line.UnitPrice,
-                    Quantity = line.Quantity,
-                    DiscountPercent = line.DiscountPercent,
-                    VatGroup = line.VatGroup,
-                    ShipDate = line.ShipDate
-                })
-                .ToList();
-
-            DRAFT.DocumentLines = documentLinesToSend; 
-
-            var preOrderData = JsonConvert.SerializeObject(DRAFT);
-
-            var request = new HttpRequestMessage(new HttpMethod("PATCH"), $"{_apiBaseUrl}/PreOrders");
-            request.Content = new StringContent(JsonConvert.SerializeObject(DRAFT), Encoding.UTF8, "application/json");
-            var response = await _client.SendAsync(request);
-            response.EnsureSuccessStatusCode();
-            var content = await response.Content.ReadAsStringAsync();
-
-            return new JsonResult(Ok(content));
-        }*/
-
 
         
         [HttpPatch]
@@ -376,6 +433,63 @@ namespace HudAsp.Controllers
             var content = await response.Content.ReadAsStringAsync();
             return content;
         }
+
+        public async Task<string> GetListaRolesAsync()
+        {
+            var url = $"{_apiBaseUrl}/Rolls/list";
+
+
+            var request = new HttpRequestMessage(HttpMethod.Get, url);
+            var response = await _client.SendAsync(request);
+            response.EnsureSuccessStatusCode();
+            var content = await response.Content.ReadAsStringAsync();
+            return content;
+        }
+
+        public async Task<string> GetRolesActionAsync(string id)
+        {
+            var url = $"{_apiBaseUrl}/Rolls/actionsByRoll?id={id}";
+
+
+            var request = new HttpRequestMessage(HttpMethod.Get, url);
+            var response = await _client.SendAsync(request);
+            response.EnsureSuccessStatusCode();
+            var content = await response.Content.ReadAsStringAsync();
+            return content;
+
+        }
+
+        public async Task<bool> GetRoleCodeComparisonAsync(string actionCode)
+        {
+            var rolesListResponse = await GetListaRolesAsync();
+            var rolesList = JsonConvert.DeserializeObject<List<ResponseRolesModel>>(rolesListResponse);
+
+            var cookieRol = _httpContextAccessor.HttpContext.Request.Cookies["Rol"];
+
+            foreach (var role in rolesList)
+            {
+                if (role.Descripcion == cookieRol)
+                {
+                    var codRol = role.Codigo;
+                    var AccionesResponse = await GetRolesActionAsync(codRol);
+
+                    var AccionesList = JsonConvert.DeserializeObject<List<ResponseRolesModel>>(AccionesResponse);
+
+                    foreach (var accion in AccionesList)
+                    {
+                        if(accion.Codigo == actionCode)
+                        {
+                            return true;
+                        }
+                    }
+ 
+                }
+            }
+
+            return false;
+        }
+
+
 
     }
 }
