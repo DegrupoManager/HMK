@@ -133,7 +133,9 @@ var handleRenderTableData = function () {
 
 	function generarFacturaPDF() {
 
-		var orderData = $('#orderData').data('order');
+		var orderDataAttr = $('#orderData').data('order');
+		var decodedOrderData = $("<div/>").html(orderDataAttr).text();
+		var orderData = JSON.parse(decodedOrderData);
 
 		var datosCabecera = [];
 		var detalle = [];
@@ -525,7 +527,15 @@ var handleRenderTableData = function () {
 		}
 	});
 
-	var orderData = $('#orderData').data('order');
+
+	var orderDataAttr = $('#orderData').data('order');
+	var decodedOrderData = $("<div/>").html(orderDataAttr).text();
+	var orderData = JSON.parse(decodedOrderData);
+
+	console.log(orderData);
+
+	//var orderDataAttr = $('#orderData').data('order');
+	//var orderData = JSON.parse(orderDataAttr);
 	//console.log(orderData);
 
 	function calcularTotales() {
@@ -673,12 +683,13 @@ var handleRenderTableData = function () {
 				</div>
 			  `;
 
+
 			var fila = [
 				input01,
 				input02,
-				input07,
-				input09,
 				input03,
+				input09,
+				input07,
 				input04,
 				input05,
 				input08,

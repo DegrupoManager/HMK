@@ -1,5 +1,4 @@
 ﻿
-
 var handleToastToggle = function () {
 
 	$('#openModalBtn').click(function () {
@@ -26,7 +25,8 @@ var handleRenderDatepicker = function () {
 
 	$('#datepicker-range').datepicker({
 		autoclose: true,
-		format: 'dd/mm/yyyy'
+		format: 'dd/mm/yyyy',
+		todayHighlight: true,
 	});
 
 	$('#datepicker-inline').datepicker({
@@ -560,9 +560,11 @@ var handleRenderTypeahead = function () {
 
 var handleRenderTableData = function () {
 
+	var contador = 0;
+
 	function llenarDetalle(orderData, articulos_codigo, articulos_descripcion) {
 		orderData.forEach(function (item) {
-			var counter = table.rows().count();
+			var counter = contador;
 
 			var opciones = `
 				<div class="px-2">
@@ -658,9 +660,9 @@ var handleRenderTableData = function () {
 				opciones,
 				input01,
 				input02,
-				input07,
-				input09,
 				input03,
+				input09,
+				input07,
 				input04,
 				input05,
 				input08,
@@ -668,11 +670,29 @@ var handleRenderTableData = function () {
 				input06
 			];
 
-			while (fila.length < table.columns().count()) {
-				fila.push("");
+
+			var nuevaFila = $('<tr>').append(
+				$('<td>').html(opciones),
+				$('<td>').html(input01),
+				$('<td>').html(input02),
+				$('<td>').html(input03),
+				$('<td>').html(input09),
+				$('<td>').html(input07),
+				$('<td>').html(input04),
+				$('<td>').html(input05),
+				$('<td>').html(input08),
+				$('<td>').html(input10),
+				$('<td>').html(input06)
+			);
+
+			$('#datatableNewOrderDraft tbody').append(nuevaFila);
+			if (counter === 0) {
+				var newRow = table.row.add(fila).draw(false);
+			} else {
+				$('#datatableNewOrderDraft tbody').append(nuevaFila);
 			}
 
-			table.row.add(fila).draw(false);
+			contador++;
 
 			$.typeahead({
 				input: `#inputCodigoArticulo${counter}`,
@@ -870,10 +890,10 @@ var handleRenderTableData = function () {
 		buttons: [],
 		scrollX: true,
 		initComplete: function () {
-
+			$('.dataTables_empty').remove();
 			$('#pBuscar').append(busquedaHTML);
 			$('#pBoton').append(btnHTML);
-			//$('#pInputCantidad').append(inputCantidadHTML);
+
 
 			var articulos_codigo = [];
 			var articulos_descripcion = [];
@@ -898,7 +918,7 @@ var handleRenderTableData = function () {
 
 			var botonAgregar = $('#agregarFilaProducto').on('click', function () {
 
-				var counter = table.rows().count(); 
+				var counter = (contador === 0) ? 0 : contador + 1;
 
 				var opciones = `
 					<div class="px-2">
@@ -991,11 +1011,44 @@ var handleRenderTableData = function () {
                     </div>
 				`;
 
-				const fila = [opciones, input01, input02, input07, input09, input03, input04, input05, input08, input10, input06];
+				const fila = [
+					opciones,
+					input01,
+					input02,
+					input03,
+					input09,
+					input07,
+					input04,
+					input05,
+					input08,
+					input10,
+					input06
+				];
 
-				var newRow = table.row.add(fila).draw(false).node();
+				var nuevaFila = $('<tr>').append(
+					$('<td>').html(opciones),
+					$('<td>').html(input01),
+					$('<td>').html(input02),
+					$('<td>').html(input03),
+					$('<td>').html(input09),
+					$('<td>').html(input07),
+					$('<td>').html(input04),
+					$('<td>').html(input05),
+					$('<td>').html(input08),
+					$('<td>').html(input10),
+					$('<td>').html(input06)
+				);
+
+
+				//var newRow = table.row.add(fila).draw(false);
 				$(newRow).find('.eliminarFila').attr('data-row-index', counter);
 
+				$('#datatableNewOrderDraft tbody').append(nuevaFila);
+				if (counter === 0) {
+					var newRow = table.row.add(fila).draw(false);
+				} else {
+					$('#datatableNewOrderDraft tbody').append(nuevaFila);
+				}
 
 				$.typeahead({
 					input: `#inputCodigoArticulo${counter}`,
@@ -1014,36 +1067,66 @@ var handleRenderTableData = function () {
 					},
 					minLength: 3
 				});
+
+				contador++;
 
 			});
 
 			$(document).on('click', '.eliminarFila', function () {
-				var rowIndex = $(this).data('row-index');
 				var filaActual = $(this).closest('tr');
-
-				filaEliminada.push(rowIndex);
-				table.row(filaActual).remove().draw(false);
-				calcularTotales() 
+				filaActual.remove();
+				calcularTotales();
 			});
 
+
 			$(document).on('click', '.duplicarFila', function () {
-
-				var counterA = table.rows().count(); 
-				var counter = counterA + 1;
-
+				var counter = contador+1;
 				var filaActual = $(this).closest('tr');
 				var nuevaFila = filaActual.clone();
 
-				var nuevaID = 'fila' + counter;
+				nuevaFila.find('.typeahead__cancel-button').remove();
+				nuevaFila.find('.typeahead__result').remove();
 
-				nuevaFila.attr('id', nuevaID);
 				nuevaFila.find('[id^=inputCodigoArticulo]').attr('id', 'inputCodigoArticulo' + counter);
 				nuevaFila.find('[id^=inputDescripcionArticulo]').attr('id', 'inputDescripcionArticulo' + counter);
+				nuevaFila.find('[id^=inputCodigoAlmacen]').attr('id', 'inputCodigoAlmacen' + counter);
+				nuevaFila.find('[id^=inputCantidadAlmacen]').attr('id', 'inputCantidadAlmacen' + counter);
+				nuevaFila.find('[id^=inputStockAlmacen]').attr('id', 'inputStockAlmacen' + counter);
+				nuevaFila.find('[id^=inputCodigoBarras]').attr('id', 'inputCodigoBarras' + counter);
+				nuevaFila.find('[id^=inputCantidad]').attr('id', 'inputCantidad' + counter);
+				nuevaFila.find('[id^=inputPrecio]').attr('id', 'inputPrecio' + counter);
+				nuevaFila.find('[id^=inputPorcentajeDescuento]').attr('id', 'inputPorcentajeDescuento' + counter);
+				nuevaFila.find('[id^=inputIGV]').attr('id', 'inputIGV' + counter);
 
-				table.row.add(nuevaFila).draw(false);
+				nuevaFila.find('[name^=inputCodigoArticulo]').attr('name', 'inputCodigoArticulo' + counter);
+				nuevaFila.find('[name^=inputDescripcionArticulo]').attr('name', 'inputDescripcionArticulo' + counter);
+				nuevaFila.find('[name^=inputCodigoAlmacen]').attr('name', 'inputCodigoAlmacen' + counter);
+				nuevaFila.find('[name^=inputCantidadAlmacen]').attr('name', 'inputCantidadAlmacen' + counter);
+				nuevaFila.find('[name^=inputStockAlmacen]').attr('name', 'inputStockAlmacen' + counter);
+				nuevaFila.find('[name^=inputCodigoBarras]').attr('name', 'inputCodigoBarras' + counter);
+				nuevaFila.find('[name^=inputCantidad]').attr('name', 'inputCantidad' + counter);
+				nuevaFila.find('[name^=inputPrecio]').attr('name', 'inputPrecio' + counter);
+				nuevaFila.find('[name^=inputPorcentajeDescuento]').attr('name', 'inputPorcentajeDescuento' + counter);
+				nuevaFila.find('[name^=inputIGV]').attr('name', 'inputIGV' + counter);
+
+				nuevaFila.find('.eliminarFila').attr('data-row-index', counter);
+				nuevaFila.find('.porCodigoArticulo').attr('data-index', counter);
+				nuevaFila.find('.porDescripcionArticulo').attr('data-index', counter);
+				nuevaFila.find('.porCodigoAlmacen').attr('data-index', counter);
+
+
+				nuevaFila.insertAfter(filaActual);
+
+				var inputCodigoArticulo = $(`#inputCodigoArticulo${counter}`);
+				var inputDescripcionArticulo = $(`#inputDescripcionArticulo${counter}`);
+				var inputAlmacen = $(`#inputCodigoAlmacen${counter}`);
+
+				inputCodigoArticulo.attr('data-index', counter);
+				inputDescripcionArticulo.attr('data-index', counter);
+				inputAlmacen.attr('data-index', counter);
 
 				$.typeahead({
-					input: `#inputCodigoArticulo${counter}`,
+					input: inputCodigoArticulo,
 					order: "desc",
 					source: {
 						data: articulos_codigo
@@ -1052,7 +1135,7 @@ var handleRenderTableData = function () {
 				});
 
 				$.typeahead({
-					input: `#inputDescripcionArticulo${counter}`,
+					input: inputDescripcionArticulo,
 					order: "desc",
 					source: {
 						data: articulos_descripcion
@@ -1060,12 +1143,116 @@ var handleRenderTableData = function () {
 					minLength: 3
 				});
 
+				inputCodigoArticulo.removeAttr("data-lineNum");
 
-				$(`#inputCodigoArticulo${counter}`).removeAttr("data-lineNum");
+				var codigoArticulo = inputCodigoArticulo.val();
+				getStoragesByProduct(codigoArticulo)
+					.then(function (dataAlmacenes) {
+						var arregloAlmacenes = dataAlmacenes.map(function (almacen) {
+							return almacen.storageId;
+						});
+
+						$.typeahead({
+							input: `#inputCodigoAlmacen${counter}`,
+							order: "desc",
+							source: {
+								data: arregloAlmacenes
+							},
+							minLength: 3
+						});
+
+					})
+					.catch(function (error) {
+						console.log(error);
+					});
 
 				calcularTotales();
-
+				contador++;
 			});
+
+			/*
+			$(document).on('click', '.duplicarFila', function () {
+				var counter = contador;
+				var filaActual = $(this).closest('tr');
+				var nuevaFila = filaActual.clone();
+
+
+				nuevaFila.find('[id^=inputCodigoArticulo]').attr('id', 'inputCodigoArticulo' + counter);
+				nuevaFila.find('[id^=inputDescripcionArticulo]').attr('id', 'inputDescripcionArticulo' + counter);
+				nuevaFila.find('[id^=inputCodigoAlmacen]').attr('id', 'inputCodigoAlmacen' + counter);
+				nuevaFila.find('[id^=inputCantidadAlmacen]').attr('id', 'inputCantidadAlmacen' + counter);
+				nuevaFila.find('[id^=inputStockAlmacen]').attr('id', 'inputStockAlmacen' + counter);
+				nuevaFila.find('[id^=inputCodigoBarras]').attr('id', 'inputCodigoBarras' + counter);
+				nuevaFila.find('[id^=inputCantidad]').attr('id', 'inputCantidad' + counter);
+				nuevaFila.find('[id^=inputPrecio]').attr('id', 'inputPrecio' + counter);
+				nuevaFila.find('[id^=inputPorcentajeDescuento]').attr('id', 'inputPorcentajeDescuento' + counter);
+				nuevaFila.find('[id^=inputIGV]').attr('id', 'inputIGV' + counter);
+
+
+				nuevaFila.find('.eliminarFila').attr('data-row-index', counter);
+
+				nuevaFila.find('.porCodigoArticulo').attr('data-index', counter);
+				nuevaFila.find('.porDescripcionArticulo').attr('data-index', counter);
+				nuevaFila.find('.porCodigoAlmacen').attr('data-index', counter);
+
+				//var newRow = table.row.add(nuevaFila).draw(false);
+
+				//var ultimaFila = table.rows().nodes().last();
+				//ultimaFila.insertAfter(filaEspecifica);
+				//table.draw(false);
+
+				var inputCodigoArticulo = $(`#inputCodigoArticulo${counter}`);
+				var inputDescripcionArticulo = $(`#inputDescripcionArticulo${counter}`);
+				var inputAlmacen = $(`#inputCodigoAlmacen${counter}`);
+
+				inputCodigoArticulo.attr('data-index', counter);
+				inputDescripcionArticulo.attr('data-index', counter);
+				inputAlmacen.attr('data-index', counter);
+
+				$.typeahead({
+					input: inputCodigoArticulo,
+					order: "desc",
+					source: {
+						data: articulos_codigo
+					},
+					minLength: 3
+				});
+
+				$.typeahead({
+					input: inputDescripcionArticulo,
+					order: "desc",
+					source: {
+						data: articulos_descripcion
+					},
+					minLength: 3
+				});
+
+				inputCodigoArticulo.removeAttr("data-lineNum");
+
+				var codigoArticulo = inputCodigoArticulo.val();
+				getStoragesByProduct(codigoArticulo)
+					.then(function (dataAlmacenes) {
+						var arregloAlmacenes = dataAlmacenes.map(function (almacen) {
+							return almacen.storageId;
+						});
+
+						$.typeahead({
+							input: `#inputCodigoAlmacen${counter}`,
+							order: "desc",
+							source: {
+								data: arregloAlmacenes
+							},
+							minLength: 3
+						});
+
+					})
+					.catch(function (error) {
+						console.log(error);
+					});
+
+				calcularTotales();
+				contador++;
+			});*/
 
 			//botonAgregar.click();
 
@@ -1085,7 +1272,7 @@ var handleRenderTableData = function () {
 			});
 
 			$('#busquedaCustom').on('keyup', function () {
-				table.draw();
+				table.draw(false);
 			});
 			/*END busqueda en input */
 
@@ -1119,13 +1306,14 @@ var handleRenderTableData = function () {
 						var inputValue2 = $(`#inputPorcentajeDescuento${index}`).val();
 						$(`#inputPorcentajeDescuento${index}`).attr('required', true);
 
-						if (inputValue2 === '') {
-							$(`#inputPorcentajeDescuento${index}`).val(0.0);
-						}
+						//if (inputValue2 === '') {
+						//	$(`#inputPorcentajeDescuento${index}`).val(0.0);
+						//}
 
 						getPorcentajeDescuento(codigoArticulo, codigoAlmacen)
 							.then(function (descuento) {
 								$(`#inputPorcentajeDescuento${index}`).val(descuento);
+								lineaPropuesta();
 								calcularTotales();
 							})
 							.catch(function (error) {
@@ -1166,13 +1354,14 @@ var handleRenderTableData = function () {
 						var inputValue2 = $(`#inputPorcentajeDescuento${index}`).val();
 						$(`#inputPorcentajeDescuento${index}`).attr('required', true);
 
-						if (inputValue2 === '') {
-							$(`#inputPorcentajeDescuento${index}`).val(0.0);
-						}
+						//if (inputValue2 === '') {
+						//	$(`#inputPorcentajeDescuento${index}`).val(0.0);
+						//}
 
 						getPorcentajeDescuento(codigoArticulo, codigoAlmacen)
 							.then(function (descuento) {
 								$(`#inputPorcentajeDescuento${index}`).val(descuento);
+								lineaPropuesta();
 								calcularTotales();
 							})
 							.catch(function (error) {
@@ -1206,29 +1395,30 @@ var handleRenderTableData = function () {
 
 						var codListaPrecio = $('#inputCodigoCliente').attr('data-codPriceList');
 
+						lineaPropuesta();
 						autocompletarDetalle(codigoArticulo, codListaPrecio, index);
 
-						var inputCodigoArticulo = $(`#inputCodigoArticulo${index + 1}`);
-						if (!inputCodigoArticulo.length && $(`#inputCodigoArticulo${index}`).val() != '') {
-							botonAgregar.click();
-							$.typeahead({
-								input: `#inputCodigoArticulo${index + 1}`,
-								order: "desc",
-								source: {
-									data: articulos_codigo
-								},
-								minLength: 3
-							});
+						//var inputCodigoArticulo = $(`#inputCodigoArticulo${index + 1}`);
+						//if (!inputCodigoArticulo.length && $(`#inputCodigoArticulo${index}`).val() != '') {
+						//	//botonAgregar.click();
+						//	$.typeahead({
+						//		input: `#inputCodigoArticulo${index + 1}`,
+						//		order: "desc",
+						//		source: {
+						//			data: articulos_codigo
+						//		},
+						//		minLength: 3
+						//	});
 
-							$.typeahead({
-								input: `#inputDescripcionArticulo${index + 1}`,
-								order: "desc",
-								source: {
-									data: articulos_descripcion
-								},
-								minLength: 3
-							});
-						}
+						//	$.typeahead({
+						//		input: `#inputDescripcionArticulo${index + 1}`,
+						//		order: "desc",
+						//		source: {
+						//			data: articulos_descripcion
+						//		},
+						//		minLength: 3
+						//	});
+						//}
 
 
 					})
@@ -1236,28 +1426,6 @@ var handleRenderTableData = function () {
 						console.log(error)
 					})
 
-				var inputCodigoArticulo = $(`#inputCodigoArticulo${index + 1}`);
-				if (!inputCodigoArticulo.length && codigoArticulo != '') {
-					botonAgregar.click();
-					$.typeahead({
-						input: `#inputCodigoArticulo${index + 1}`,
-						order: "desc",
-						source: {
-							data: articulos_codigo
-						},
-						minLength: 3
-					});
-
-					$.typeahead({
-						input: `#inputDescripcionArticulo${index + 1}`,
-						order: "desc",
-						source: {
-							data: articulos_descripcion
-						},
-						minLength: 3
-					});
-				}
-				calcularTotales();
 			});
 
 			$(document).on('blur', '.descripcionArticulo', function () {
@@ -1279,30 +1447,9 @@ var handleRenderTableData = function () {
 						$(`#inputCodigoArticulo${index}`).val(codigoArticulo);
 
 						var codListaPrecio = $('#inputCodigoCliente').attr('data-codPriceList');
-
+						lineaPropuesta();
 						autocompletarDetalle(codigoArticulo, codListaPrecio, index);
-						calcularTotales();
-						var inputCodigoArticulo = $(`#inputCodigoArticulo${index + 1}`);
-						if (!inputCodigoArticulo.length && $(`#inputCodigoArticulo${index}`).val() != '') {
-							botonAgregar.click();
-							$.typeahead({
-								input: `#inputCodigoArticulo${index + 1}`,
-								order: "desc",
-								source: {
-									data: articulos_codigo
-								},
-								minLength: 3
-							});
 
-							$.typeahead({
-								input: `#inputDescripcionArticulo${index + 1}`,
-								order: "desc",
-								source: {
-									data: articulos_descripcion
-								},
-								minLength: 3
-							});
-						}
 
 					})
 					.catch(function (error) {
@@ -1322,42 +1469,17 @@ var handleRenderTableData = function () {
 
 				autocompletarDetalle(codigoArticulo, codListaPrecio, index);
 
-				var filas = table.rows().count();
+				lineaPropuesta();
 
-				for (var i = index; i <= filas; i++) {
-					var inputCodigoArticulo = $(`#inputCodigoArticulo${index + 1}`);
-					if (!inputCodigoArticulo.length && codigoArticulo !== '') {
-						botonAgregar.click();
-						$.typeahead({
-							input: `#inputCodigoArticulo${index + 1}`,
-							order: "desc",
-							source: {
-								data: articulos_codigo
-							},
-							minLength: 3
-						});
-
-						$.typeahead({
-							input: `#inputDescripcionArticulo${index + 1}`,
-							order: "desc",
-							source: {
-								data: articulos_descripcion
-							},
-							minLength: 3
-						});
-					}
-				}
 				calcularTotales();
 			}
-
-
-
 
 
 			/* POR CODIGO ARTICULO */
 			$(document).on('click', '.porCodigoArticulo', function () {
 				var index = $(this).data('index');
 				ejecutarCodigoArticulo(index);
+				lineaPropuesta();
 				setTimeout(function () {
 					calcularTotales();
 				}, 1000);
@@ -1368,6 +1490,7 @@ var handleRenderTableData = function () {
 			$(document).on('blur', '.codigoArticulo', function () {
 				var index = $(this).data('index');
 				ejecutarCodigoArticulo(index);
+				lineaPropuesta();
 				setTimeout(function () {
 					calcularTotales();
 				}, 1000);
@@ -1427,6 +1550,37 @@ var handleRenderTableData = function () {
 
 			/*END Calcular resumen*/
 
+			function lineaPropuesta() {
+				var allFieldsValid = true;
+
+				$('#detalleRow tr').each(function () {
+					var CodigoArticulo = $(this).find('[name^="inputCodigoArticulo"]').val();
+					var CodigoAlmacen = $(this).find('[name^="inputCodigoAlmacen"]').val();
+					var Precio = $(this).find('[name^="inputPrecio"]').val();
+					var Cantidad = $(this).find('[name^="inputCantidad"]').val();
+					var PorcentajeDescuento = $(this).find('[name^="inputPorcentajeDescuento"]').val();
+					var VatGroup = $(this).find('[name^="inputIGV"]').val();
+
+					if (
+						CodigoArticulo === '' ||
+						CodigoAlmacen === '' ||
+						Precio === '' ||
+						Cantidad === '' ||
+						PorcentajeDescuento === '' ||
+						VatGroup === ''
+					) {
+						allFieldsValid = false;
+						return false; 
+					}
+				});
+
+				if (allFieldsValid) {
+					contador++;
+					botonAgregar.click(); 
+				}
+			}
+
+
 
 			function adaptarDetalle() {
 
@@ -1471,14 +1625,14 @@ var handleRenderTableData = function () {
 	function limpiarLineaArticulo(index) {
 		$(`#inputDescripcionArticulo${index}`).val('');
 		$(`#inputCodigoBarras${index}`).val('');
-		$(`#inputCodigoAlmacen${index}`).val('');
+		//$(`#inputCodigoAlmacen${index}`).val('');
 		$(`#inputPrecio${index}`).val('');
 		$(`#inputIGV${index}`).val('');
 		$(`#inputIGV${index}`).attr("data-valor", '');
 		$(`#inputCantidadAlmacen${index}`).val('');
 		$(`#inputStockAlmacen${index}`).val('');
-		$(`#inputPorcentajeDescuento${index}`).val('');
-		$(`#inputCantidad${index}`).val('');
+		//$(`#inputPorcentajeDescuento${index}`).val('');
+		//$(`#inputCantidad${index}`).val('');
 	}
 
 	function getProductById(productCode, productListId) {
@@ -1624,12 +1778,18 @@ var handleRenderTableData = function () {
 				$(`#inputDescripcionArticulo${index}`).val(dataArticulo.DescripcionArticulo);
 				$(`#inputCodigoBarras${index}`).val(dataArticulo.CodigoBarra);
 
-				$(`#inputCodigoAlmacen${index}`).val(dataArticulo.StorageDefaultId);
+				var valAlm = $(`#inputCodigoAlmacen${index}`).val();
+
+				if (valAlm === '') {
+					$(`#inputCodigoAlmacen${index}`).val(dataArticulo.StorageDefaultId);
+					var codigoAlmacen = dataArticulo.StorageDefaultId;
+				} else {
+					var codigoAlmacen = valAlm;
+				}
 
 
 				$(`#inputPrecio${index}`).val(dataArticulo.precio);
 
-				var codigoAlmacen = dataArticulo.StorageDefaultId;
 
 				getLineArt(codListaPrecio, codigoArticulo, codigoAlmacen)
 					.then(function (linea) {
@@ -1639,18 +1799,24 @@ var handleRenderTableData = function () {
 						$(`#inputCantidadAlmacen${index}`).val(linea.Stock);
 						$(`#inputStockAlmacen${index}`).val(linea.StockGeneral);
 
-						$(`#inputCantidad${index}`).val(1);
+						$(`#inputPorcentajeDescuento${index}`).attr('required', true);
+
+						var inputValue1 = $(`#inputCantidad${index}`).val();
+						$(`#inputCantidad${index}`).attr('required', true);
+
+						if (inputValue1 === '') {
+							$(`#inputCantidad${index}`).val(1);
+						}
 
 						getPorcentajeDescuento(codigoArticulo, codigoAlmacen)
 							.then(function (descuento) {
-								$(`#inputPorcentajeDescuento${index}`).val(descuento);
 
 								var inputValue2 = $(`#inputPorcentajeDescuento${index}`).val();
 								$(`#inputPorcentajeDescuento${index}`).attr('required', true);
 
 								if (inputValue2 === '') {
-									$(`#inputPorcentajeDescuento${index}`).val(0.0);
-								}
+									$(`#inputPorcentajeDescuento${index}`).val(descuento);
+								} 
 
 								calcularTotales();
 							})
@@ -1792,6 +1958,42 @@ var handleRenderTableData = function () {
 
 		$('#myModal').modal('show');
 	});
+
+	$('#btnGrabar').on('click', function () {
+		noValidarVacios();
+	})
+
+	function noValidarVacios() {
+		$('#detalleRow tr').each(function () {
+			var CodigoArticulo = $(this).find('[name^="inputCodigoArticulo"]').val();
+			var CodigoAlmacen = $(this).find('[name^="inputCodigoAlmacen"]').val();
+			var Precio = $(this).find('[name^="inputPrecio"]').val();
+			var Cantidad = $(this).find('[name^="inputCantidad"]').val();
+			var PorcentajeDescuento = $(this).find('[name^="inputPorcentajeDescuento"]').val();
+			var VatGroup = $(this).find('[name^="inputIGV"]').val();
+
+			var allFieldsEmpty =
+				CodigoArticulo === '' &&
+				CodigoAlmacen === '' &&
+				Precio === '' &&
+				Cantidad === '' &&
+				PorcentajeDescuento === '' &&
+				VatGroup === '';
+
+			if (allFieldsEmpty) {
+				$(this).find('[name^="inputCodigoArticulo"]').removeAttr('required');
+				$(this).find('[name^="inputCodigoAlmacen"]').removeAttr('required');
+				$(this).find('[name^="inputCantidad"]').removeAttr('required');
+				$(this).find('[name^="inputPorcentajeDescuento"]').removeAttr('required');
+			} else {
+				$(this).find('[name^="inputCodigoArticulo"]').prop('required', true);
+				$(this).find('[name^="inputCodigoAlmacen"]').prop('required', true);
+				$(this).find('[name^="inputCantidad"]').prop('required', true);
+				$(this).find('[name^="inputPorcentajeDescuento"]').prop('required', true);
+			}
+		});
+	}
+
 
 	/*END post nueva orden preliminar */
 

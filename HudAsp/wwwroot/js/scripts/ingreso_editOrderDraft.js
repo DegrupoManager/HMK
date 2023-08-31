@@ -791,9 +791,9 @@ var handleRenderTableData = function () {
 				opciones,
 				input01,
 				input02,
-				input07,
-				input09,
 				input03,
+				input09,
+				input07,
 				input04,
 				input05,
 				input08,
@@ -805,7 +805,9 @@ var handleRenderTableData = function () {
 				fila.push("");
 			}
 
-			table.row.add(fila).draw(false);
+			//table.row.add(fila).draw(false);
+			var newRow = table.row.add(fila).draw(false).node();
+			$(newRow).find('.eliminarFila').attr('data-row-index', counter);
 
 			$.typeahead({
 				input: `#inputCodigoArticulo${counter}`,
@@ -1072,7 +1074,19 @@ var handleRenderTableData = function () {
                     </div>
 				`;
 
-				const fila = [opciones, input01, input02, input07, input09, input03, input04, input05, input08, input10, input06];
+				const fila = [
+					opciones,
+					input01,
+					input02,
+					input03,
+					input09,
+					input07,
+					input04,
+					input05,
+					input08,
+					input10,
+					input06
+				];
 
 				var newRow = table.row.add(fila).draw(false).node();
 				$(newRow).find('.eliminarFila').attr('data-row-index', counter);
@@ -1099,14 +1113,94 @@ var handleRenderTableData = function () {
 			});
 
 			$(document).on('click', '.eliminarFila', function () {
-				var rowIndex = $(this).data('row-index');
-				var filaActual = $(this).closest('tr');
-
-				filaEliminada.push(rowIndex);
+				var filaActual = $(this).parents('tr');
 				table.row(filaActual).remove().draw(false);
 				calcularTotales();
 			});
 
+			$(document).on('click', '.duplicarFila', function () {
+				var counter = table.rows().count() + 1;
+				var filaActual = $(this).closest('tr');
+				var nuevaFila = filaActual.clone();
+
+				var nuevaID = 'fila' + counter;
+
+				nuevaFila.attr('id', nuevaID);
+				nuevaFila.find('[id^=inputCodigoArticulo]').attr('id', 'inputCodigoArticulo' + counter);
+				nuevaFila.find('[id^=inputDescripcionArticulo]').attr('id', 'inputDescripcionArticulo' + counter);
+				nuevaFila.find('[id^=inputCodigoAlmacen]').attr('id', 'inputCodigoAlmacen' + counter);
+				nuevaFila.find('[id^=inputCantidadAlmacen]').attr('id', 'inputCantidadAlmacen' + counter);
+				nuevaFila.find('[id^=inputStockAlmacen]').attr('id', 'inputStockAlmacen' + counter);
+				nuevaFila.find('[id^=inputCodigoBarras]').attr('id', 'inputCodigoBarras' + counter);
+				nuevaFila.find('[id^=inputCantidad]').attr('id', 'inputCantidad' + counter);
+				nuevaFila.find('[id^=inputPrecio]').attr('id', 'inputPrecio' + counter);
+				nuevaFila.find('[id^=inputPorcentajeDescuento]').attr('id', 'inputPorcentajeDescuento' + counter);
+				nuevaFila.find('[id^=inputIGV]').attr('id', 'inputIGV' + counter);
+
+
+				nuevaFila.find('.eliminarFila').attr('data-row-index', counter);
+
+				nuevaFila.find('.porCodigoArticulo').attr('data-index', counter);
+				nuevaFila.find('.porDescripcionArticulo').attr('data-index', counter);
+				nuevaFila.find('.porCodigoAlmacen').attr('data-index', counter);
+
+				//table.row.add(nuevaFila).draw(false);
+				nuevaFila.insertAfter(filaActual);
+
+				var inputCodigoArticulo = $(`#inputCodigoArticulo${counter}`);
+				var inputDescripcionArticulo = $(`#inputDescripcionArticulo${counter}`);
+				var inputAlmacen = $(`#inputCodigoAlmacen${counter}`);
+
+				inputCodigoArticulo.attr('data-index', counter);
+				inputDescripcionArticulo.attr('data-index', counter);
+				inputAlmacen.attr('data-index', counter);
+
+				$.typeahead({
+					input: inputCodigoArticulo,
+					order: "desc",
+					source: {
+						data: articulos_codigo
+					},
+					minLength: 3
+				});
+
+				$.typeahead({
+					input: inputDescripcionArticulo,
+					order: "desc",
+					source: {
+						data: articulos_descripcion
+					},
+					minLength: 3
+				});
+
+				inputCodigoArticulo.removeAttr("data-lineNum");
+
+				var codigoArticulo = inputCodigoArticulo.val();
+				getStoragesByProduct(codigoArticulo)
+					.then(function (dataAlmacenes) {
+						var arregloAlmacenes = dataAlmacenes.map(function (almacen) {
+							return almacen.storageId;
+						});
+
+						$.typeahead({
+							input: `#inputCodigoAlmacen${counter}`,
+							order: "desc",
+							source: {
+								data: arregloAlmacenes
+							},
+							minLength: 3
+						});
+
+					})
+					.catch(function (error) {
+						console.log(error);
+					});
+
+				calcularTotales();
+			});
+
+
+			/*
 			$(document).on('click', '.duplicarFila', function () {
 
 				var counterA = table.rows().count();
@@ -1120,8 +1214,12 @@ var handleRenderTableData = function () {
 				nuevaFila.attr('id', nuevaID);
 				nuevaFila.find('[id^=inputCodigoArticulo]').attr('id', 'inputCodigoArticulo' + counter);
 				nuevaFila.find('[id^=inputDescripcionArticulo]').attr('id', 'inputDescripcionArticulo' + counter);
+				nuevaFila.find('.eliminarFila').attr('data-row-index', counter);
+
 
 				table.row.add(nuevaFila).draw(false);
+				nuevaFila.insertAfter(filaActual); 
+				$(`#inputCodigoArticulo${counter}`).removeAttr("data-lineNum");
 
 
 				$.typeahead({
@@ -1142,11 +1240,35 @@ var handleRenderTableData = function () {
 					minLength: 3
 				});
 
+				var codigoArticulo = $(`#inputCodigoArticulo${counter}`).val();
+
+				getStoragesByProduct(codigoArticulo)
+					.then(function (dataAlmacenes) {
+
+						dataAlmacenes.forEach(function (almacen) {
+							arregloAlmacenes.push(almacen.storageId);
+						});
+
+						$.typeahead({
+							input: `#inputCodigoAlmacen${index}`,
+							order: "desc",
+							source: {
+								data: arregloAlmacenes
+							},
+							minLength: 3
+						});
+
+					})
+					.catch(function (error) {
+						console.log(error);
+					});
+
+
 				$(`#inputCodigoArticulo${counter}`).removeAttr("data-lineNum");
 
 				calcularTotales()
 
-			});
+			});*/
 
 			//botonAgregar.click();
 
@@ -1182,6 +1304,7 @@ var handleRenderTableData = function () {
 
 				var codigoAlmacen = $(`#inputCodigoAlmacen${index}`).val();
 				$(`#inputCodigoAlmacen${index}`).attr('required', true);
+
 
 				getLineArt(codListaPrecio, codigoArticulo, codigoAlmacen).
 					then(function (linea) {
@@ -1230,6 +1353,7 @@ var handleRenderTableData = function () {
 				var codigoAlmacen = $(`#inputCodigoAlmacen${index}`).val();
 				$(`#inputCodigoAlmacen${index}`).attr('required', true);
 
+
 				getLineArt(codListaPrecio, codigoArticulo, codigoAlmacen).
 					then(function (linea) {
 						$(`#inputIGV${index}`).val(linea.Impuesto);
@@ -1244,16 +1368,18 @@ var handleRenderTableData = function () {
 							$(`#inputCantidad${index}`).val(1);
 						}
 
-						var inputValue2 = $(`#inputPorcentajeDescuento${index}`).val();
-						$(`#inputPorcentajeDescuento${index}`).attr('required', true);
-
-						if (inputValue2 === '') {
-							$(`#inputPorcentajeDescuento${index}`).val(0.0);
-						}
 
 						getPorcentajeDescuento(codigoArticulo, codigoAlmacen)
 							.then(function (descuento) {
+
 								$(`#inputPorcentajeDescuento${index}`).val(descuento);
+
+								var inputValue2 = $(`#inputPorcentajeDescuento${index}`).val();
+								$(`#inputPorcentajeDescuento${index}`).attr('required', true);
+
+								//if (inputValue2 === '') {
+								//	$(`#inputPorcentajeDescuento${index}`).val(descuento);
+								//}
 								calcularTotales();
 							})
 							.catch(function (error) {
@@ -1317,27 +1443,6 @@ var handleRenderTableData = function () {
 						console.log(error)
 					})
 
-				var inputCodigoArticulo = $(`#inputCodigoArticulo${index + 1}`);
-				if (!inputCodigoArticulo.length && codigoArticulo != '') {
-					botonAgregar.click();
-					$.typeahead({
-						input: `#inputCodigoArticulo${index + 1}`,
-						order: "desc",
-						source: {
-							data: articulos_codigo
-						},
-						minLength: 3
-					});
-
-					$.typeahead({
-						input: `#inputDescripcionArticulo${index + 1}`,
-						order: "desc",
-						source: {
-							data: articulos_descripcion
-						},
-						minLength: 3
-					});
-				}
 				calcularTotales();
 			});
 
@@ -1408,7 +1513,7 @@ var handleRenderTableData = function () {
 				for (var i = index; i <= filas; i++) {
 					var inputCodigoArticulo = $(`#inputCodigoArticulo${index + 1}`);
 					if (!inputCodigoArticulo.length && codigoArticulo !== '') {
-						botonAgregar.click();
+						//botonAgregar.click();
 						$.typeahead({
 							input: `#inputCodigoArticulo${index + 1}`,
 							order: "desc",
@@ -1498,7 +1603,7 @@ var handleRenderTableData = function () {
 			}
 
 
-			$(document).on('input blur change', '#detalleRow input[name^="inputCantidad"], #detalleRow input[name^="inputPrecio"], #detalleRow input[name^="inputPorcentajeDescuento"]', function () {
+			$(document).on('blur', '#detalleRow input[name^="inputCantidad"], #detalleRow input[name^="inputPrecio"], #detalleRow input[name^="inputPorcentajeDescuento"]', function () {
 				calcularTotales();
 			});
 
@@ -1523,7 +1628,6 @@ var handleRenderTableData = function () {
 						}
 					}
 				});
-
 				calcularTotales();
 			}
 
@@ -1536,6 +1640,11 @@ var handleRenderTableData = function () {
 						adaptarDetalle();
 					}
 				}, 1000);
+
+				setTimeout(function () {
+					calcularTotales();
+				}, 2000);
+
 			});
 
 			setTimeout(function () {
@@ -1548,13 +1657,13 @@ var handleRenderTableData = function () {
 	function limpiarLineaArticulo(index) {
 		$(`#inputDescripcionArticulo${index}`).val('');
 		$(`#inputCodigoBarras${index}`).val('');
-		$(`#inputCodigoAlmacen${index}`).val('');
+		/*$(`#inputCodigoAlmacen${index}`).val('');*/
 		$(`#inputPrecio${index}`).val('');
 		$(`#inputIGV${index}`).val('');
 		$(`#inputIGV${index}`).attr("data-valor", '');
 		$(`#inputCantidadAlmacen${index}`).val('');
 		$(`#inputStockAlmacen${index}`).val('');
-		$(`#inputPorcentajeDescuento${index}`).val('');
+		//$(`#inputPorcentajeDescuento${index}`).val('');
 	}
 
 	function getProductById(productCode, productListId) {
@@ -1699,13 +1808,14 @@ var handleRenderTableData = function () {
 			.then(function (dataArticulo) {
 				$(`#inputDescripcionArticulo${index}`).val(dataArticulo.DescripcionArticulo);
 				$(`#inputCodigoBarras${index}`).val(dataArticulo.CodigoBarra);
-
-				$(`#inputCodigoAlmacen${index}`).val(dataArticulo.StorageDefaultId);
-
-
 				$(`#inputPrecio${index}`).val(dataArticulo.precio);
 
-				var codigoAlmacen = dataArticulo.StorageDefaultId;
+				var codigoAlmacenInput = $(`#inputCodigoAlmacen${counter}`);
+				var codigoAlmacen = codigoAlmacenInput.val();
+
+				if (!codigoAlmacen) {
+					codigoAlmacen = dataArticulo.StorageDefaultId;
+				}
 
 				getLineArt(codListaPrecio, codigoArticulo, codigoAlmacen)
 					.then(function (linea) {
@@ -1715,20 +1825,18 @@ var handleRenderTableData = function () {
 						$(`#inputCantidadAlmacen${index}`).val(linea.Stock);
 						$(`#inputStockAlmacen${index}`).val(linea.StockGeneral);
 
-						$(`#inputCantidad${index}`).val(1);
+						//$(`#inputCantidad${index}`).val(1);
 
 						getPorcentajeDescuento(codigoArticulo, codigoAlmacen)
 							.then(function (descuento) {
-								$(`#inputPorcentajeDescuento${index}`).val(descuento);
+								//$(`#inputPorcentajeDescuento${index}`).val(descuento);
 
 								var inputValue2 = $(`#inputPorcentajeDescuento${index}`).val();
 								$(`#inputPorcentajeDescuento${index}`).attr('required', true);
 
 								if (inputValue2 === '') {
-									$(`#inputPorcentajeDescuento${index}`).val(0.0);
+									$(`#inputPorcentajeDescuento${index}`).val(descuento);
 								}
-
-								calcularTotales();
 							})
 							.catch(function (error) {
 

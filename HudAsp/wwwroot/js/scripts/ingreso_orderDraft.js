@@ -149,7 +149,32 @@ var handleRenderTableData = function () {
 				$("#nuevaOrden").remove();
 			}
 
-			table.columns(0).nodes().each(function (cell, index) {
+			table.rows().every(function (index, element) {
+				var column0 = $('td:eq(0)', this.node());
+
+				var id = column0.text();
+
+				var url = '/Ingreso/ViewOrderDraft?id=' + id;
+
+
+				var opcionesX = accionesRoles;
+
+				const codigosDeseados = ['003'];
+
+				const codigosExisten = codigosDeseados.map(codigoDeseado =>
+					opcionesX.some(opcion => opcion.codigo === codigoDeseado)
+				);
+
+				var linkHTML = '<a href="' + url + '">' + id + '</a>';
+
+				if (codigosExisten[codigosDeseados.indexOf('003')]) {
+					column0.html(linkHTML);
+				}
+
+			});
+
+
+			/*table.columns(0).nodes().each(function (cell, index) {
 				var row = table.row(index);
 				var id = row.data().num_orden;
 				var url = '/Ingreso/ViewOrderDraft?id=' + id;
@@ -168,7 +193,7 @@ var handleRenderTableData = function () {
 					$(cell).html(linkHTML);
 				}
 				
-			});
+			});*/
 
 			table.columns(9).every(function () {
 				var column = this;
@@ -286,11 +311,11 @@ var handleRenderTableData = function () {
 
 			$('td', row).addClass('text-sm');
 
-			//var column0 = $('td:eq(0)', row);
-			//var id = column0.text();
-			//var url = '/Ingreso/ViewOrderDraft?id=' + id; 
+			var column0 = $('td:eq(0)', row);
+			var id = column0.text();
+			var url = '/Ingreso/ViewOrderDraft?id=' + id; 
 
-			//column0.html('<a href="' + url + '">' + id + '</a>');
+			column0.html('<a href="' + url + '">' + id + '</a>');
 
 			var column4 = $('td:eq(4)', row);
 

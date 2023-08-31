@@ -22,6 +22,7 @@
 
 public class DocumentLinesUpdate
 {
+    public string VisualOrder { get; set; }
     public string LineNum { get; set; }
     public string ItemCode { get; set; }
     public string WarehouseCode { get; set; }

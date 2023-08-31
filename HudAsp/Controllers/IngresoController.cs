@@ -287,20 +287,30 @@ namespace HudAsp.Controllers
         [HttpPatch]
         public async Task<JsonResult> UpdatePreOrder(UpdateOrderDraftModel DRAFT)
         {
+            int visOrderCounter = 1;
 
-			foreach (var line in DRAFT.DocumentLines)
-			{
-				if (string.IsNullOrEmpty(line.LineNum))
-				{
-					line.LineNum = null;
-				}
-			}
+            int maxLineNum = DRAFT.DocumentLines
+                .Where(l => !string.IsNullOrEmpty(l.LineNum))
+                .Select(l => int.TryParse(l.LineNum, out int num) ? num : 0)
+                .DefaultIfEmpty(0)
+                .Max();
 
-			var preOrderData = JsonConvert.SerializeObject(DRAFT, new JsonSerializerSettings
+            foreach (var line in DRAFT.DocumentLines)
+            {
+                if (string.IsNullOrEmpty(line.LineNum))
+                {
+                    line.LineNum = (maxLineNum + 1).ToString();
+                    maxLineNum++;
+                }
+
+                line.VisualOrder = visOrderCounter.ToString();
+                visOrderCounter++;
+            }
+
+            var preOrderData = JsonConvert.SerializeObject(DRAFT, new JsonSerializerSettings
 			{
 				NullValueHandling = NullValueHandling.Ignore
 			});
-
 
 			var request = new HttpRequestMessage(new HttpMethod("PATCH"), $"{_apiBaseUrl}/PreOrders");
             request.Content = new StringContent(preOrderData, Encoding.UTF8, "application/json");
